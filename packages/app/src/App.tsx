@@ -1,14 +1,18 @@
 import { ErrorNotFound } from '#pages/ErrorNotFound'
-import { Home } from '#pages/Home'
+import LoadingPage from '#pages/LoadingPage'
 import {
   CoreSdkProvider,
   ErrorBoundary,
   MetaTags,
   TokenProvider
 } from '@commercelayer/app-elements'
+import { Suspense, lazy } from 'react'
 import { SWRConfig } from 'swr'
 import { Route, Router, Switch } from 'wouter'
 import { appRoutes } from './data/routes'
+
+const HomePage = lazy(() => import('#pages/HomePage'))
+const NewPage = lazy(() => import('#pages/NewPage'))
 
 const isDev = Boolean(import.meta.env.DEV)
 const basePath =
@@ -35,16 +39,15 @@ export function App(): JSX.Element {
         >
           <MetaTags />
           <CoreSdkProvider>
-            <Router base={basePath}>
-              <Switch>
-                <Route path={appRoutes.home.path}>
-                  <Home />
-                </Route>
-                <Route>
-                  <ErrorNotFound />
-                </Route>
-              </Switch>
-            </Router>
+            <Suspense fallback={<LoadingPage />}>
+              <Router base={basePath}>
+                <Switch>
+                  <Route path={appRoutes.home.path} component={HomePage} />
+                  <Route path={appRoutes.new.path} component={NewPage}/>
+                  <Route component={ErrorNotFound} />
+                </Switch>
+              </Router>
+            </Suspense>
           </CoreSdkProvider>
         </TokenProvider>
       </SWRConfig>

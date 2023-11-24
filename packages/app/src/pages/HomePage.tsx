@@ -7,7 +7,7 @@ import {
 } from '@commercelayer/app-elements'
 import { Link } from 'wouter'
 
-export function Home(): JSX.Element {
+function HomePage(): JSX.Element {
   const {
     dashboardUrl,
     settings: { mode }
@@ -31,3 +31,5 @@ export function Home(): JSX.Element {
     </PageLayout>
   )
 }
+
+export default HomePage
