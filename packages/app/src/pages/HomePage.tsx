@@ -24,7 +24,15 @@ function HomePage(): JSX.Element {
       }}
     >
       <Spacer top='10'>
-        <Section titleSize='small' title='Browse' actionButton={<Link href={appRoutes.new.makePath({})}><a>New promotion</a></Link>}>
+        <Section
+          titleSize='small'
+          title='Browse'
+          actionButton={
+            <Link href={appRoutes.selectType.makePath({})}>
+              <a>New promotion</a>
+            </Link>
+          }
+        >
           &nbsp;
         </Section>
       </Spacer>
