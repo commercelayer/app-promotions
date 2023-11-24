@@ -1,17 +1,53 @@
-import { appRoutes, type AppRoute } from './routes'
+import { appRoutes, createRoute, createTypedRoute, type AppRoute } from './routes'
 
 describe('appRoutes', () => {
-  test('Every route should have a `path` property', () => {
+  it('Every route should have a `path` property', () => {
     const allRoutes = Object.keys(appRoutes) as AppRoute[]
     expect(allRoutes.every((route) => 'path' in appRoutes[route])).toBe(true)
   })
 
-  test('Every route should have a `makePath` method', () => {
+  it('Every route should have a `makePath` method', () => {
     const allRoutes = Object.keys(appRoutes) as AppRoute[]
     expect(allRoutes.every((route) => 'makePath' in appRoutes[route])).toBe(
       true
     )
     expect(allRoutes.every(isMakePathAFunction)).toBe(true)
+  })
+})
+
+describe('createRoute', () => {
+  it('`makePath` should be without variables when `path` does not have variables', () => {
+    const home = createRoute('/')
+    expect(home.path).toEqual('/')
+    expect(home.makePath({})).toEqual('/')
+    expect(home.makePath({ promotionId: '1234' }, 'firstname=John&lastname=Doe')).toEqual('/?firstname=John&lastname=Doe')
+
+    const list = createRoute('/orders/')
+    expect(list.path).toEqual('/orders')
+    expect(list.makePath({})).toEqual('/orders')
+    expect(list.makePath({ promotionId: '1234' }, 'firstname=John&lastname=Doe')).toEqual('/orders?firstname=John&lastname=Doe')
+  })
+
+  it('`makePath` should accepts a list of variables based on the provided `path`', () => {
+    const route = createRoute('/list/:promotionId/edit/:name?/')
+    expect(route.path).toEqual('/list/:promotionId/edit/:name?')
+    expect(route.makePath({ promotionId: '1234', name: 'John' })).toEqual('/list/1234/edit/John')
+    expect(route.makePath({ promotionId: '1234' }, 'firstname=John&lastname=Doe')).toEqual('/list/1234/edit?firstname=John&lastname=Doe')
+
+    const ordersRoute = createRoute('/orders/:orderId?/')
+    expect(ordersRoute.makePath({})).toEqual('/orders')
+    expect(ordersRoute.makePath({ orderId: '1234' })).toEqual('/orders/1234')
+  })
+})
+
+describe('createTypedRoute', () => {
+  it('`makePath` should accepts a list of variables with the defined types', () => {
+    const route = createTypedRoute<{ orderNumber: number, shipmentCode?: string }>()('/orders/:orderNumber/:shipmentCode?/')
+    expect(route.path).toEqual('/orders/:orderNumber/:shipmentCode?')
+    expect(route.makePath({ orderNumber: 1234 }, 'firstname=John&lastname=Doe')).toEqual('/orders/1234?firstname=John&lastname=Doe')
+    expect(route.makePath({ orderNumber: 1234, shipmentCode: 'ACDC' })).toEqual('/orders/1234/ACDC')
+    expect(route.makePath({ orderNumber: 1234 }, 'firstname=John&lastname=Doe')).toEqual('/orders/1234?firstname=John&lastname=Doe')
+    expect(route.makePath({ orderNumber: 1234, shipmentCode: 'ACDC' }, 'firstname=John&lastname=Doe')).toEqual('/orders/1234/ACDC?firstname=John&lastname=Doe')
   })
 })
 

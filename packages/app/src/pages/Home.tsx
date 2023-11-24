@@ -1,9 +1,11 @@
+import { appRoutes } from '#data/routes'
 import {
   PageLayout,
   Section,
   Spacer,
   useTokenProvider
 } from '@commercelayer/app-elements'
+import { Link } from 'wouter'
 
 export function Home(): JSX.Element {
   const {
@@ -22,7 +24,7 @@ export function Home(): JSX.Element {
       }}
     >
       <Spacer top='10'>
-        <Section titleSize='small' title='Browse'>
+        <Section titleSize='small' title='Browse' actionButton={<Link href={appRoutes.new.makePath({})}><a>New promotion</a></Link>}>
           &nbsp;
         </Section>
       </Spacer>
