@@ -11,8 +11,11 @@ import { SWRConfig } from 'swr'
 import { Route, Router, Switch } from 'wouter'
 import { appRoutes } from './data/routes'
 
-const HomePage = lazy(() => import('#pages/HomePage'))
-const NewPage = lazy(() => import('#pages/NewPage'))
+const HomePage = lazy(async () => await import('#pages/HomePage'))
+const SelectTypePage = lazy(async () => await import('#pages/SelectTypePage'))
+const NewPromotionPage = lazy(
+  async () => await import('#pages/NewPromotionPage')
+)
 
 const isDev = Boolean(import.meta.env.DEV)
 const basePath =
@@ -43,7 +46,14 @@ export function App(): JSX.Element {
               <Router base={basePath}>
                 <Switch>
                   <Route path={appRoutes.home.path} component={HomePage} />
-                  <Route path={appRoutes.new.path} component={NewPage}/>
+                  <Route
+                    path={appRoutes.selectType.path}
+                    component={SelectTypePage}
+                  />
+                  <Route
+                    path={appRoutes.newPromotion.path}
+                    component={NewPromotionPage}
+                  />
                   <Route component={ErrorNotFound} />
                 </Switch>
               </Router>
