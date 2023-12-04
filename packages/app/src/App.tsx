@@ -16,6 +16,9 @@ const SelectTypePage = lazy(async () => await import('#pages/SelectTypePage'))
 const NewPromotionPage = lazy(
   async () => await import('#pages/NewPromotionPage')
 )
+const NewPromotionRulesPage = lazy(
+  async () => await import('#pages/NewPromotionRulesPage')
+)
 
 const isDev = Boolean(import.meta.env.DEV)
 const basePath =
@@ -53,6 +56,14 @@ export function App(): JSX.Element {
                   <Route
                     path={appRoutes.newPromotion.path}
                     component={NewPromotionPage}
+                  />
+                  <Route
+                    path={appRoutes.newPromotionEdit.path}
+                    component={NewPromotionPage}
+                  />
+                  <Route
+                    path={appRoutes.newPromotionRules.path}
+                    component={NewPromotionRulesPage}
                   />
                   <Route component={ErrorNotFound} />
                 </Switch>

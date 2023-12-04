@@ -9,7 +9,7 @@ export function ErrorNotFound(): JSX.Element {
         title='Not found'
         description='We could not find the resource you are looking for.'
         action={
-          <Link href={appRoutes.home.makePath()}>
+          <Link href={appRoutes.home.makePath({})}>
             <Button variant='primary'>Go Home</Button>
           </Link>
         }

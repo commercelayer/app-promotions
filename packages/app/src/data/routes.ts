@@ -1,5 +1,4 @@
-import type { PromotionSlug } from './dictionaries/promotion'
-import { createRoute, createTypedRoute } from './route.utils'
+import { createRoute } from './route.utils'
 export type AppRoute = keyof typeof appRoutes
 
 // Object to be used as source of truth to handel application routes
@@ -9,7 +8,7 @@ export type AppRoute = keyof typeof appRoutes
 export const appRoutes = {
   home: createRoute('/'),
   selectType: createRoute('/new/'),
-  newPromotion: createTypedRoute<{ promotionSlug: PromotionSlug }>()(
-    '/new/:promotionSlug/'
-  )
+  newPromotion: createRoute('/new/:promotionSlug/'),
+  newPromotionEdit: createRoute('/new/:promotionSlug/:promotionId/'),
+  newPromotionRules: createRoute('/new/:promotionSlug/:promotionId/rules/')
 }

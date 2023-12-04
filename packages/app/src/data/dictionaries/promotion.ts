@@ -1,6 +1,16 @@
 import type { IconProps } from '@commercelayer/app-elements'
+import type {
+  BuyXPayYPromotion,
+  ExternalPromotion,
+  FixedAmountPromotion,
+  FixedPricePromotion,
+  FreeGiftPromotion,
+  FreeShippingPromotion,
+  PercentageDiscountPromotion
+} from '@commercelayer/sdk'
 import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
 import type { Replace } from 'type-fest'
+import { z } from 'zod'
 
 type Sanitize<PT extends PromotionType> = Replace<
   Replace<PT, '_promotions', ''>,
@@ -8,6 +18,16 @@ type Sanitize<PT extends PromotionType> = Replace<
   '-',
   { all: true }
 >
+
+// TODO: this is a temporary fix. We should manage this kind of type directly into the SDK.
+export type Promotion =
+  | BuyXPayYPromotion
+  | ExternalPromotion
+  | FixedAmountPromotion
+  | FixedPricePromotion
+  | FreeGiftPromotion
+  | FreeShippingPromotion
+  | PercentageDiscountPromotion
 
 export type PromotionType = Extract<ResourceTypeLock, `${string}_promotions`>
 export type PromotionSlug = Sanitize<PromotionType>
@@ -19,60 +39,124 @@ export type PromotionDictionary = {
     titleList: string
     titleNew: string
     icon: IconProps['name']
+    form: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
   }
 }
 
-export const promotionDictionary: PromotionDictionary = {
+export const promotionDictionary = {
   buy_x_pay_y_promotions: {
     type: 'buy_x_pay_y_promotions',
     slug: 'buy-x-pay-y',
     icon: 'stack',
     titleList: 'Buy X pay Y',
-    titleNew: 'buy X pay Y'
+    titleNew: 'buy X pay Y',
+    form: z.object({
+      name: z.string().min(1),
+      percentage1: z
+        .string()
+        .min(1)
+        .transform((p) => parseInt(p)),
+      startOn: z.date(),
+      expiresOn: z.date()
+    })
   },
   external_promotions: {
     type: 'external_promotions',
     slug: 'external',
     icon: 'stack',
     titleList: 'External promotion',
-    titleNew: 'external promotion'
+    titleNew: 'external promotion',
+    form: z.object({
+      name: z.string().min(1),
+      percentage: z
+        .string()
+        .min(1)
+        .transform((p) => parseInt(p)),
+      startOn: z.date(),
+      expiresOn: z.date()
+    })
   },
   fixed_amount_promotions: {
     type: 'fixed_amount_promotions',
     slug: 'fixed-amount',
     icon: 'stack',
     titleList: 'Fixed amount discount',
-    titleNew: 'fixed amount discount'
+    titleNew: 'fixed amount discount',
+    form: z.object({
+      name: z.string().min(1),
+      fixed_amount_cents: z
+        .string()
+        .min(1)
+        .transform((p) => parseInt(p)),
+      starts_at: z.date(),
+      expires_at: z.date()
+    })
   },
   fixed_price_promotions: {
     type: 'fixed_price_promotions',
     slug: 'fixed-price',
     icon: 'stack',
     titleList: 'Fixed price',
-    titleNew: 'fixed price'
+    titleNew: 'fixed price',
+    form: z.object({
+      name: z.string().min(1),
+      percentage: z
+        .string()
+        .min(1)
+        .transform((p) => parseInt(p)),
+      startOn: z.date(),
+      expiresOn: z.date()
+    })
   },
   free_gift_promotions: {
     type: 'free_gift_promotions',
     slug: 'free-gift',
     icon: 'stack',
     titleList: 'Free gift',
-    titleNew: 'free gift'
+    titleNew: 'free gift',
+    form: z.object({
+      name: z.string().min(1),
+      percentage: z
+        .string()
+        .min(1)
+        .transform((p) => parseInt(p)),
+      startOn: z.date(),
+      expiresOn: z.date()
+    })
   },
   free_shipping_promotions: {
     type: 'free_shipping_promotions',
     slug: 'free-shipping',
     icon: 'truck',
     titleList: 'Free shipping',
-    titleNew: 'free shipping'
+    titleNew: 'free shipping',
+    form: z.object({
+      name: z.string().min(1),
+      percentage: z
+        .string()
+        .min(1)
+        .transform((p) => parseInt(p)),
+      startOn: z.date(),
+      expiresOn: z.date()
+    })
   },
   percentage_discount_promotions: {
     type: 'percentage_discount_promotions',
     slug: 'percentage-discount',
     icon: 'stack',
     titleList: 'Percentage discount',
-    titleNew: 'percentage discount'
+    titleNew: 'percentage discount',
+    form: z.object({
+      name: z.string().min(1),
+      percentage: z
+        .number()
+        .or(z.string().min(1))
+        .transform((p) => parseInt(p.toString())),
+      starts_at: z.date(),
+      expires_at: z.date()
+    })
   }
-}
+} as const
 
 // HELPER
 
@@ -90,10 +174,29 @@ export function isPromotionSlug(
     .includes(promotionSlug)
 }
 
-export function getPromotionBySlug(
+export function getPromotionConfigBySlug(
   promotionSlug: string
-): PromotionDictionary[PromotionType] | undefined {
-  return Object.values(promotionDictionary).find(
+): (typeof promotionDictionary)[PromotionType] {
+  const configuration = Object.values(promotionDictionary).find(
     (v) => v.slug === promotionSlug
   )
+
+  if (configuration == null) {
+    throw new Error(`Cannot find the slug "${promotionSlug}"`)
+  }
+
+  return configuration
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function promotionToFormValues(promotion?: Promotion) {
+  if (promotion == null) {
+    return undefined
+  }
+
+  return {
+    ...promotion,
+    starts_at: new Date(promotion.starts_at),
+    expires_at: new Date(promotion.expires_at)
+  }
 }

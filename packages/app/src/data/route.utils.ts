@@ -6,12 +6,15 @@ export function createRoute<
   Variables extends Record<string, any> = ExtractVariables<Path>
 >(path: ValidPath<Variables, Path>) {
   return {
-    variable: '' as unknown as Variables,
+    params: null as unknown as ToParams<Variables>,
     path: ('/' +
       path
         .replace(/\/+$/g, '')
         .replace(/^\/+/g, '')) as Path extends `/${infer P}/` ? `/${P}` : '/',
-    makePath: (variables: Variables, queryParameters?: string) => {
+    makePath: (
+      variables: Variables,
+      searchParams?: string | URLSearchParams
+    ) => {
       const placeholderRegex = /:(\w+)[?]?/g
 
       const newPath =
@@ -29,7 +32,7 @@ export function createRoute<
           .replace(/^\/+/g, '')
 
       return `${newPath}${
-        hasQueryParameters(queryParameters) ? `?${queryParameters}` : ''
+        hasSearchParameters(searchParams) ? `?${searchParams.toString()}` : ''
       }`
     }
   }
@@ -41,10 +44,10 @@ export const createTypedRoute =
     return createRoute<Path, Variables>(path)
   }
 
-function hasQueryParameters(
-  queryParameters?: string
-): queryParameters is string {
-  return Array.from(new URLSearchParams(queryParameters)).length > 0
+function hasSearchParameters(
+  searchParams?: string | URLSearchParams
+): searchParams is string {
+  return Array.from(new URLSearchParams(searchParams)).length > 0
 }
 
 type ExtractVariables<Path extends string> =
@@ -60,6 +63,10 @@ type FixOptional<T extends Record<string, any>> = Omit<T, `${string}?`> & {
   [K in keyof T as K extends `${infer VariableName}?`
     ? VariableName
     : never]?: T[K]
+}
+
+type ToParams<Variables extends Record<string, any>> = {
+  [K in keyof Variables]: string
 }
 
 type ErrorVariables<

@@ -1,5 +1,10 @@
-import { getPromotionBySlug } from '#data/dictionaries/promotion'
+import { NewPromotionForm } from '#components/NewPromotionForm'
+import {
+  getPromotionConfigBySlug,
+  promotionToFormValues
+} from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
+import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
   Section,
@@ -10,22 +15,23 @@ import { useLocation, type RouteComponentProps } from 'wouter'
 import { ErrorNotFound } from './ErrorNotFound'
 
 function Page(
-  props: RouteComponentProps<{ promotionSlug: string }>
+  props: RouteComponentProps<{ promotionSlug: string; promotionId?: string }>
 ): JSX.Element {
   const {
     settings: { mode }
   } = useTokenProvider()
   const [, setLocation] = useLocation()
 
-  const promotion = getPromotionBySlug(props.params.promotionSlug)
+  const promotionConfig = getPromotionConfigBySlug(props.params.promotionSlug)
+  const { promotion } = usePromotion(props.params.promotionId)
 
-  if (promotion == null) {
+  if (promotionConfig == null) {
     return <ErrorNotFound />
   }
 
   return (
     <PageLayout
-      title={`New ${promotion.titleNew}`}
+      title={`New ${promotionConfig.titleNew}`}
       mode={mode}
       gap='only-top'
       onGoBack={() => {
@@ -34,7 +40,11 @@ function Page(
     >
       <Spacer top='10'>
         <Section title='Basic info'>
-          <Spacer top='4'>Ehi there!</Spacer>
+          <NewPromotionForm
+            promotionSlug={props.params.promotionSlug}
+            promotionId={props.params.promotionId}
+            defaultValues={promotionToFormValues(promotion)}
+          />
         </Section>
       </Spacer>
     </PageLayout>
