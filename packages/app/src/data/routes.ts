@@ -10,5 +10,8 @@ export const appRoutes = {
   selectType: createRoute('/new/'),
   newPromotion: createRoute('/new/:promotionSlug/'),
   newPromotionEdit: createRoute('/new/:promotionSlug/:promotionId/'),
-  newPromotionRules: createRoute('/new/:promotionSlug/:promotionId/rules/')
+  newPromotionRules: createRoute('/new/:promotionSlug/:promotionId/rules/'),
+  newPromotionRulesAdd: createRoute(
+    '/new/:promotionSlug/:promotionId/rules/add/'
+  )
 }
