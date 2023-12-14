@@ -8,6 +8,7 @@ import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
   Section,
+  SkeletonTemplate,
   Spacer,
   useTokenProvider
 } from '@commercelayer/app-elements'
@@ -23,7 +24,7 @@ function Page(
   const [, setLocation] = useLocation()
 
   const promotionConfig = getPromotionConfigBySlug(props.params.promotionSlug)
-  const { promotion } = usePromotion(props.params.promotionId)
+  const { isLoading, promotion } = usePromotion(props.params.promotionId)
 
   if (promotionConfig == null) {
     return <ErrorNotFound />
@@ -38,15 +39,17 @@ function Page(
         setLocation(appRoutes.selectType.makePath({}))
       }}
     >
-      <Spacer top='10'>
-        <Section title='Basic info'>
-          <NewPromotionForm
-            promotionSlug={props.params.promotionSlug}
-            promotionId={props.params.promotionId}
-            defaultValues={promotionToFormValues(promotion)}
-          />
-        </Section>
-      </Spacer>
+      <SkeletonTemplate isLoading={isLoading}>
+        <Spacer top='10'>
+          <Section title='Basic info'>
+            <NewPromotionForm
+              promotionSlug={props.params.promotionSlug}
+              promotionId={props.params.promotionId}
+              defaultValues={promotionToFormValues(promotion)}
+            />
+          </Section>
+        </Spacer>
+      </SkeletonTemplate>
     </PageLayout>
   )
 }

@@ -1,12 +1,16 @@
 import type { IconProps } from '@commercelayer/app-elements'
 import type {
   BuyXPayYPromotion,
+  CouponCodesPromotionRule,
+  CustomPromotionRule,
   ExternalPromotion,
   FixedAmountPromotion,
   FixedPricePromotion,
   FreeGiftPromotion,
   FreeShippingPromotion,
-  PercentageDiscountPromotion
+  OrderAmountPromotionRule,
+  PercentageDiscountPromotion,
+  SkuListPromotionRule
 } from '@commercelayer/sdk'
 import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
 import type { Replace } from 'type-fest'
@@ -20,14 +24,24 @@ type Sanitize<PT extends PromotionType> = Replace<
 >
 
 // TODO: this is a temporary fix. We should manage this kind of type directly into the SDK.
-export type Promotion =
-  | BuyXPayYPromotion
-  | ExternalPromotion
-  | FixedAmountPromotion
-  | FixedPricePromotion
-  | FreeGiftPromotion
-  | FreeShippingPromotion
-  | PercentageDiscountPromotion
+export type Promotion = (
+  | Omit<BuyXPayYPromotion, 'promotion_rules'>
+  | Omit<ExternalPromotion, 'promotion_rules'>
+  | Omit<FixedAmountPromotion, 'promotion_rules'>
+  | Omit<FixedPricePromotion, 'promotion_rules'>
+  | Omit<FreeGiftPromotion, 'promotion_rules'>
+  | Omit<FreeShippingPromotion, 'promotion_rules'>
+  | Omit<PercentageDiscountPromotion, 'promotion_rules'>
+) & {
+  promotion_rules?: PromotionRule[] | null
+}
+
+// TODO: this is a temporary fix. We should manage this kind of type directly into the SDK.
+export type PromotionRule =
+  | CustomPromotionRule
+  | SkuListPromotionRule
+  | CouponCodesPromotionRule
+  | OrderAmountPromotionRule
 
 export type PromotionType = Extract<ResourceTypeLock, `${string}_promotions`>
 export type PromotionSlug = Sanitize<PromotionType>

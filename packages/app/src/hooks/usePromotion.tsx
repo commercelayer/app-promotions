@@ -1,9 +1,9 @@
 import type { Promotion } from '#data/dictionaries/promotion'
-import { isMockedId } from '#mocks'
+import { isMockedId, makePromotion } from '#mocks'
 import { useCoreApi } from '@commercelayer/app-elements'
 import type { KeyedMutator } from 'swr'
 
-export const promotionIncludeAttribute = []
+export const promotionIncludeAttribute = ['promotion_rules']
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function usePromotion<Id extends string | undefined>(id: Id) {
@@ -19,7 +19,8 @@ export function usePromotion<Id extends string | undefined>(id: Id) {
           }
         ],
     {
-      isPaused: () => id != null && isMockedId(id)
+      isPaused: () => id != null && isMockedId(id),
+      fallbackData: id != null ? (makePromotion() as any) : undefined
     }
   )
 
