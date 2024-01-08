@@ -7,7 +7,7 @@ export type AppRoute = keyof typeof appRoutes
 // and `makePath` method to be used to generate the path used in navigation and links
 export const appRoutes = {
   home: createRoute('/'),
-  selectType: createRoute('/new/'),
+  newSelectType: createRoute('/new/'),
   newPromotion: createRoute('/new/:promotionSlug/'),
   newPromotionEdit: createRoute('/new/:promotionSlug/:promotionId/'),
   newPromotionRules: createRoute('/new/:promotionSlug/:promotionId/rules/'),

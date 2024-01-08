@@ -1,7 +1,11 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import { makeResource } from '../resource'
 
-export const makePromotion = (): Promotion => {
+export const makePercentageDiscountPromotion = (
+  overrides?: Partial<
+    Extract<Promotion, { type: 'percentage_discount_promotions' }>
+  >
+): Extract<Promotion, { type: 'percentage_discount_promotions' }> => {
   return {
     ...makeResource(),
     type: 'percentage_discount_promotions',
@@ -9,6 +13,7 @@ export const makePromotion = (): Promotion => {
     starts_at: new Date().toJSON(),
     expires_at: new Date().toJSON(),
     total_usage_limit: 4,
-    percentage: 50
+    percentage: 50,
+    ...overrides
   }
 }

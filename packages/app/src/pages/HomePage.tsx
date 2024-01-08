@@ -28,7 +28,7 @@ function HomePage(): JSX.Element {
           titleSize='small'
           title='Browse'
           actionButton={
-            <Link href={appRoutes.selectType.makePath({})}>
+            <Link href={appRoutes.newSelectType.makePath({})}>
               <a>New promotion</a>
             </Link>
           }
