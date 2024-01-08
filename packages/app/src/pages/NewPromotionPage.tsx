@@ -1,4 +1,4 @@
-import { NewPromotionForm } from '#components/NewPromotionForm'
+import { PromotionForm } from '#components/PromotionForm'
 import {
   getPromotionConfigBySlug,
   promotionToFormValues
@@ -36,13 +36,13 @@ function Page(
       mode={mode}
       gap='only-top'
       onGoBack={() => {
-        setLocation(appRoutes.selectType.makePath({}))
+        setLocation(appRoutes.newSelectType.makePath({}))
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='10'>
           <Section title='Basic info'>
-            <NewPromotionForm
+            <PromotionForm
               promotionSlug={props.params.promotionSlug}
               promotionId={props.params.promotionId}
               defaultValues={promotionToFormValues(promotion)}

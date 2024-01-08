@@ -1,5 +1,5 @@
 import type { Promotion } from '#data/dictionaries/promotion'
-import { isMockedId, makePromotion } from '#mocks'
+import { isMockedId, makePercentageDiscountPromotion } from '#mocks'
 import { useCoreApi } from '@commercelayer/app-elements'
 import type { KeyedMutator } from 'swr'
 
@@ -20,7 +20,8 @@ export function usePromotion<Id extends string | undefined>(id: Id) {
         ],
     {
       isPaused: () => id != null && isMockedId(id),
-      fallbackData: id != null ? (makePromotion() as any) : undefined
+      fallbackData:
+        id != null ? (makePercentageDiscountPromotion() as any) : undefined
     }
   )
 

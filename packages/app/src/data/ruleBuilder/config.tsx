@@ -1,12 +1,13 @@
-import type { PromotionRule } from '#data/dictionaries/promotion'
+import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
 import {
   HookedInput,
   HookedInputSelect,
   useCoreSdkProvider,
   type InputSelectValue
 } from '@commercelayer/app-elements'
+import type { CustomPromotionRule } from '@commercelayer/sdk'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
-import { currencies } from './currencies'
+import { currencies, type CurrencyCode } from './currencies'
 
 export function toFormLabels(promotionRule: PromotionRule): Array<{
   valid: boolean
@@ -181,4 +182,56 @@ function SelectCurrencyComponent(): JSX.Element {
   return (
     <HookedInputSelect name='value' initialValues={currencyValues} isMulti />
   )
+}
+
+/**
+ * Get the list of currency codes given a `Promotion`.
+ */
+export function getCurrencyCodes(
+  promotion: Promotion
+): Array<Uppercase<CurrencyCode>> | null | undefined {
+  const ccPromotionCurrencyCode = promotion.currency_code as
+    | Uppercase<CurrencyCode>
+    | null
+    | undefined
+
+  const ccPromotionMarket = promotion.market?.price_list?.currency_code as
+    | Uppercase<CurrencyCode>
+    | null
+    | undefined
+
+  const customPromotionRule = promotion.promotion_rules?.find(
+    (pr): pr is CustomPromotionRule => pr.type === 'custom_promotion_rules'
+  )
+
+  const currencyCodeIn = customPromotionRule?.filters?.currency_code_in as
+    | string
+    | null
+    | undefined
+
+  const currencyCodeNotIn = customPromotionRule?.filters
+    ?.currency_code_not_in as string | null | undefined
+
+  const currencyCodeNotInAsArray =
+    currencyCodeNotIn != null ? currencyCodeNotIn.split(',') : null
+
+  const currencyCodeNotInList =
+    currencyCodeNotInAsArray != null
+      ? Object.values(currencies)
+          .map((obj) => obj.iso_code)
+          .filter((code) => !currencyCodeNotInAsArray.includes(code))
+      : null
+
+  const currencyCodes =
+    ccPromotionCurrencyCode != null
+      ? [ccPromotionCurrencyCode]
+      : ccPromotionMarket != null
+        ? [ccPromotionMarket]
+        : currencyCodeIn != null
+          ? (currencyCodeIn.split(',') as Array<Uppercase<CurrencyCode>>)
+          : currencyCodeNotInList != null
+            ? (currencyCodeNotInList as Array<Uppercase<CurrencyCode>>)
+            : null
+
+  return currencyCodes
 }

@@ -12,7 +12,9 @@ import { Route, Router, Switch } from 'wouter'
 import { appRoutes } from './data/routes'
 
 const HomePage = lazy(async () => await import('#pages/HomePage'))
-const SelectTypePage = lazy(async () => await import('#pages/SelectTypePage'))
+const NewSelectTypePage = lazy(
+  async () => await import('#pages/NewSelectTypePage')
+)
 const NewPromotionPage = lazy(
   async () => await import('#pages/NewPromotionPage')
 )
@@ -53,8 +55,8 @@ export function App(): JSX.Element {
                 <Switch>
                   <Route path={appRoutes.home.path} component={HomePage} />
                   <Route
-                    path={appRoutes.selectType.path}
-                    component={SelectTypePage}
+                    path={appRoutes.newSelectType.path}
+                    component={NewSelectTypePage}
                   />
                   <Route
                     path={appRoutes.newPromotion.path}

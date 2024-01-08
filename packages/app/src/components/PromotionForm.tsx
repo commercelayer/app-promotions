@@ -28,7 +28,7 @@ interface Props {
   >
 }
 
-export function NewPromotionForm({
+export function PromotionForm({
   defaultValues,
   promotionId,
   promotionSlug
