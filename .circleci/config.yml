@@ -1,0 +1,113 @@
+version: 2.1
+
+parameters:
+  project-name:
+    type: string
+    default: "promotions"
+
+orbs:
+  aws-s3: circleci/aws-s3@3.1.1
+
+image: &image
+  docker:
+    - image: cimg/node:18.15.0
+  resource_class: medium+
+
+setup: &setup
+  - run:
+      name: Setup
+      command: |
+        sudo npm install -g pnpm
+        pnpm install
+
+jobs:
+  test:
+    <<: *image
+    steps:
+      - checkout
+      - <<: *setup
+      - run:
+          name: Test 
+          command: pnpm --if-present lint && pnpm --if-present ts:check && pnpm --if-present test
+  build:
+    <<: *image
+    environment:
+      PUBLIC_PROJECT_PATH: "<< pipeline.parameters.project-name >>"
+    steps:
+      - checkout
+      - <<: *setup
+      - run:
+          name: Build
+          command: pnpm build
+      - aws-s3/sync:
+          aws-access-key-id: AWS_ACCESS_KEY
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          from: packages/app/dist
+          to: "s3://$S3_ASSETS_BUCKET/team/fe-static-apps/<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>"
+
+  preview:
+    <<: *image
+    environment:
+      PUBLIC_PROJECT_PATH: "<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>"
+    steps:
+      - checkout
+      - <<: *setup
+      - run:
+          name: Build
+          command: pnpm build
+      - run:
+          name: Inject configuration
+          command: 'echo "window.clAppConfig = { domain: \"commercelayer.co\" }" > packages/app/dist/config.local.js'
+      - aws-s3/sync:
+          aws-access-key-id: AWS_ACCESS_KEY
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          from: packages/app/dist
+          to: "s3://$S3_ASSETS_DEV_BUCKET/team/fe-static-apps/<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>"
+
+workflows:
+
+  run-tests:
+    jobs:
+      - test:
+          context: commercelayer
+          filters:
+            tags:
+              ignore: /v.*|pr-.*/
+  
+  test-build-and-push:
+    jobs:
+      - test:
+          context: commercelayer
+          filters:
+            tags:
+              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*).*/
+            branches:
+              ignore: /.*/
+      - build:
+          requires:
+            - test
+          context: commercelayer
+          filters:
+            tags:
+              only: /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*).*/
+            branches:
+              ignore: /.*/
+
+  test-and-preview-link:
+    jobs:
+      - test:
+          context: commercelayer
+          filters:
+            tags:
+              only: /^pr-(0|[1-9]\d*).*/
+            branches:
+              ignore: /.*/
+      - preview:
+          requires:
+            - test
+          context: commercelayer
+          filters:
+            tags:
+              only: /^pr-(0|[1-9]\d*).*/
+            branches:
+              ignore: /.*/
