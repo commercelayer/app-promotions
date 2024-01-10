@@ -7,11 +7,12 @@ export type AppRoute = keyof typeof appRoutes
 // and `makePath` method to be used to generate the path used in navigation and links
 export const appRoutes = {
   home: createRoute('/'),
+  list: createRoute('/list/'),
+  filters: createRoute('/filters/'),
+  promotionDetails: createRoute('/list/:promotionId/'),
+  editPromotion: createRoute('/list/:promotionId/edit/'),
   newSelectType: createRoute('/new/'),
   newPromotion: createRoute('/new/:promotionSlug/'),
-  newPromotionEdit: createRoute('/new/:promotionSlug/:promotionId/'),
-  newPromotionRules: createRoute('/new/:promotionSlug/:promotionId/rules/'),
-  newPromotionRulesAdd: createRoute(
-    '/new/:promotionSlug/:promotionId/rules/add/'
-  )
+  promotionConditions: createRoute('/list/:promotionId/conditions/'),
+  newPromotionCondition: createRoute('/list/:promotionId/conditions/new/')
 }

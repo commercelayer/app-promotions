@@ -67,8 +67,7 @@ export function PromotionForm({
         }
 
         setLocation(
-          appRoutes.newPromotionRules.makePath({
-            promotionSlug,
+          appRoutes.promotionDetails.makePath({
             promotionId: promotion.id
           })
         )
@@ -94,7 +93,7 @@ export function PromotionForm({
       </Spacer>
       <Spacer top='8'>
         <Button type='submit' fullWidth>
-          Continue to conditions
+          {promotionId != null ? 'Update promotion' : 'Create promotion'}
         </Button>
       </Spacer>
     </HookedForm>

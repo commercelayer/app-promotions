@@ -25,8 +25,12 @@ function Page(): JSX.Element {
       title='Select type'
       mode={mode}
       gap='only-top'
-      onGoBack={() => {
-        setLocation(appRoutes.home.makePath({}))
+      navigationButton={{
+        label: 'Cancel',
+        icon: 'x',
+        onClick() {
+          setLocation(appRoutes.home.makePath({}))
+        }
       }}
     >
       <Spacer top='10'>
@@ -58,7 +62,8 @@ function LinkTo({
   return (
     <ListItem
       tag='a'
-      icon={<Icon name={promotion.icon} />}
+      icon={<Icon name='resources' />}
+      // icon={<Icon name={promotion.icon} />}
       href={appRoutes.newPromotion.makePath({ promotionSlug: promotion.slug })}
     >
       <Text weight='semibold'>{promotion.titleList}</Text>

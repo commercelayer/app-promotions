@@ -18,9 +18,12 @@ function HomePage(): JSX.Element {
       title='Promotions'
       mode={mode}
       gap='only-top'
-      onGoBack={() => {
-        window.location.href =
-          dashboardUrl != null ? `${dashboardUrl}/hub` : '/'
+      navigationButton={{
+        onClick: () => {
+          window.location.href =
+            dashboardUrl != null ? `${dashboardUrl}/hub` : '/'
+        },
+        label: 'Hub'
       }}
     >
       <Spacer top='10'>
