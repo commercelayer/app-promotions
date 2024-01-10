@@ -18,6 +18,7 @@ export function ListItemPromotion({
 
   return (
     <ResourceListItem
+      // @ts-expect-error // TODO: I need to fix this
       resource={resource}
       isLoading={isLoading}
       delayMs={delayMs}

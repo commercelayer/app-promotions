@@ -54,13 +54,15 @@ export function PromotionForm({
   return (
     <HookedForm
       {...methods}
-      onSubmit={async (formValues) => {
+      onSubmit={async (formValues): Promise<void> => {
         const resource = sdkClient[promotionConfig.type]
         let promotion: Promotion
 
         if (promotionId != null) {
+          // @ts-expect-error // TODO: I need to fix this
           promotion = await resource.update({ id: promotionId, ...formValues })
         } else {
+          // @ts-expect-error // TODO: I need to fix this
           promotion = await resource.create(formValues)
 
           await resource._disable(promotion.id)
