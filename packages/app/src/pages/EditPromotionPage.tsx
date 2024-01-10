@@ -1,6 +1,6 @@
 import { PromotionForm } from '#components/PromotionForm'
 import {
-  getPromotionConfigBySlug,
+  promotionDictionary,
   promotionToFormValues
 } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
@@ -13,32 +13,32 @@ import {
   useTokenProvider
 } from '@commercelayer/app-elements'
 import { useLocation, type RouteComponentProps } from 'wouter'
-import { ErrorNotFound } from './ErrorNotFound'
 
 function Page(
-  props: RouteComponentProps<{ promotionSlug: string; promotionId?: string }>
+  props: RouteComponentProps<{ promotionId: string }>
 ): JSX.Element {
   const {
     settings: { mode }
   } = useTokenProvider()
   const [, setLocation] = useLocation()
 
-  const promotionConfig = getPromotionConfigBySlug(props.params.promotionSlug)
   const { isLoading, promotion } = usePromotion(props.params.promotionId)
-
-  if (promotionConfig == null) {
-    return <ErrorNotFound />
-  }
+  const promotionConfig = promotionDictionary[promotion.type]
 
   return (
     <PageLayout
-      title={`New ${promotionConfig.titleNew}`}
+      title='Edit promotion'
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Back',
+        label: 'Cancel',
+        icon: 'x',
         onClick() {
-          setLocation(appRoutes.newSelectType.makePath({}))
+          setLocation(
+            appRoutes.promotionDetails.makePath({
+              promotionId: props.params.promotionId
+            })
+          )
         }
       }}
     >
@@ -46,7 +46,7 @@ function Page(
         <Spacer top='10'>
           <Section title='Basic info'>
             <PromotionForm
-              promotionSlug={props.params.promotionSlug}
+              promotionSlug={promotionConfig.slug}
               promotionId={props.params.promotionId}
               defaultValues={promotionToFormValues(promotion)}
             />

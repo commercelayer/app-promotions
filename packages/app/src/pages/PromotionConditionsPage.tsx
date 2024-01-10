@@ -1,7 +1,4 @@
-import {
-  promotionDictionary,
-  type PromotionRule
-} from '#data/dictionaries/promotion'
+import { type PromotionRule } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
 import { toFormLabels } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
@@ -22,7 +19,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Link, useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<typeof appRoutes.newPromotionRules.params>
+  props: RouteComponentProps<typeof appRoutes.promotionConditions.params>
 ): JSX.Element | null {
   const {
     settings: { mode }
@@ -35,16 +32,20 @@ function Page(
 
   return (
     <PageLayout
-      title='Activation conditions'
+      title='Set conditions'
+      description='Promotion applies only if all conditions are met.'
       mode={mode}
       gap='only-top'
-      onGoBack={() => {
-        setLocation(
-          appRoutes.newPromotionEdit.makePath({
-            promotionSlug: promotionDictionary[promotion.type].slug,
-            promotionId: props.params.promotionId
-          })
-        )
+      navigationButton={{
+        label: 'Cancel',
+        icon: 'x',
+        onClick() {
+          setLocation(
+            appRoutes.promotionDetails.makePath({
+              promotionId: props.params.promotionId
+            })
+          )
+        }
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
@@ -63,8 +64,7 @@ function Page(
           ))}
           <Spacer top='14'>
             <Link
-              href={appRoutes.newPromotionRulesAdd.makePath({
-                promotionSlug: promotionDictionary[promotion.type].slug,
+              href={appRoutes.newPromotionCondition.makePath({
                 promotionId: props.params.promotionId
               })}
             >

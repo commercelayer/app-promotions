@@ -15,7 +15,6 @@ function LoadingPage(): JSX.Element {
         title={<SkeletonTemplate isLoading>Promotions</SkeletonTemplate>}
         mode={mode}
         gap='only-top'
-        onGoBack={() => {}}
       >
         <div />
       </PageLayout>

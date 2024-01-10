@@ -1,7 +1,4 @@
-import {
-  promotionDictionary,
-  type Promotion
-} from '#data/dictionaries/promotion'
+import { type Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
 import { matchers, ruleBuilderConfig } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
@@ -24,7 +21,7 @@ import { useLocation, type RouteComponentProps } from 'wouter'
 import { z } from 'zod'
 
 function Page(
-  props: RouteComponentProps<typeof appRoutes.newPromotionRules.params>
+  props: RouteComponentProps<typeof appRoutes.promotionConditions.params>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -38,13 +35,15 @@ function Page(
       title='New condition'
       mode={mode}
       gap='only-top'
-      onGoBack={() => {
-        setLocation(
-          appRoutes.newPromotionRules.makePath({
-            promotionSlug: promotionDictionary[promotion.type].slug,
-            promotionId: props.params.promotionId
-          })
-        )
+      navigationButton={{
+        label: 'Back',
+        onClick() {
+          setLocation(
+            appRoutes.promotionConditions.makePath({
+              promotionId: props.params.promotionId
+            })
+          )
+        }
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
@@ -54,8 +53,7 @@ function Page(
             promotion={promotion}
             onSuccess={() => {
               setLocation(
-                appRoutes.newPromotionRules.makePath({
-                  promotionSlug: promotionDictionary[promotion.type].slug,
+                appRoutes.promotionConditions.makePath({
                   promotionId: props.params.promotionId
                 })
               )
