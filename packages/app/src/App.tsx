@@ -8,10 +8,10 @@ import {
 } from '@commercelayer/app-elements'
 import { Suspense, lazy } from 'react'
 import { SWRConfig } from 'swr'
-import { Redirect, Route, Router, Switch } from 'wouter'
+import { Route, Router, Switch } from 'wouter'
 import { appRoutes } from './data/routes'
 
-// const HomePage = lazy(async () => await import('#pages/HomePage'))
+const HomePage = lazy(async () => await import('#pages/HomePage'))
 const PromotionListPage = lazy(
   async () => await import('#pages/PromotionListPage')
 )
@@ -63,10 +63,7 @@ export function App(): JSX.Element {
             <Suspense fallback={<LoadingPage />}>
               <Router base={basePath}>
                 <Switch>
-                  {/* <Route path={appRoutes.home.path} component={HomePage} /> */}
-                  <Route path={appRoutes.home.path}>
-                    <Redirect to={appRoutes.list.path} />
-                  </Route>
+                  <Route path={appRoutes.home.path} component={HomePage} />
                   <Route
                     path={appRoutes.list.path}
                     component={PromotionListPage}

@@ -1,8 +1,12 @@
 import { appRoutes } from '#data/routes'
 import {
+  Icon,
+  List,
+  ListItem,
   PageLayout,
-  Section,
   Spacer,
+  StatusIcon,
+  Text,
   useTokenProvider
 } from '@commercelayer/app-elements'
 import { Link } from 'wouter'
@@ -26,18 +30,31 @@ function HomePage(): JSX.Element {
         label: 'Hub'
       }}
     >
-      <Spacer top='10'>
-        <Section
-          titleSize='small'
+      <Spacer top='14'>
+        <List
           title='Browse'
           actionButton={
             <Link href={appRoutes.newSelectType.makePath({})}>
-              <a>New promotion</a>
+              <a>New promo</a>
             </Link>
           }
         >
-          &nbsp;
-        </Section>
+          <Link href={appRoutes.list.makePath({})}>
+            <ListItem
+              tag='a'
+              icon={
+                <StatusIcon
+                  name='asteriskSimple'
+                  background='black'
+                  gap='small'
+                />
+              }
+            >
+              <Text weight='semibold'>All promotions</Text>
+              <Icon name='caretRight' />
+            </ListItem>
+          </Link>
+        </List>
       </Spacer>
     </PageLayout>
   )
