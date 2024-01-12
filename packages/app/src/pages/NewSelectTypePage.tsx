@@ -62,8 +62,7 @@ function LinkTo({
   return (
     <ListItem
       tag='a'
-      icon={<Icon name='resources' />}
-      // icon={<Icon name={promotion.icon} />}
+      icon={<Icon name={promotion.icon} />}
       href={appRoutes.newPromotion.makePath({ promotionSlug: promotion.slug })}
     >
       <Text weight='semibold'>{promotion.titleList}</Text>
