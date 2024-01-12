@@ -10,11 +10,15 @@ import {
   Icon,
   ListDetails,
   ListDetailsItem,
+  ListItem,
   PageLayout,
   Section,
   SkeletonTemplate,
   Spacer,
   Text,
+  formatDate,
+  formatDateRange,
+  getPromotionDisplayStatus,
   useCoreSdkProvider,
   useTokenProvider
 } from '@commercelayer/app-elements'
@@ -30,10 +34,7 @@ function Page(
 
   const [, setLocation] = useLocation()
 
-  const { sdkClient } = useCoreSdkProvider()
-  const { promotion, isLoading, mutatePromotion } = usePromotion(
-    props.params.promotionId
-  )
+  const { promotion, isLoading } = usePromotion(props.params.promotionId)
 
   return (
     <PageLayout
@@ -70,31 +71,7 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='14'>
-          <Card overflow='hidden'>
-            Promotion is{' '}
-            <Badge
-              variant={promotion.active === true ? 'success' : 'secondary'}
-              icon={promotion.active === true ? 'pulse' : undefined}
-            >
-              {promotion.active === true ? 'active' : 'disabled'}
-            </Badge>
-            <Button
-              variant={promotion.active === true ? 'secondary' : 'primary'}
-              onClick={() => {
-                void sdkClient[promotion.type]
-                  .update({
-                    id: promotion.id,
-                    _disable: promotion.active === true,
-                    _enable: promotion.active !== true
-                  })
-                  .then(() => {
-                    void mutatePromotion()
-                  })
-              }}
-            >
-              {promotion.active === true ? 'Disable' : 'Enable'}
-            </Button>
-          </Card>
+          <CardStatus promotionId={props.params.promotionId} />
         </Spacer>
 
         <Spacer top='14'>
@@ -124,7 +101,96 @@ function Page(
   )
 }
 
+function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
+  const { user } = useTokenProvider()
+  const { sdkClient } = useCoreSdkProvider()
+  const { promotion, mutatePromotion } = usePromotion(promotionId)
+
+  const displayStatus = useMemo(() => {
+    // @ts-expect-error // TODO: we should fix this error type
+    const displayStatus = getPromotionDisplayStatus(promotion)
+
+    let statusDescription = ''
+    switch (displayStatus.status) {
+      case 'disabled':
+        if (promotion.disabled_at != null) {
+          statusDescription = `Disabled ${formatDate({
+            isoDate: promotion.disabled_at,
+            format: 'distanceToNow',
+            timezone: user?.timezone
+          })}`
+        }
+        break
+      case 'active':
+        statusDescription = `Expires in ${formatDate({
+          isoDate: promotion.expires_at,
+          format: 'distanceToNow',
+          timezone: user?.timezone
+        })}`
+        break
+      case 'expired':
+        statusDescription = `Expired ${formatDate({
+          isoDate: promotion.expires_at,
+          format: 'distanceToNow',
+          timezone: user?.timezone
+        })}`
+        break
+      case 'upcoming':
+        statusDescription = `Active in ${formatDate({
+          isoDate: promotion.starts_at,
+          format: 'distanceToNow',
+          timezone: user?.timezone
+        })}`
+        break
+    }
+
+    return {
+      ...displayStatus,
+      isEnabled: displayStatus.status !== 'disabled',
+      statusDescription
+    }
+  }, [promotion])
+
+  return (
+    <Card overflow='hidden'>
+      <ListItem tag='div' borderStyle='none' padding='none' alignItems='top'>
+        <div>
+          <Text weight='semibold'>Promotion is</Text>{' '}
+          <Badge
+            style={{ verticalAlign: 'middle' }}
+            variant={
+              displayStatus.status === 'active' ? 'success' : 'secondary'
+            }
+            icon={displayStatus.isEnabled ? displayStatus.icon : undefined}
+          >
+            {displayStatus.label.toLowerCase()}
+          </Badge>
+          <br />
+          <Text size='small'>{displayStatus.statusDescription}</Text>
+        </div>
+        <Button
+          variant={displayStatus.isEnabled ? 'secondary' : 'primary'}
+          onClick={() => {
+            void sdkClient[promotion.type]
+              .update({
+                id: promotion.id,
+                _disable: displayStatus.isEnabled,
+                _enable: !displayStatus.isEnabled
+              })
+              .then(() => {
+                void mutatePromotion()
+              })
+          }}
+        >
+          {displayStatus.isEnabled ? 'Disable' : 'Enable'}
+        </Button>
+      </ListItem>
+    </Card>
+  )
+}
+
 function Info({ promotion }: { promotion: Promotion }): JSX.Element {
+  const { user } = useTokenProvider()
   const specificDetails = useMemo(() => {
     switch (promotion.type) {
       case 'percentage_discount_promotions':
@@ -144,9 +210,17 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
     <>
       {specificDetails}
       <ListDetailsItem label='Activation period'>
-        ?? 15 ‒ 31 October 2023
+        {formatDateRange({
+          rangeFrom: promotion.starts_at,
+          rangeTo: promotion.expires_at,
+          timezone: user?.timezone
+        })}
       </ListDetailsItem>
-      <ListDetailsItem label='Used'>?? 32 / 100</ListDetailsItem>
+      {promotion.total_usage_limit != null && (
+        <ListDetailsItem label='Used'>
+          {promotion.total_usage_count} / {promotion.total_usage_limit}
+        </ListDetailsItem>
+      )}
       {promotion.exclusive === true && (
         <ListDetailsItem label='Exclusive'>
           <Text variant='success'>
