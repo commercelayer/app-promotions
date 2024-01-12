@@ -16,8 +16,8 @@ import {
   SkeletonTemplate,
   Spacer,
   Text,
-  formatDate,
   formatDateRange,
+  formatDateWithPredicate,
   getPromotionDisplayStatus,
   useCoreSdkProvider,
   useTokenProvider
@@ -114,33 +114,37 @@ function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
     switch (displayStatus.status) {
       case 'disabled':
         if (promotion.disabled_at != null) {
-          statusDescription = `Disabled ${formatDate({
+          statusDescription = formatDateWithPredicate({
+            predicate: 'Disabled',
             isoDate: promotion.disabled_at,
             format: 'distanceToNow',
             timezone: user?.timezone
-          })}`
+          })
         }
         break
       case 'active':
-        statusDescription = `Expires in ${formatDate({
+        statusDescription = formatDateWithPredicate({
+          predicate: 'Expires',
           isoDate: promotion.expires_at,
           format: 'distanceToNow',
           timezone: user?.timezone
-        })}`
+        })
         break
       case 'expired':
-        statusDescription = `Expired ${formatDate({
+        statusDescription = formatDateWithPredicate({
+          predicate: 'Expired',
           isoDate: promotion.expires_at,
           format: 'distanceToNow',
           timezone: user?.timezone
-        })}`
+        })
         break
       case 'upcoming':
-        statusDescription = `Active in ${formatDate({
+        statusDescription = formatDateWithPredicate({
+          predicate: 'Active',
           isoDate: promotion.starts_at,
           format: 'distanceToNow',
           timezone: user?.timezone
-        })}`
+        })
         break
     }
 
