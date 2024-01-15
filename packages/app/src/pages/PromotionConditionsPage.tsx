@@ -1,6 +1,5 @@
-import { type PromotionRule } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import { toFormLabels } from '#data/ruleBuilder/config'
+import { usePromotionRules, type toFormLabels } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   Card,
@@ -9,13 +8,11 @@ import {
   RemoveButton,
   SkeletonTemplate,
   Spacer,
-  useCoreApi,
   useCoreSdkProvider,
   useTokenProvider
 } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
-import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
@@ -26,9 +23,10 @@ function Page(
   } = useTokenProvider()
   const [, setLocation] = useLocation()
 
-  const { isLoading, promotion, mutatePromotion } = usePromotion(
-    props.params.promotionId
-  )
+  const { promotion, mutatePromotion } = usePromotion(props.params.promotionId)
+
+  const { isLoading: isLoadingRules, data: rules } =
+    usePromotionRules(promotion)
 
   return (
     <PageLayout
@@ -48,20 +46,28 @@ function Page(
         }
       }}
     >
-      <SkeletonTemplate isLoading={isLoading}>
+      <SkeletonTemplate isLoading={isLoadingRules}>
         <Spacer top='10'>
-          {promotion.promotion_rules?.map((promotionRule) => (
-            <div key={promotionRule.id}>
-              <PromotionRuleDetail
-                onRemove={() => {
-                  setTimeout(() => {
-                    void mutatePromotion()
-                  }, 1000)
-                }}
-                promotionRule={promotionRule}
-              />
-            </div>
-          ))}
+          {rules?.map((formLabel) => {
+            if (formLabel.promotionRule.type === 'custom_promotion_rules') {
+              return (
+                <div key={formLabel.predicate}>
+                  <CustomPromotionRuleItem
+                    key={formLabel.predicate}
+                    onRemove={() => {
+                      setTimeout(() => {
+                        void mutatePromotion()
+                      }, 1000)
+                    }}
+                    customPromotionRule={formLabel.promotionRule}
+                    formLabel={formLabel}
+                  />
+                </div>
+              )
+            }
+
+            return null
+          })}
           <Spacer top='14'>
             <Link
               href={appRoutes.newPromotionCondition.makePath({
@@ -75,34 +81,6 @@ function Page(
       </SkeletonTemplate>
     </PageLayout>
   )
-}
-
-function PromotionRuleDetail({
-  promotionRule,
-  onRemove
-}: {
-  promotionRule: PromotionRule
-  onRemove: () => void
-}): JSX.Element | null {
-  const formLabels = useMemo(() => toFormLabels(promotionRule), [promotionRule])
-
-  switch (promotionRule.type) {
-    case 'custom_promotion_rules':
-      return (
-        <div>
-          {formLabels?.map((formLabel) => (
-            <CustomPromotionRuleItem
-              key={formLabel.predicate}
-              onRemove={onRemove}
-              customPromotionRule={promotionRule}
-              formLabel={formLabel}
-            />
-          ))}
-        </div>
-      )
-    default:
-      return null
-  }
 }
 
 function CustomPromotionRuleItem({
@@ -131,50 +109,8 @@ function CustomPromotionRuleItem({
         console.log('removing', formLabel.predicate, 'from filters')
       }
     : undefined
-  if (formLabel.rel != null) {
-    return (
-      <ConditionItemWithRelationships
-        rel={formLabel.rel}
-        ids={values}
-        label={label}
-        onRemove={handleRemove}
-      />
-    )
-  }
 
   return <ConditionItem label={label} onRemove={handleRemove} values={values} />
-}
-
-function ConditionItemWithRelationships({
-  rel,
-  label,
-  ids,
-  onRemove
-}: {
-  rel: Extract<ListableResourceType, 'markets' | 'tags'>
-  label: string
-  ids: string[]
-  onRemove?: () => void
-}): JSX.Element | null {
-  const { data } = useCoreApi(
-    rel,
-    'list',
-    [{ filters: { id_in: ids.join(',') } }],
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-      revalidateOnReconnect: false
-    }
-  )
-
-  return (
-    <ConditionItem
-      label={label}
-      onRemove={onRemove}
-      values={data?.map((d) => d.name) ?? []}
-    />
-  )
 }
 
 function ConditionItem({

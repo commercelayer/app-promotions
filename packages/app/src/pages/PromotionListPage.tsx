@@ -9,13 +9,12 @@ import {
   useResourceFilters,
   useTokenProvider
 } from '@commercelayer/app-elements'
-import { Link, useLocation } from 'wouter'
+import { useLocation } from 'wouter'
 import { navigate, useSearch } from 'wouter/use-location'
 
 function Page(): JSX.Element {
   const {
-    settings: { mode },
-    canUser
+    settings: { mode }
   } = useTokenProvider()
 
   const queryString = useSearch()
@@ -87,13 +86,6 @@ function Page(): JSX.Element {
                     : 'history'
               }
             />
-          }
-          actionButton={
-            canUser('create', 'promotions') ? (
-              <Link href={appRoutes.newSelectType.makePath({})}>
-                <a>Add new</a>
-              </Link>
-            ) : undefined
           }
         />
       </Spacer>

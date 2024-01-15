@@ -1,5 +1,6 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
+import { getCurrencyCodes, usePromotionRules } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   Badge,
@@ -35,6 +36,9 @@ function Page(
   const [, setLocation] = useLocation()
 
   const { promotion, isLoading } = usePromotion(props.params.promotionId)
+  const { data: rules } = usePromotionRules(promotion)
+
+  console.log('available currency codes', getCurrencyCodes(promotion))
 
   return (
     <PageLayout
@@ -93,7 +97,11 @@ function Page(
               </Link>
             }
           >
-            <ListDetailsItem label='??'>??</ListDetailsItem>
+            {rules?.map((rule) => (
+              <ListDetailsItem key={rule.predicate} label={rule.parameter}>
+                {rule.value.split(',').join(', ')}
+              </ListDetailsItem>
+            ))}
           </Section>
         </Spacer>
       </SkeletonTemplate>

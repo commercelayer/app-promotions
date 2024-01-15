@@ -7,9 +7,53 @@ import {
 } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
+import { useEffect, useState } from 'react'
 import { currencies, type CurrencyCode } from './currencies'
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function usePromotionRules(promotion: Promotion) {
+  const { sdkClient } = useCoreSdkProvider()
+  const [output, setOutput] = useState<{
+    isLoading: boolean
+    data: ReturnType<typeof toFormLabels>
+  }>({ isLoading: true, data: null })
+  useEffect(() => {
+    promotion.promotion_rules?.forEach((promotionRule) => {
+      const formLabels = toFormLabels(promotionRule)
+
+      const data =
+        formLabels?.flatMap(async (formLabel) => {
+          if (formLabel.rel == null) {
+            return formLabel
+          }
+
+          const promise = sdkClient[formLabel.rel]
+            .list({
+              filters: { id_in: formLabel.value.split(',').join(',') }
+            })
+            .then((data) => data.map((d) => d.name))
+            .then((values) => ({
+              ...formLabel,
+              value: values.join(',')
+            }))
+
+          return await promise
+        }) ?? []
+
+      void Promise.all(data).then((data) => {
+        setOutput({
+          isLoading: false,
+          data
+        })
+      })
+    })
+  }, [promotion])
+
+  return output
+}
+
 export function toFormLabels(promotionRule: PromotionRule): Array<{
+  promotionRule: PromotionRule
   valid: boolean
   predicate: string
   parameter: keyof typeof ruleBuilderConfig
@@ -17,10 +61,6 @@ export function toFormLabels(promotionRule: PromotionRule): Array<{
   operator?: string
   value: string
 }> | null {
-  if (promotionRule.type !== 'custom_promotion_rules') {
-    return null
-  }
-
   switch (promotionRule.type) {
     case 'custom_promotion_rules':
       return Object.entries(promotionRule.filters ?? {}).map(
@@ -38,6 +78,7 @@ export function toFormLabels(promotionRule: PromotionRule): Array<{
           const parameter = predicate.replace(regexp, '')
           const valid = ruleBuilderConfig[parameter] != null
           return {
+            promotionRule,
             valid,
             predicate,
             rel: ruleBuilderConfig[parameter]?.rel,
@@ -48,6 +89,9 @@ export function toFormLabels(promotionRule: PromotionRule): Array<{
           }
         }
       )
+
+    default:
+      return null
   }
 }
 

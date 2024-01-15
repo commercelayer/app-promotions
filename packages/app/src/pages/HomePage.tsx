@@ -14,7 +14,8 @@ import { Link } from 'wouter'
 function HomePage(): JSX.Element {
   const {
     dashboardUrl,
-    settings: { mode }
+    settings: { mode },
+    canUser
   } = useTokenProvider()
 
   return (
@@ -34,9 +35,17 @@ function HomePage(): JSX.Element {
         <List
           title='Browse'
           actionButton={
-            <Link href={appRoutes.newSelectType.makePath({})}>
-              <a>New promo</a>
-            </Link>
+            canUser('create', 'buy_x_pay_y_promotions') ||
+            canUser('create', 'external_promotions') ||
+            canUser('create', 'fixed_amount_promotions') ||
+            canUser('create', 'fixed_price_promotions') ||
+            canUser('create', 'free_gift_promotions') ||
+            canUser('create', 'free_shipping_promotions') ||
+            canUser('create', 'percentage_discount_promotions') ? (
+              <Link href={appRoutes.newSelectType.makePath({})}>
+                <a>New promo</a>
+              </Link>
+            ) : undefined
           }
         >
           <Link href={appRoutes.list.makePath({})}>
