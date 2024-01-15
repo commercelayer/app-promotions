@@ -47,8 +47,12 @@ jobs:
 
   preview:
     <<: *image
+    parameters:
+      preview-env:
+        type: string
+        default: "prd"
     environment:
-      PUBLIC_PROJECT_PATH: "<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>"
+      PUBLIC_PROJECT_PATH: "<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>-<< parameters.preview-env >>"
     steps:
       - checkout
       - <<: *setup
@@ -57,12 +61,12 @@ jobs:
           command: pnpm build
       - run:
           name: Inject configuration
-          command: 'echo "window.clAppConfig = { domain: \"commercelayer.co\" }" > packages/app/dist/config.local.js'
+          command: 'cp packages/app/public/config.preview-<< parameters.preview-env >>.js packages/app/dist/config.local.js'
       - aws-s3/sync:
           aws-access-key-id: AWS_ACCESS_KEY
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           from: packages/app/dist
-          to: "s3://$S3_ASSETS_DEV_BUCKET/team/fe-static-apps/<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>"
+          to: "s3://$S3_ASSETS_DEV_BUCKET/team/fe-static-apps/<< pipeline.parameters.project-name >>/<< pipeline.git.tag >>-<< parameters.preview-env >>"
 
 workflows:
 
@@ -103,8 +107,21 @@ workflows:
             branches:
               ignore: /.*/
       - preview:
+          name: preview-prd
           requires:
             - test
+          preview-env: prd
+          context: commercelayer
+          filters:
+            tags:
+              only: /^pr-(0|[1-9]\d*).*/
+            branches:
+              ignore: /.*/
+      - preview:
+          name: preview-stg
+          requires:
+            - test
+          preview-env: stg
           context: commercelayer
           filters:
             tags:
