@@ -1,17 +1,11 @@
-import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
-
-interface GenericResource<T> {
-  readonly type: T
+interface GenericResource {
   id: string
   created_at: string
   updated_at: string
 }
 
-export const makeResource = <T extends ResourceTypeLock>(
-  type: T
-): GenericResource<T> => {
+export const makeResource = (): GenericResource => {
   return {
-    type,
     id: `fake-${Math.random()}`,
     created_at: new Date().toJSON(),
     updated_at: new Date().toJSON()
