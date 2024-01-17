@@ -18,35 +18,45 @@ export function usePromotionRules(promotion: Promotion) {
     data: ReturnType<typeof toFormLabels>
   }>({ isLoading: true, data: null })
   useEffect(() => {
-    promotion.promotion_rules?.forEach((promotionRule) => {
-      const formLabels = toFormLabels(promotionRule)
+    if (
+      promotion.promotion_rules == null ||
+      promotion.promotion_rules.length === 0
+    ) {
+      setOutput({
+        isLoading: false,
+        data: null
+      })
+    } else {
+      promotion.promotion_rules.forEach((promotionRule) => {
+        const formLabels = toFormLabels(promotionRule)
 
-      const data =
-        formLabels?.flatMap(async (formLabel) => {
-          if (formLabel.rel == null) {
-            return formLabel
-          }
+        const data =
+          formLabels?.flatMap(async (formLabel) => {
+            if (formLabel.rel == null) {
+              return formLabel
+            }
 
-          const promise = sdkClient[formLabel.rel]
-            .list({
-              filters: { id_in: formLabel.value.split(',').join(',') }
-            })
-            .then((data) => data.map((d) => d.name))
-            .then((values) => ({
-              ...formLabel,
-              value: values.join(',')
-            }))
+            const promise = sdkClient[formLabel.rel]
+              .list({
+                filters: { id_in: formLabel.value.split(',').join(',') }
+              })
+              .then((data) => data.map((d) => d.name))
+              .then((values) => ({
+                ...formLabel,
+                value: values.join(',')
+              }))
 
-          return await promise
-        }) ?? []
+            return await promise
+          }) ?? []
 
-      void Promise.all(data).then((data) => {
-        setOutput({
-          isLoading: false,
-          data
+        void Promise.all(data).then((data) => {
+          setOutput({
+            isLoading: false,
+            data
+          })
         })
       })
-    })
+    }
   }, [promotion])
 
   return output

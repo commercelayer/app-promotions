@@ -1,6 +1,7 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import { getCurrencyCodes, usePromotionRules } from '#data/ruleBuilder/config'
+import { usePromotionRules } from '#data/ruleBuilder/config'
+import { useDeleteOverlay } from '#hooks/useDeleteOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   Badge,
@@ -20,6 +21,7 @@ import {
   formatDateRange,
   formatDateWithPredicate,
   getPromotionDisplayStatus,
+  goBack,
   useCoreSdkProvider,
   useTokenProvider
 } from '@commercelayer/app-elements'
@@ -38,7 +40,9 @@ function Page(
   const { promotion, isLoading } = usePromotion(props.params.promotionId)
   const { data: rules } = usePromotionRules(promotion)
 
-  console.log('available currency codes', getCurrencyCodes(promotion))
+  const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
+
+  // console.log('available currency codes', getCurrencyCodes(promotion))
 
   return (
     <PageLayout
@@ -60,6 +64,13 @@ function Page(
                   })
                 )
               }}
+            />,
+            <DropdownItem
+              key='delete'
+              label='Delete'
+              onClick={() => {
+                showDeleteOverlay()
+              }}
             />
           ]}
         />
@@ -67,13 +78,17 @@ function Page(
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'All promotions',
+        label: 'Back',
         onClick() {
-          setLocation(appRoutes.list.makePath({}))
+          goBack({
+            setLocation,
+            defaultRelativePath: appRoutes.home.makePath({})
+          })
         }
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
+        <DeleteOverlay promotion={promotion} />
         <Spacer top='14'>
           <CardStatus promotionId={props.params.promotionId} />
         </Spacer>
