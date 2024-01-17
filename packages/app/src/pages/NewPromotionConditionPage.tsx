@@ -48,7 +48,6 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='10'>
-          <MagicButton promotion={promotion} />
           <PromotionRuleForm
             promotion={promotion}
             onSuccess={() => {
@@ -71,11 +70,10 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
   ? I
   : never
 
-type LastOf<T> = UnionToIntersection<
-  T extends any ? () => T : never
-> extends () => infer R
-  ? R
-  : never
+type LastOf<T> =
+  UnionToIntersection<T extends any ? () => T : never> extends () => infer R
+    ? R
+    : never
 
 type Push<T extends any[], V> = [...T, V]
 
@@ -228,48 +226,6 @@ function PromotionRuleForm({
         </Button>
       </Spacer>
     </HookedForm>
-  )
-}
-
-function MagicButton({
-  promotion
-}: {
-  promotion: NonNullable<ReturnType<typeof usePromotion>['promotion']>
-}): JSX.Element {
-  const { sdkClient } = useCoreSdkProvider()
-
-  return (
-    <Button
-      variant='secondary'
-      onClick={() => {
-        void (async () => {
-          if (promotion.promotion_rules?.length === 0) {
-            await sdkClient.custom_promotion_rules.create({
-              promotion
-            })
-          }
-
-          if (promotion.promotion_rules?.[0] != null) {
-            await sdkClient.custom_promotion_rules.update({
-              id: promotion.promotion_rules[0].id,
-              filters: {
-                market_id_in: 'robAnhPdGl,KoaJYhMVVj',
-                currency_code_in: 'USD',
-                // skus_count_gt: 3, // TODO: this is not filterable
-                total_amount_cents_gteq: 50000,
-                line_items_sku_tags_id_in: 'Yawgnfnmga',
-                shipping_amount_cents_gteq: 0,
-                // line_items_sku_tags_name_eq: 'winter-2023',
-                // line_items_sku_tags_name_in: 'winter-2023,clothing',
-                subtotal_amount_cents_gt: 30000
-              }
-            })
-          }
-        })()
-      }}
-    >
-      Magic&nbsp;&nbsp;&nbsp;🪄
-    </Button>
   )
 }
 

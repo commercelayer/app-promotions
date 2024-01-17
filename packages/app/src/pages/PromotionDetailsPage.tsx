@@ -6,6 +6,7 @@ import { usePromotion } from '#hooks/usePromotion'
 import {
   Badge,
   Button,
+  ButtonCard,
   Card,
   Dropdown,
   DropdownItem,
@@ -38,9 +39,13 @@ function Page(
   const [, setLocation] = useLocation()
 
   const { promotion, isLoading } = usePromotion(props.params.promotionId)
-  const { data: rules } = usePromotionRules(promotion)
+  const { rules } = usePromotionRules(promotion)
 
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
+
+  const editConditionLink = appRoutes.promotionConditions.makePath({
+    promotionId: promotion.id
+  })
 
   // console.log('available currency codes', getCurrencyCodes(promotion))
 
@@ -102,21 +107,36 @@ function Page(
         <Spacer top='14'>
           <Section
             title='Conditions'
+            border={rules.length > 0 ? undefined : 'none'}
             actionButton={
-              <Link
-                href={appRoutes.promotionConditions.makePath({
-                  promotionId: promotion.id
-                })}
-              >
-                Edit
-              </Link>
+              rules.length > 0 ? (
+                <Link href={editConditionLink}>Edit</Link>
+              ) : undefined
             }
           >
-            {rules?.map((rule) => (
-              <ListDetailsItem key={rule.predicate} label={rule.parameter}>
-                {rule.value.split(',').join(', ')}
-              </ListDetailsItem>
-            ))}
+            {rules.length > 0 ? (
+              rules.map((rule) => (
+                <ListDetailsItem key={rule.predicate} label={rule.parameter}>
+                  {rule.value.split(',').join(', ')}
+                </ListDetailsItem>
+              ))
+            ) : (
+              <ButtonCard
+                icon='sliders'
+                padding='6'
+                fullWidth
+                onClick={() => {
+                  setLocation(editConditionLink)
+                }}
+              >
+                <Text align='left' variant='info'>
+                  <a>Set conditions</a> to limit the promotion to specific
+                  orders.
+                  <br />
+                  Promotion applies only if all conditions are met.
+                </Text>
+              </ButtonCard>
+            )}
           </Section>
         </Spacer>
       </SkeletonTemplate>
@@ -223,7 +243,7 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
       case 'percentage_discount_promotions':
         return (
           <>
-            <ListDetailsItem label='Discount'>
+            <ListDetailsItem label='Discount' gutter='none'>
               {promotion.percentage}%
             </ListDetailsItem>
           </>
@@ -236,7 +256,7 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
   return (
     <>
       {specificDetails}
-      <ListDetailsItem label='Activation period'>
+      <ListDetailsItem label='Activation period' gutter='none'>
         {formatDateRange({
           rangeFrom: promotion.starts_at,
           rangeTo: promotion.expires_at,
@@ -244,12 +264,12 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
         })}
       </ListDetailsItem>
       {promotion.total_usage_limit != null && (
-        <ListDetailsItem label='Used'>
+        <ListDetailsItem label='Used' gutter='none'>
           {promotion.total_usage_count} / {promotion.total_usage_limit}
         </ListDetailsItem>
       )}
       {promotion.exclusive === true && (
-        <ListDetailsItem label='Exclusive'>
+        <ListDetailsItem label='Exclusive' gutter='none'>
           <Text variant='success'>
             <Icon name='check' />
           </Text>

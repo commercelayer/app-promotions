@@ -15,8 +15,8 @@ export function usePromotionRules(promotion: Promotion) {
   const { sdkClient } = useCoreSdkProvider()
   const [output, setOutput] = useState<{
     isLoading: boolean
-    data: ReturnType<typeof toFormLabels>
-  }>({ isLoading: true, data: null })
+    rules: NonNullable<ReturnType<typeof toFormLabels>>
+  }>({ isLoading: true, rules: [] })
   useEffect(() => {
     if (
       promotion.promotion_rules == null ||
@@ -24,7 +24,7 @@ export function usePromotionRules(promotion: Promotion) {
     ) {
       setOutput({
         isLoading: false,
-        data: null
+        rules: []
       })
     } else {
       promotion.promotion_rules.forEach((promotionRule) => {
@@ -52,7 +52,7 @@ export function usePromotionRules(promotion: Promotion) {
         void Promise.all(data).then((data) => {
           setOutput({
             isLoading: false,
-            data
+            rules: data
           })
         })
       })

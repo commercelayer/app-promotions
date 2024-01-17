@@ -7,9 +7,7 @@ import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
-  Section,
   SkeletonTemplate,
-  Spacer,
   useTokenProvider
 } from '@commercelayer/app-elements'
 import { useLocation, type RouteComponentProps } from 'wouter'
@@ -33,6 +31,7 @@ function Page(
   return (
     <PageLayout
       title={`New ${promotionConfig.titleNew}`}
+      description='Enter basic details to create the promotion, then set conditions or coupons to limit its reach after creation.'
       mode={mode}
       gap='only-top'
       navigationButton={{
@@ -43,15 +42,11 @@ function Page(
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
-        <Spacer top='10'>
-          <Section title='Basic info'>
-            <PromotionForm
-              promotionSlug={props.params.promotionSlug}
-              promotionId={props.params.promotionId}
-              defaultValues={promotionToFormValues(promotion)}
-            />
-          </Section>
-        </Spacer>
+        <PromotionForm
+          promotionSlug={props.params.promotionSlug}
+          promotionId={props.params.promotionId}
+          defaultValues={promotionToFormValues(promotion)}
+        />
       </SkeletonTemplate>
     </PageLayout>
   )

@@ -61,6 +61,7 @@ function Page(): JSX.Element {
           type='promotions'
           ItemTemplate={ListItemPromotion}
           query={{
+            include: ['coupons'],
             fields: {
               customers: [
                 'id',
