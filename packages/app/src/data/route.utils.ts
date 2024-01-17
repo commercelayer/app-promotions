@@ -92,11 +92,9 @@ type ErrorVariables<
     : never]-?: 'Is not properly set.'
 })
 
-type ValidPath<
-  Variables extends Record<string, any>,
-  Path extends string
-> = ErrorVariables<Variables, Path> extends never
-  ? Path
-  : `Missing variable '${ErrorVariables<Variables, Path> extends string
-      ? ErrorVariables<Variables, Path>
-      : 'unknown'}'`
+type ValidPath<Variables extends Record<string, any>, Path extends string> =
+  ErrorVariables<Variables, Path> extends never
+    ? Path
+    : `Missing variable '${ErrorVariables<Variables, Path> extends string
+        ? ErrorVariables<Variables, Path>
+        : 'unknown'}'`

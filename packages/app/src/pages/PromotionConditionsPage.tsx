@@ -2,6 +2,7 @@ import { appRoutes } from '#data/routes'
 import { usePromotionRules, type toFormLabels } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
 import {
+  ButtonCard,
   Card,
   ListItem,
   PageLayout,
@@ -13,7 +14,7 @@ import {
 } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import { useCallback, useState } from 'react'
-import { Link, useLocation, type RouteComponentProps } from 'wouter'
+import { useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
   props: RouteComponentProps<typeof appRoutes.promotionConditions.params>
@@ -25,8 +26,7 @@ function Page(
 
   const { promotion, mutatePromotion } = usePromotion(props.params.promotionId)
 
-  const { isLoading: isLoadingRules, data: rules } =
-    usePromotionRules(promotion)
+  const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
 
   return (
     <PageLayout
@@ -68,14 +68,18 @@ function Page(
 
             return null
           })}
-          <Spacer top='14'>
-            <Link
-              href={appRoutes.newPromotionCondition.makePath({
-                promotionId: props.params.promotionId
-              })}
-            >
-              <a>Add condition</a>
-            </Link>
+          <Spacer top='2'>
+            <ButtonCard
+              fullWidth
+              iconLabel='Add condition'
+              onClick={() => {
+                setLocation(
+                  appRoutes.newPromotionCondition.makePath({
+                    promotionId: props.params.promotionId
+                  })
+                )
+              }}
+            />
           </Spacer>
         </Spacer>
       </SkeletonTemplate>

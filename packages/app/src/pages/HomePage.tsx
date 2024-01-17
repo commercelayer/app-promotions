@@ -43,7 +43,7 @@ function HomePage(): JSX.Element {
             canUser('create', 'free_shipping_promotions') ||
             canUser('create', 'percentage_discount_promotions') ? (
               <Link href={appRoutes.newSelectType.makePath({})}>
-                <a>New promo</a>
+                <a>Add promo</a>
               </Link>
             ) : undefined
           }

@@ -175,13 +175,13 @@ export const promotionDictionary = {
 // HELPER
 
 export function isPromotionType(
-  promotionType: any
+  promotionType: string
 ): promotionType is PromotionType {
   return Object.keys(promotionDictionary).includes(promotionType)
 }
 
 export function isPromotionSlug(
-  promotionSlug: any
+  promotionSlug: (typeof promotionDictionary)[keyof typeof promotionDictionary]['slug']
 ): promotionSlug is PromotionSlug {
   return Object.values(promotionDictionary)
     .map((v) => v.slug)

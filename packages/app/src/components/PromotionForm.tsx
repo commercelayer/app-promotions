@@ -11,6 +11,7 @@ import {
   HookedForm,
   HookedInput,
   HookedInputDate,
+  Section,
   Spacer,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
@@ -75,28 +76,42 @@ export function PromotionForm({
         )
       }}
     >
-      <Spacer top='8'>
-        <HookedInput name='name' label='Name' />
+      <Spacer top='14'>
+        <Section title='Basic info'>
+          <Spacer top='6'>
+            <HookedInput
+              name='name'
+              label='Name'
+              hint={{ text: 'Pick a name that helps you identify it.' }}
+            />
+          </Spacer>
+          <Spacer top='6'>
+            <Grid columns='2'>
+              <HookedInputDate name='starts_at' label='Start on' />
+              <HookedInputDate name='expires_at' label='Expires on' />
+            </Grid>
+          </Spacer>
+        </Section>
       </Spacer>
-      <Spacer top='8'>
-        <HookedInput
-          name='percentage'
-          label='Percentage discount'
-          hint={{
-            text: 'How much the order subtotal is discounted in percentage.'
-          }}
-        />
+      <Spacer top='14'>
+        <Section title='Promotion info'>
+          <Spacer top='6'>
+            <HookedInput
+              name='percentage'
+              label='Percentage discount'
+              hint={{
+                text: 'How much the order subtotal is discounted in percentage.'
+              }}
+            />
+          </Spacer>
+        </Section>
       </Spacer>
-      <Spacer top='8'>
-        <Grid columns='2'>
-          <HookedInputDate name='starts_at' label='Start on' />
-          <HookedInputDate name='expires_at' label='Expires on' />
-        </Grid>
-      </Spacer>
-      <Spacer top='8'>
-        <Button type='submit' fullWidth>
-          {promotionId != null ? 'Update promotion' : 'Create promotion'}
-        </Button>
+      <Spacer top='14'>
+        <Spacer top='8'>
+          <Button type='submit' fullWidth>
+            {promotionId != null ? 'Update promotion' : 'Create promotion'}
+          </Button>
+        </Spacer>
       </Spacer>
     </HookedForm>
   )
