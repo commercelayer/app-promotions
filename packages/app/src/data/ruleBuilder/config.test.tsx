@@ -8,8 +8,8 @@ import { getCurrencyCodes } from './config'
 import { currencies } from './currencies'
 
 describe('getCurrencyCodes', () => {
-  it('should return null when there are no currency codes associated to the promotion', () => {
-    expect(getCurrencyCodes(makePercentageDiscountPromotion())).toEqual(null)
+  it('should return empty array when there are no currency codes associated to the promotion', () => {
+    expect(getCurrencyCodes(makePercentageDiscountPromotion())).toEqual([])
   })
 
   it('should return the currency code from a promotion', () => {

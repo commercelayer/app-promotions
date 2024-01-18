@@ -1,6 +1,10 @@
 import { type Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import { matchers, ruleBuilderConfig } from '#data/ruleBuilder/config'
+import {
+  ruleBuilderConfig,
+  ruleFormValidator,
+  type matchers
+} from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   Button,
@@ -18,7 +22,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, type RouteComponentProps } from 'wouter'
-import { z } from 'zod'
 
 function Page(
   props: RouteComponentProps<typeof appRoutes.promotionConditions.params>
@@ -63,37 +66,6 @@ function Page(
     </PageLayout>
   )
 }
-
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I
-) => void
-  ? I
-  : never
-
-type LastOf<T> =
-  UnionToIntersection<T extends any ? () => T : never> extends () => infer R
-    ? R
-    : never
-
-type Push<T extends any[], V> = [...T, V]
-
-type TuplifyUnion<
-  T,
-  L = LastOf<T>,
-  N = [T] extends [never] ? true : false
-> = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>
-
-const ruleFormValidator = z.object({
-  parameter: z.enum(
-    Object.keys(ruleBuilderConfig) as TuplifyUnion<
-      keyof typeof ruleBuilderConfig
-    >
-  ),
-  operator: z.enum(
-    Object.keys(matchers) as TuplifyUnion<keyof typeof matchers>
-  ),
-  value: z.string().min(1).or(z.string().array())
-})
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function PromotionRuleForm({

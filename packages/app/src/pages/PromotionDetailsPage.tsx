@@ -11,7 +11,6 @@ import {
   Dropdown,
   DropdownItem,
   Icon,
-  ListDetails,
   ListDetailsItem,
   ListItem,
   PageLayout,
@@ -39,15 +38,6 @@ function Page(
   const [, setLocation] = useLocation()
 
   const { promotion, isLoading } = usePromotion(props.params.promotionId)
-  const { rules } = usePromotionRules(promotion)
-
-  const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
-
-  const editConditionLink = appRoutes.promotionConditions.makePath({
-    promotionId: promotion.id
-  })
-
-  // console.log('available currency codes', getCurrencyCodes(promotion))
 
   return (
     <PageLayout
@@ -56,30 +46,7 @@ function Page(
           {promotion.name}
         </SkeletonTemplate>
       }
-      actionButton={
-        <Dropdown
-          dropdownItems={[
-            <DropdownItem
-              key='edit'
-              label='Edit'
-              onClick={() => {
-                setLocation(
-                  appRoutes.editPromotion.makePath({
-                    promotionId: props.params.promotionId
-                  })
-                )
-              }}
-            />,
-            <DropdownItem
-              key='delete'
-              label='Delete'
-              onClick={() => {
-                showDeleteOverlay()
-              }}
-            />
-          ]}
-        />
-      }
+      actionButton={<ActionButton promotion={promotion} />}
       mode={mode}
       gap='only-top'
       navigationButton={{
@@ -93,54 +60,52 @@ function Page(
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
-        <DeleteOverlay promotion={promotion} />
         <Spacer top='14'>
           <CardStatus promotionId={props.params.promotionId} />
         </Spacer>
 
         <Spacer top='14'>
-          <ListDetails title='Info'>
-            <Info promotion={promotion} />
-          </ListDetails>
+          <SectionInfo promotion={promotion} />
         </Spacer>
 
         <Spacer top='14'>
-          <Section
-            title='Conditions'
-            border={rules.length > 0 ? undefined : 'none'}
-            actionButton={
-              rules.length > 0 ? (
-                <Link href={editConditionLink}>Edit</Link>
-              ) : undefined
-            }
-          >
-            {rules.length > 0 ? (
-              rules.map((rule) => (
-                <ListDetailsItem key={rule.predicate} label={rule.parameter}>
-                  {rule.value.split(',').join(', ')}
-                </ListDetailsItem>
-              ))
-            ) : (
-              <ButtonCard
-                icon='sliders'
-                padding='6'
-                fullWidth
-                onClick={() => {
-                  setLocation(editConditionLink)
-                }}
-              >
-                <Text align='left' variant='info'>
-                  <a>Set conditions</a> to limit the promotion to specific
-                  orders.
-                  <br />
-                  Promotion applies only if all conditions are met.
-                </Text>
-              </ButtonCard>
-            )}
-          </Section>
+          <SectionConditions promotion={promotion} />
         </Spacer>
       </SkeletonTemplate>
     </PageLayout>
+  )
+}
+
+function ActionButton({ promotion }: { promotion: Promotion }): JSX.Element {
+  const [, setLocation] = useLocation()
+  const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
+
+  return (
+    <>
+      <DeleteOverlay promotion={promotion} />
+      <Dropdown
+        dropdownItems={[
+          <DropdownItem
+            key='edit'
+            label='Edit'
+            onClick={() => {
+              setLocation(
+                appRoutes.editPromotion.makePath({
+                  promotionId: promotion.id
+                })
+              )
+            }}
+          />,
+          <DropdownItem
+            key='delete'
+            label='Delete'
+            onClick={() => {
+              showDeleteOverlay()
+            }}
+          />
+        ]}
+      />
+    </>
   )
 }
 
@@ -236,7 +201,7 @@ function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
   )
 }
 
-function Info({ promotion }: { promotion: Promotion }): JSX.Element {
+function SectionInfo({ promotion }: { promotion: Promotion }): JSX.Element {
   const { user } = useTokenProvider()
   const specificDetails = useMemo(() => {
     switch (promotion.type) {
@@ -254,7 +219,7 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
   }, [promotion])
 
   return (
-    <>
+    <Section title='Info'>
       {specificDetails}
       <ListDetailsItem label='Activation period' gutter='none'>
         {formatDateRange({
@@ -275,7 +240,55 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
           </Text>
         </ListDetailsItem>
       )}
-    </>
+    </Section>
+  )
+}
+
+function SectionConditions({
+  promotion
+}: {
+  promotion: Promotion
+}): JSX.Element {
+  const [, setLocation] = useLocation()
+  const { rules } = usePromotionRules(promotion)
+
+  const editConditionLink = appRoutes.promotionConditions.makePath({
+    promotionId: promotion.id
+  })
+
+  return (
+    <Section
+      title='Conditions'
+      border={rules.length > 0 ? undefined : 'none'}
+      actionButton={
+        rules.length > 0 ? (
+          <Link href={editConditionLink}>Edit</Link>
+        ) : undefined
+      }
+    >
+      {rules.length > 0 ? (
+        rules.map((rule) => (
+          <ListDetailsItem key={rule.predicate} label={rule.parameter}>
+            {rule.value.split(',').join(', ')}
+          </ListDetailsItem>
+        ))
+      ) : (
+        <ButtonCard
+          icon='sliders'
+          padding='6'
+          fullWidth
+          onClick={() => {
+            setLocation(editConditionLink)
+          }}
+        >
+          <Text align='left' variant='info'>
+            <a>Set conditions</a> to limit the promotion to specific orders.
+            <br />
+            Promotion applies only if all conditions are met.
+          </Text>
+        </ButtonCard>
+      )}
+    </Section>
   )
 }
 

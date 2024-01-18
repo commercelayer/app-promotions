@@ -1,5 +1,8 @@
 import { appRoutes } from '#data/routes'
-import { usePromotionRules, type toFormLabels } from '#data/ruleBuilder/config'
+import {
+  hasCustomPromotionRule,
+  usePromotionRules
+} from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   ButtonCard,
@@ -12,7 +15,6 @@ import {
   useCoreSdkProvider,
   useTokenProvider
 } from '@commercelayer/app-elements'
-import type { CustomPromotionRule } from '@commercelayer/sdk'
 import { useCallback, useState } from 'react'
 import { useLocation, type RouteComponentProps } from 'wouter'
 
@@ -22,6 +24,7 @@ function Page(
   const {
     settings: { mode }
   } = useTokenProvider()
+  const { sdkClient } = useCoreSdkProvider()
   const [, setLocation] = useLocation()
 
   const { promotion, mutatePromotion } = usePromotion(props.params.promotionId)
@@ -49,20 +52,30 @@ function Page(
       <SkeletonTemplate isLoading={isLoadingRules}>
         <Spacer top='10'>
           {rules?.map((formLabel) => {
-            if (formLabel.promotionRule.type === 'custom_promotion_rules') {
+            if (hasCustomPromotionRule(formLabel)) {
               return (
-                <div key={formLabel.predicate}>
-                  <CustomPromotionRuleItem
-                    key={formLabel.predicate}
-                    onRemove={() => {
-                      setTimeout(() => {
-                        void mutatePromotion()
-                      }, 1000)
-                    }}
-                    customPromotionRule={formLabel.promotionRule}
-                    formLabel={formLabel}
-                  />
-                </div>
+                <ConditionItem
+                  key={formLabel.predicate}
+                  label={`${formLabel.parameter} ${formLabel.operator ?? ''}`}
+                  onRemove={
+                    formLabel.valid
+                      ? () => {
+                          void sdkClient.custom_promotion_rules
+                            .update({
+                              id: formLabel.promotionRule.id,
+                              filters: {
+                                ...formLabel.promotionRule.filters,
+                                [formLabel.predicate]: undefined
+                              }
+                            })
+                            .then(async () => {
+                              return await mutatePromotion()
+                            })
+                        }
+                      : undefined
+                  }
+                  values={formLabel.value.split(',')}
+                />
               )
             }
 
@@ -85,36 +98,6 @@ function Page(
       </SkeletonTemplate>
     </PageLayout>
   )
-}
-
-function CustomPromotionRuleItem({
-  formLabel,
-  customPromotionRule,
-  onRemove
-}: {
-  formLabel: NonNullable<ReturnType<typeof toFormLabels>>[number]
-  customPromotionRule: CustomPromotionRule
-  onRemove: () => void
-}): JSX.Element | null {
-  const { sdkClient } = useCoreSdkProvider()
-  const label = `${formLabel.parameter} ${formLabel.operator ?? ''}`
-  const values = formLabel.value.split(',')
-  const handleRemove = formLabel.valid
-    ? () => {
-        void sdkClient.custom_promotion_rules.update({
-          id: customPromotionRule.id,
-          filters: {
-            ...customPromotionRule.filters,
-            [formLabel.predicate]: undefined
-          }
-        })
-
-        onRemove()
-        console.log('removing', formLabel.predicate, 'from filters')
-      }
-    : undefined
-
-  return <ConditionItem label={label} onRemove={handleRemove} values={values} />
 }
 
 function ConditionItem({

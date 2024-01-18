@@ -1,21 +1,22 @@
 import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
-import {
-  HookedInput,
-  HookedInputSelect,
-  useCoreSdkProvider,
-  type InputSelectValue
-} from '@commercelayer/app-elements'
+import { HookedInput, useCoreSdkProvider } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { useEffect, useState } from 'react'
+import { z } from 'zod'
+import { SelectCurrencyComponent } from './components/SelectCurrencyComponent'
+import { SelectMarketComponent } from './components/SelectMarketComponent'
+import { SelectTagComponent } from './components/SelectTagComponent'
 import { currencies, type CurrencyCode } from './currencies'
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function usePromotionRules(promotion: Promotion) {
+export function usePromotionRules(promotion: Promotion): {
+  isLoading: boolean
+  rules: FormLabel[]
+} {
   const { sdkClient } = useCoreSdkProvider()
   const [output, setOutput] = useState<{
     isLoading: boolean
-    rules: NonNullable<ReturnType<typeof toFormLabels>>
+    rules: FormLabel[]
   }>({ isLoading: true, rules: [] })
   useEffect(() => {
     if (
@@ -62,7 +63,7 @@ export function usePromotionRules(promotion: Promotion) {
   return output
 }
 
-export function toFormLabels(promotionRule: PromotionRule): Array<{
+export interface FormLabel {
   promotionRule: PromotionRule
   valid: boolean
   predicate: string
@@ -70,7 +71,19 @@ export function toFormLabels(promotionRule: PromotionRule): Array<{
   rel?: Extract<ListableResourceType, 'markets' | 'tags'>
   operator?: string
   value: string
-}> | null {
+}
+
+export interface FormLabelWithCustomPromotionRule extends FormLabel {
+  promotionRule: CustomPromotionRule
+}
+
+export function hasCustomPromotionRule(
+  formLabel: FormLabel
+): formLabel is FormLabelWithCustomPromotionRule {
+  return formLabel.promotionRule.type === 'custom_promotion_rules'
+}
+
+function toFormLabels(promotionRule: PromotionRule): FormLabel[] | null {
   switch (promotionRule.type) {
     case 'custom_promotion_rules':
       return Object.entries(promotionRule.filters ?? {}).map(
@@ -180,88 +193,27 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
   }
 }
 
-function SelectMarketComponent(): JSX.Element {
-  const { sdkClient } = useCoreSdkProvider()
-  return (
-    <HookedInputSelect
-      name='value'
-      initialValues={[]}
-      loadAsyncValues={async (value) => {
-        const markets = await sdkClient.markets.list({
-          filters: {
-            name_cont: value
-          }
-        })
-
-        return markets.map((market) => ({
-          label: market.name,
-          value: market.id
-        }))
-      }}
-      isMulti
-    />
-  )
-}
-
-function SelectTagComponent(): JSX.Element {
-  const { sdkClient } = useCoreSdkProvider()
-  return (
-    <HookedInputSelect
-      name='value'
-      initialValues={[]}
-      loadAsyncValues={async (value) => {
-        const tags = await sdkClient.tags.list({
-          filters: {
-            name_cont: value
-          }
-        })
-
-        return tags.map((tag) => ({
-          label: tag.name,
-          value: tag.id
-        }))
-      }}
-      isMulti
-    />
-  )
-}
-
-function SelectCurrencyComponent(): JSX.Element {
-  const currencyValues: InputSelectValue[] = Object.entries(currencies).map(
-    ([code, currency]) => ({
-      label: `${currency.name} (${code.toUpperCase()})`,
-      value: code.toUpperCase()
-    })
-  )
-  return (
-    <HookedInputSelect name='value' initialValues={currencyValues} isMulti />
-  )
-}
-
 /**
  * Get the list of currency codes given a `Promotion`.
  */
 export function getCurrencyCodes(
   promotion: Promotion
-): Array<Uppercase<CurrencyCode>> | null | undefined {
-  const ccPromotionCurrencyCode = promotion.currency_code as
+): Array<Uppercase<CurrencyCode>> {
+  const currencyCodeFromPromotion = promotion.currency_code as
     | Uppercase<CurrencyCode>
     | null
     | undefined
 
-  const ccPromotionMarket = promotion.market?.price_list?.currency_code as
-    | Uppercase<CurrencyCode>
-    | null
-    | undefined
+  const currencyCodeFromPromotionMarket = promotion.market?.price_list
+    ?.currency_code as Uppercase<CurrencyCode> | null | undefined
 
   const customPromotionRule = promotion.promotion_rules?.find(
     (pr): pr is CustomPromotionRule => pr.type === 'custom_promotion_rules'
   )
 
-  const currencyCodeIn = customPromotionRule?.filters?.currency_code_in as
-    | string
-    | null
-    | undefined
+  const currencyCodeInList = (
+    customPromotionRule?.filters?.currency_code_in as string | null | undefined
+  )?.split(',') as Array<Uppercase<CurrencyCode>> | null | undefined
 
   const currencyCodeNotIn = customPromotionRule?.filters
     ?.currency_code_not_in as string | null | undefined
@@ -269,23 +221,51 @@ export function getCurrencyCodes(
   const currencyCodeNotInAsArray =
     currencyCodeNotIn != null ? currencyCodeNotIn.split(',') : null
 
-  const currencyCodeNotInList =
+  const currencyCodeNotInList = (
     currencyCodeNotInAsArray != null
       ? Object.values(currencies)
           .map((obj) => obj.iso_code)
           .filter((code) => !currencyCodeNotInAsArray.includes(code))
       : null
+  ) as Array<Uppercase<CurrencyCode>> | null | undefined
 
   const currencyCodes =
-    ccPromotionCurrencyCode != null
-      ? [ccPromotionCurrencyCode]
-      : ccPromotionMarket != null
-        ? [ccPromotionMarket]
-        : currencyCodeIn != null
-          ? (currencyCodeIn.split(',') as Array<Uppercase<CurrencyCode>>)
-          : currencyCodeNotInList != null
-            ? (currencyCodeNotInList as Array<Uppercase<CurrencyCode>>)
-            : null
+    currencyCodeFromPromotion != null
+      ? [currencyCodeFromPromotion]
+      : currencyCodeFromPromotionMarket != null
+        ? [currencyCodeFromPromotionMarket]
+        : currencyCodeInList ?? currencyCodeNotInList ?? []
 
   return currencyCodes
 }
+
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never
+
+type LastOf<T> =
+  UnionToIntersection<T extends any ? () => T : never> extends () => infer R
+    ? R
+    : never
+
+type Push<T extends any[], V> = [...T, V]
+
+type TuplifyUnion<
+  T,
+  L = LastOf<T>,
+  N = [T] extends [never] ? true : false
+> = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>
+
+export const ruleFormValidator = z.object({
+  parameter: z.enum(
+    Object.keys(ruleBuilderConfig) as TuplifyUnion<
+      keyof typeof ruleBuilderConfig
+    >
+  ),
+  operator: z.enum(
+    Object.keys(matchers) as TuplifyUnion<keyof typeof matchers>
+  ),
+  value: z.string().min(1).or(z.string().array())
+})
