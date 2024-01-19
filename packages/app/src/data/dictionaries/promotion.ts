@@ -57,6 +57,12 @@ export type PromotionDictionary = {
   }
 }
 
+const genericPromotionOptions = z.object({
+  name: z.string().min(1),
+  startOn: z.date(),
+  expiresOn: z.date()
+})
+
 export const promotionDictionary = {
   buy_x_pay_y_promotions: {
     type: 'buy_x_pay_y_promotions',
@@ -64,15 +70,13 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'Buy X pay Y',
     titleNew: 'buy X pay Y',
-    form: z.object({
-      name: z.string().min(1),
-      percentage1: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(
+      z.object({
+        x: z.number(),
+        y: z.number(),
+        sku_list: z.object({ type: z.literal('sku_lists'), id: z.string() })
+      })
+    )
   },
   external_promotions: {
     type: 'external_promotions',
@@ -80,15 +84,7 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'External promotion',
     titleNew: 'external promotion',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   fixed_amount_promotions: {
     type: 'fixed_amount_promotions',
@@ -96,15 +92,14 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'Fixed amount discount',
     titleNew: 'fixed amount discount',
-    form: z.object({
-      name: z.string().min(1),
-      fixed_amount_cents: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      starts_at: z.date(),
-      expires_at: z.date()
-    })
+    form: genericPromotionOptions.merge(
+      z.object({
+        fixed_amount_cents: z
+          .string()
+          .min(1)
+          .transform((p) => parseInt(p))
+      })
+    )
   },
   fixed_price_promotions: {
     type: 'fixed_price_promotions',
@@ -112,15 +107,7 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'Fixed price',
     titleNew: 'fixed price',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   free_gift_promotions: {
     type: 'free_gift_promotions',
@@ -128,15 +115,7 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'Free gift',
     titleNew: 'free gift',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   free_shipping_promotions: {
     type: 'free_shipping_promotions',
@@ -144,15 +123,7 @@ export const promotionDictionary = {
     icon: 'truck',
     titleList: 'Free shipping',
     titleNew: 'free shipping',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   percentage_discount_promotions: {
     type: 'percentage_discount_promotions',
@@ -160,15 +131,14 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'Percentage discount',
     titleNew: 'percentage discount',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .number()
-        .or(z.string().min(1))
-        .transform((p) => parseInt(p.toString())),
-      starts_at: z.date(),
-      expires_at: z.date()
-    })
+    form: genericPromotionOptions.merge(
+      z.object({
+        percentage: z
+          .number()
+          .or(z.string().min(1))
+          .transform((p) => parseInt(p.toString()))
+      })
+    )
   }
 } as const
 

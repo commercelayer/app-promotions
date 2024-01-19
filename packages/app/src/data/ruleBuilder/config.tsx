@@ -9,85 +9,109 @@ import { SelectMarketComponent } from './components/SelectMarketComponent'
 import { SelectTagComponent } from './components/SelectTagComponent'
 import { currencies, type CurrencyCode } from './currencies'
 
-export function usePromotionRules(promotion: Promotion): {
+/**
+ * Returns a standard format to identify all promotion rules so that it's easier to read and display them.
+ */
+export function usePromotionRules(
+  promotionRules: Promotion['promotion_rules']
+): {
   isLoading: boolean
-  rules: FormLabel[]
+  rules: Rule[]
 } {
   const { sdkClient } = useCoreSdkProvider()
   const [output, setOutput] = useState<{
     isLoading: boolean
-    rules: FormLabel[]
+    rules: Rule[]
   }>({ isLoading: true, rules: [] })
   useEffect(() => {
-    if (
-      promotion.promotion_rules == null ||
-      promotion.promotion_rules.length === 0
-    ) {
+    if (promotionRules == null || promotionRules.length === 0) {
       setOutput({
         isLoading: false,
         rules: []
       })
     } else {
-      promotion.promotion_rules.forEach((promotionRule) => {
-        const formLabels = toFormLabels(promotionRule)
+      // The following code resolves the IDs inside `rawValue` when `rel` is set.
+      const resolvedValues: Array<Promise<Rule>> = promotionRules.flatMap(
+        (promotionRule) => {
+          const rules = toRawRules(promotionRule)
 
-        const data =
-          formLabels?.flatMap(async (formLabel) => {
-            if (formLabel.rel == null) {
-              return formLabel
-            }
+          return (
+            rules?.flatMap(async (rule) => {
+              if (!rule.valid || rule.rel == null) {
+                return {
+                  ...rule,
+                  value: rule.rawValue
+                } satisfies Rule
+              }
 
-            const promise = sdkClient[formLabel.rel]
-              .list({
-                filters: { id_in: formLabel.value.split(',').join(',') }
-              })
-              .then((data) => data.map((d) => d.name))
-              .then((values) => ({
-                ...formLabel,
-                value: values.join(',')
-              }))
+              const promise: Promise<Rule> = sdkClient[rule.rel]
+                .list({
+                  filters: { id_in: rule.rawValue.split(',').join(',') }
+                })
+                .then((data) => data.map((d) => d.name))
+                .then((values) => ({
+                  ...rule,
+                  value: values.join(',')
+                }))
 
-            return await promise
-          }) ?? []
+              return await promise
+            }) ?? []
+          )
+        }
+      )
 
-        void Promise.all(data).then((data) => {
-          setOutput({
-            isLoading: false,
-            rules: data
-          })
+      void Promise.all(resolvedValues).then((data) => {
+        setOutput({
+          isLoading: false,
+          rules: data
         })
       })
     }
-  }, [promotion])
+  }, [promotionRules])
 
   return output
 }
 
-export interface FormLabel {
-  promotionRule: PromotionRule
-  valid: boolean
-  predicate: string
-  parameter: keyof typeof ruleBuilderConfig
-  rel?: Extract<ListableResourceType, 'markets' | 'tags'>
-  operator?: string
-  value: string
-}
+type RawRule = {
+  key: string
+  label: string
+  rawValue: string
+} & (
+  | {
+      /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
+      valid: false
+    }
+  | {
+      /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
+      valid: true
+      /** Rule builder configuration */
+      config: (typeof ruleBuilderConfig)[keyof typeof ruleBuilderConfig]
+      /** Related resource. (e.g. when `markets`, the `rawValue` contains market IDs) */
+      rel?: Extract<ListableResourceType, 'markets' | 'tags'>
+      /** Filter matcher. It represents the condition to be met by the query. */
+      matcherLabel: (typeof matchers)[keyof typeof matchers]['label']
+      /** Type from the associated promotion rule */
+      type: CustomPromotionRule['type']
+      /** The associated `PromotionRule`. */
+      promotionRule: CustomPromotionRule
 
-export interface FormLabelWithCustomPromotionRule extends FormLabel {
-  promotionRule: CustomPromotionRule
-}
+      /**
+       * In a `CustomPromotionRule` filter the `predicate` indicates the filter key.
+       * It's format is `{{attributes}}_{{matcher}}`,
+       * where attributes is a set of one or more attributes and matcher represents the condition to be met by the query.
+       * (e.g. `market_id_in`)
+       */
+      predicate: string
+    }
+)
 
-export function hasCustomPromotionRule(
-  formLabel: FormLabel
-): formLabel is FormLabelWithCustomPromotionRule {
-  return formLabel.promotionRule.type === 'custom_promotion_rules'
-}
+export type Rule = { value: string } & RawRule
 
-function toFormLabels(promotionRule: PromotionRule): FormLabel[] | null {
+function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
   switch (promotionRule.type) {
     case 'custom_promotion_rules':
       return Object.entries(promotionRule.filters ?? {}).map(
-        ([predicate, value]) => {
+        ([predicate, rawValue]) => {
           const regexp = new RegExp(
             `(?<matcher>${Object.keys(matchers)
               .map((matcher) => `_${matcher}`)
@@ -98,18 +122,31 @@ function toFormLabels(promotionRule: PromotionRule): FormLabel[] | null {
             ?.groups?.matcher?.replace('_', '') as
             | keyof typeof matchers
             | undefined
-          const parameter = predicate.replace(regexp, '')
-          const valid = ruleBuilderConfig[parameter] != null
-          return {
-            promotionRule,
-            valid,
-            predicate,
-            rel: ruleBuilderConfig[parameter]?.rel,
-            parameter: ruleBuilderConfig[parameter]?.label ?? predicate,
-            operator:
-              valid && matcher != null ? matchers[matcher]?.label : undefined,
-            value: value.toString()
+          const attributes = predicate.replace(regexp, '')
+
+          const config = ruleBuilderConfig[attributes]
+          const matcherLabel = matcher != null ? matchers[matcher].label : null
+          if (config == null || matcherLabel == null) {
+            return {
+              valid: false,
+              key: predicate,
+              label: predicate,
+              rawValue: rawValue.toString()
+            } satisfies RawRule
           }
+
+          return {
+            valid: true,
+            type: 'custom_promotion_rules',
+            promotionRule,
+            key: predicate,
+            label: config.label,
+            predicate,
+            config,
+            rel: config.rel,
+            matcherLabel,
+            rawValue: rawValue.toString()
+          } satisfies RawRule
         }
       )
 
@@ -145,10 +182,11 @@ type RuleBuilderConfig = Record<
   string,
   {
     resource: 'custom_promotion_rules' | 'sku_list_promotion_rules'
-    rel?: 'markets' | 'tags'
+    rel?: Extract<ListableResourceType, 'markets' | 'tags'>
     label: string
     operators: Array<(typeof matchers)[keyof typeof matchers]>
     component: () => JSX.Element
+    isVisible: (rules: Rule[]) => boolean
   }
 >
 
@@ -158,38 +196,51 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     rel: 'markets',
     label: 'Market',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectMarketComponent />
+    component: () => <SelectMarketComponent />,
+    isVisible() {
+      return true
+    }
   },
   currency_code: {
     resource: 'custom_promotion_rules',
     label: 'Currency',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectCurrencyComponent />
+    component: () => <SelectCurrencyComponent />,
+    isVisible() {
+      return true
+    }
   },
-  itemsInCart: {
-    resource: 'sku_list_promotion_rules',
-    label: 'Items in cart',
-    operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: () => <HookedInput name='value' />
-  },
+  // itemsInCart: {
+  //   resource: 'sku_list_promotion_rules',
+  //   label: 'Items in cart',
+  //   operators: [matchers.eq, matchers.gteq, matchers.gt],
+  //   component: () => <HookedInput name='value' />
+  // },
   total_amount_cents: {
     resource: 'custom_promotion_rules',
     label: 'Cart total',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: () => <HookedInput name='value' />
+    component: () => <HookedInput name='value' />,
+    isVisible() {
+      return true
+    }
   },
   line_items_sku_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
     label: 'SKU tag',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectTagComponent />
+    component: () => <SelectTagComponent />,
+    isVisible: () => true
   },
   subtotal_amount_cents: {
     resource: 'custom_promotion_rules',
     label: 'Cart subtotal',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: () => <HookedInput name='value' />
+    component: () => <HookedInput name='value' />,
+    isVisible() {
+      return true
+    }
   }
 }
 

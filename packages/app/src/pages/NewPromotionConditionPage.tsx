@@ -3,6 +3,7 @@ import { appRoutes } from '#data/routes'
 import {
   ruleBuilderConfig,
   ruleFormValidator,
+  usePromotionRules,
   type matchers
 } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
@@ -67,6 +68,10 @@ function Page(
   )
 }
 
+function isDefined<T>(value: T | undefined | null): value is T {
+  return value != null
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function PromotionRuleForm({
   promotion,
@@ -75,6 +80,8 @@ function PromotionRuleForm({
   promotion: Promotion
   onSuccess: () => void
 }) {
+  const { rules } = usePromotionRules(promotion.promotion_rules)
+
   const methods = useForm<{
     parameter: keyof typeof ruleBuilderConfig | null
     operator: keyof typeof matchers | null
@@ -93,12 +100,20 @@ function PromotionRuleForm({
 
   const watchParameter = methods.watch('parameter')
 
-  const parameterInitialValues: InputSelectValue[] = Object.entries(
-    ruleBuilderConfig
-  ).map(([value, { label }]) => ({
-    label,
-    value
-  }))
+  const parameterInitialValues: InputSelectValue[] = useMemo(() => {
+    return Object.entries(ruleBuilderConfig)
+      .map(([value, { label, isVisible }]) =>
+        isVisible(rules)
+          ? {
+              label,
+              value
+            }
+          : undefined
+      )
+      .filter(isDefined)
+  }, [rules])
+
+  console.log(parameterInitialValues, rules)
 
   const operatorInitialValues: InputSelectValue[] = useMemo(() => {
     if (watchParameter == null) {
@@ -129,7 +144,7 @@ function PromotionRuleForm({
   return (
     <HookedForm
       {...methods}
-      onSubmit={async (values) => {
+      onSubmit={async (values): Promise<void> => {
         if (values.operator != null && values.parameter != null) {
           const config = ruleBuilderConfig[values.parameter]
           const promotionRules = promotion.promotion_rules ?? []

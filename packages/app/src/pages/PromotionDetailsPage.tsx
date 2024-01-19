@@ -23,7 +23,8 @@ import {
   getPromotionDisplayStatus,
   goBack,
   useCoreSdkProvider,
-  useTokenProvider
+  useTokenProvider,
+  withSkeletonTemplate
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
 import { Link, useLocation, type RouteComponentProps } from 'wouter'
@@ -37,7 +38,7 @@ function Page(
 
   const [, setLocation] = useLocation()
 
-  const { promotion, isLoading } = usePromotion(props.params.promotionId)
+  const { isLoading, promotion } = usePromotion(props.params.promotionId)
 
   return (
     <PageLayout
@@ -76,7 +77,9 @@ function Page(
   )
 }
 
-function ActionButton({ promotion }: { promotion: Promotion }): JSX.Element {
+const ActionButton = withSkeletonTemplate<{
+  promotion: Promotion
+}>(({ promotion }) => {
   const [, setLocation] = useLocation()
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
 
@@ -107,9 +110,11 @@ function ActionButton({ promotion }: { promotion: Promotion }): JSX.Element {
       />
     </>
   )
-}
+})
 
-function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
+const CardStatus = withSkeletonTemplate<{
+  promotionId: string
+}>(({ promotionId }) => {
   const { user } = useTokenProvider()
   const { sdkClient } = useCoreSdkProvider()
   const { promotion, mutatePromotion } = usePromotion(promotionId)
@@ -199,9 +204,11 @@ function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
       </ListItem>
     </Card>
   )
-}
+})
 
-function SectionInfo({ promotion }: { promotion: Promotion }): JSX.Element {
+const SectionInfo = withSkeletonTemplate<{
+  promotion: Promotion
+}>(({ promotion }) => {
   const { user } = useTokenProvider()
   const specificDetails = useMemo(() => {
     switch (promotion.type) {
@@ -242,54 +249,54 @@ function SectionInfo({ promotion }: { promotion: Promotion }): JSX.Element {
       )}
     </Section>
   )
-}
+})
 
-function SectionConditions({
-  promotion
-}: {
+const SectionConditions = withSkeletonTemplate<{
   promotion: Promotion
-}): JSX.Element {
+}>(({ promotion }) => {
   const [, setLocation] = useLocation()
-  const { rules } = usePromotionRules(promotion)
+  const { isLoading, rules } = usePromotionRules(promotion.promotion_rules)
 
   const editConditionLink = appRoutes.promotionConditions.makePath({
     promotionId: promotion.id
   })
 
   return (
-    <Section
-      title='Conditions'
-      border={rules.length > 0 ? undefined : 'none'}
-      actionButton={
-        rules.length > 0 ? (
-          <Link href={editConditionLink}>Edit</Link>
-        ) : undefined
-      }
-    >
-      {rules.length > 0 ? (
-        rules.map((rule) => (
-          <ListDetailsItem key={rule.predicate} label={rule.parameter}>
-            {rule.value.split(',').join(', ')}
-          </ListDetailsItem>
-        ))
-      ) : (
-        <ButtonCard
-          icon='sliders'
-          padding='6'
-          fullWidth
-          onClick={() => {
-            setLocation(editConditionLink)
-          }}
-        >
-          <Text align='left' variant='info'>
-            <a>Set conditions</a> to limit the promotion to specific orders.
-            <br />
-            Promotion applies only if all conditions are met.
-          </Text>
-        </ButtonCard>
-      )}
-    </Section>
+    <SkeletonTemplate isLoading={isLoading}>
+      <Section
+        title='Conditions'
+        border={rules.length > 0 ? undefined : 'none'}
+        actionButton={
+          rules.length > 0 ? (
+            <Link href={editConditionLink}>Edit</Link>
+          ) : undefined
+        }
+      >
+        {rules.length > 0 ? (
+          rules.map((rule) => (
+            <ListDetailsItem key={rule.key} label={rule.label}>
+              {rule.value.split(',').join(', ')}
+            </ListDetailsItem>
+          ))
+        ) : (
+          <ButtonCard
+            icon='sliders'
+            padding='6'
+            fullWidth
+            onClick={() => {
+              setLocation(editConditionLink)
+            }}
+          >
+            <Text align='left' variant='info'>
+              <a>Set conditions</a> to limit the promotion to specific orders.
+              <br />
+              Promotion applies only if all conditions are met.
+            </Text>
+          </ButtonCard>
+        )}
+      </Section>
+    </SkeletonTemplate>
   )
-}
+})
 
 export default Page

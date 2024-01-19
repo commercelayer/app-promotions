@@ -1,8 +1,5 @@
 import { appRoutes } from '#data/routes'
-import {
-  hasCustomPromotionRule,
-  usePromotionRules
-} from '#data/ruleBuilder/config'
+import { usePromotionRules } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   ButtonCard,
@@ -29,7 +26,9 @@ function Page(
 
   const { promotion, mutatePromotion } = usePromotion(props.params.promotionId)
 
-  const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
+  const { isLoading: isLoadingRules, rules } = usePromotionRules(
+    promotion.promotion_rules
+  )
 
   return (
     <PageLayout
@@ -51,30 +50,36 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoadingRules}>
         <Spacer top='10'>
-          {rules?.map((formLabel) => {
-            if (hasCustomPromotionRule(formLabel)) {
+          {rules?.map((rule) => {
+            if (!rule.valid) {
               return (
                 <ConditionItem
-                  key={formLabel.predicate}
-                  label={`${formLabel.parameter} ${formLabel.operator ?? ''}`}
-                  onRemove={
-                    formLabel.valid
-                      ? () => {
-                          void sdkClient.custom_promotion_rules
-                            .update({
-                              id: formLabel.promotionRule.id,
-                              filters: {
-                                ...formLabel.promotionRule.filters,
-                                [formLabel.predicate]: undefined
-                              }
-                            })
-                            .then(async () => {
-                              return await mutatePromotion()
-                            })
+                  key={rule.key}
+                  label={rule.label}
+                  values={rule.value.split(',')}
+                />
+              )
+            }
+
+            if (rule.type === 'custom_promotion_rules') {
+              return (
+                <ConditionItem
+                  key={rule.key}
+                  label={`${rule.label} ${rule.matcherLabel}`}
+                  onRemove={() => {
+                    void sdkClient.custom_promotion_rules
+                      .update({
+                        id: rule.promotionRule.id,
+                        filters: {
+                          ...rule.promotionRule.filters,
+                          [rule.predicate]: undefined
                         }
-                      : undefined
-                  }
-                  values={formLabel.value.split(',')}
+                      })
+                      .then(async () => {
+                        return await mutatePromotion()
+                      })
+                  }}
+                  values={rule.value.split(',')}
                 />
               )
             }
