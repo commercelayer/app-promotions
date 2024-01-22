@@ -1,3 +1,4 @@
+import type { GetParams } from '#data/route.utils'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/config'
 import { usePromotion } from '#hooks/usePromotion'
@@ -16,7 +17,7 @@ import { useCallback, useState } from 'react'
 import { useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<typeof appRoutes.promotionConditions.params>
+  props: RouteComponentProps<GetParams<typeof appRoutes.promotionConditions>>
 ): JSX.Element | null {
   const {
     settings: { mode }

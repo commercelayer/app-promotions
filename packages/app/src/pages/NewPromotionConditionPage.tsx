@@ -1,4 +1,5 @@
 import { type Promotion } from '#data/dictionaries/promotion'
+import type { GetParams } from '#data/route.utils'
 import { appRoutes } from '#data/routes'
 import {
   ruleBuilderConfig,
@@ -25,7 +26,7 @@ import { useForm } from 'react-hook-form'
 import { useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<typeof appRoutes.promotionConditions.params>
+  props: RouteComponentProps<GetParams<typeof appRoutes.promotionConditions>>
 ): JSX.Element {
   const {
     settings: { mode }
