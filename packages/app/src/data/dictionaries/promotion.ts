@@ -65,6 +65,7 @@ const genericPromotionOptions = z.object({
 
 export const promotionDictionary = {
   buy_x_pay_y_promotions: {
+    enable: false,
     type: 'buy_x_pay_y_promotions',
     slug: 'buy-x-pay-y',
     icon: 'stack',
@@ -79,17 +80,19 @@ export const promotionDictionary = {
     )
   },
   external_promotions: {
+    enable: false,
     type: 'external_promotions',
     slug: 'external',
-    icon: 'stack',
+    icon: 'linkSimple',
     titleList: 'External promotion',
     titleNew: 'external promotion',
     form: genericPromotionOptions.merge(z.object({}))
   },
   fixed_amount_promotions: {
+    enable: false,
     type: 'fixed_amount_promotions',
     slug: 'fixed-amount',
-    icon: 'stack',
+    icon: 'currencyEur',
     titleList: 'Fixed amount discount',
     titleNew: 'fixed amount discount',
     form: genericPromotionOptions.merge(
@@ -102,22 +105,25 @@ export const promotionDictionary = {
     )
   },
   fixed_price_promotions: {
+    enable: false,
     type: 'fixed_price_promotions',
     slug: 'fixed-price',
-    icon: 'stack',
+    icon: 'pushPin',
     titleList: 'Fixed price',
     titleNew: 'fixed price',
     form: genericPromotionOptions.merge(z.object({}))
   },
   free_gift_promotions: {
+    enable: false,
     type: 'free_gift_promotions',
     slug: 'free-gift',
-    icon: 'stack',
+    icon: 'gift',
     titleList: 'Free gift',
     titleNew: 'free gift',
     form: genericPromotionOptions.merge(z.object({}))
   },
   free_shipping_promotions: {
+    enable: false,
     type: 'free_shipping_promotions',
     slug: 'free-shipping',
     icon: 'truck',
@@ -126,9 +132,10 @@ export const promotionDictionary = {
     form: genericPromotionOptions.merge(z.object({}))
   },
   percentage_discount_promotions: {
+    enable: true,
     type: 'percentage_discount_promotions',
     slug: 'percentage-discount',
-    icon: 'stack',
+    icon: 'percent',
     titleList: 'Percentage discount',
     titleNew: 'percentage discount',
     form: genericPromotionOptions.merge(
@@ -140,7 +147,18 @@ export const promotionDictionary = {
       })
     )
   }
-} as const
+} as const satisfies Record<
+  string,
+  {
+    enable: boolean
+    type: string
+    slug: string
+    icon: IconProps['name']
+    titleList: string
+    titleNew: string
+    form: z.AnyZodObject
+  }
+>
 
 // HELPER
 

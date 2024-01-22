@@ -58,18 +58,22 @@ function LinkTo({
   promotionType: PromotionType
 }): JSX.Element {
   const promotion = promotionDictionary[promotionType]
+  const EnabledLink = promotion.enable ? Link : 'div'
 
   return (
-    <Link
+    <EnabledLink
       href={appRoutes.newPromotion.makePath({
         promotionSlug: promotion.slug
       })}
     >
-      <ListItem tag='a' icon={<Icon name={promotion.icon} />}>
+      <ListItem
+        tag={promotion.enable ? 'a' : 'div'}
+        icon={<Icon name={promotion.icon} size={24} />}
+      >
         <Text weight='semibold'>{promotion.titleList}</Text>
-        <Icon name='caretRight' />
+        {promotion.enable && <Icon name='caretRight' />}
       </ListItem>
-    </Link>
+    </EnabledLink>
   )
 }
 
