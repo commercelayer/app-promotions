@@ -4,8 +4,8 @@ import {
   makePercentageDiscountPromotion,
   makePriceList
 } from '#mocks'
+import { currencies } from '@commercelayer/app-elements'
 import { getCurrencyCodes } from './config'
-import { currencies } from './currencies'
 
 describe('getCurrencyCodes', () => {
   it('should return empty array when there are no currency codes associated to the promotion', () => {

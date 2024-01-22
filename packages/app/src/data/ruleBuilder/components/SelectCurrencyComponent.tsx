@@ -1,8 +1,8 @@
 import {
   HookedInputSelect,
+  currencies,
   type InputSelectValue
 } from '@commercelayer/app-elements'
-import { currencies } from '../currencies'
 
 export function SelectCurrencyComponent(): JSX.Element {
   const currencyValues: InputSelectValue[] = Object.entries(currencies).map(

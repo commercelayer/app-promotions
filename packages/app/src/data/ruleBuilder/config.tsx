@@ -1,5 +1,10 @@
 import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
-import { HookedInput, useCoreSdkProvider } from '@commercelayer/app-elements'
+import type { CurrencyCode } from '@commercelayer/app-elements'
+import {
+  HookedInput,
+  currencies,
+  useCoreSdkProvider
+} from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { useEffect, useState } from 'react'
@@ -7,7 +12,6 @@ import { z } from 'zod'
 import { SelectCurrencyComponent } from './components/SelectCurrencyComponent'
 import { SelectMarketComponent } from './components/SelectMarketComponent'
 import { SelectTagComponent } from './components/SelectTagComponent'
-import { currencies, type CurrencyCode } from './currencies'
 
 /**
  * Returns a standard format to identify all promotion rules so that it's easier to read and display them.
@@ -247,16 +251,14 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
 /**
  * Get the list of currency codes given a `Promotion`.
  */
-export function getCurrencyCodes(
-  promotion: Promotion
-): Array<Uppercase<CurrencyCode>> {
+export function getCurrencyCodes(promotion: Promotion): CurrencyCode[] {
   const currencyCodeFromPromotion = promotion.currency_code as
-    | Uppercase<CurrencyCode>
+    | CurrencyCode
     | null
     | undefined
 
   const currencyCodeFromPromotionMarket = promotion.market?.price_list
-    ?.currency_code as Uppercase<CurrencyCode> | null | undefined
+    ?.currency_code as CurrencyCode | null | undefined
 
   const customPromotionRule = promotion.promotion_rules?.find(
     (pr): pr is CustomPromotionRule => pr.type === 'custom_promotion_rules'
@@ -264,7 +266,7 @@ export function getCurrencyCodes(
 
   const currencyCodeInList = (
     customPromotionRule?.filters?.currency_code_in as string | null | undefined
-  )?.split(',') as Array<Uppercase<CurrencyCode>> | null | undefined
+  )?.split(',') as CurrencyCode[] | null | undefined
 
   const currencyCodeNotIn = customPromotionRule?.filters
     ?.currency_code_not_in as string | null | undefined
@@ -278,7 +280,7 @@ export function getCurrencyCodes(
           .map((obj) => obj.iso_code)
           .filter((code) => !currencyCodeNotInAsArray.includes(code))
       : null
-  ) as Array<Uppercase<CurrencyCode>> | null | undefined
+  ) as CurrencyCode[] | null | undefined
 
   const currencyCodes =
     currencyCodeFromPromotion != null
