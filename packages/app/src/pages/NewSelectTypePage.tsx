@@ -12,7 +12,7 @@ import {
   Text,
   useTokenProvider
 } from '@commercelayer/app-elements'
-import { useLocation } from 'wouter'
+import { Link, useLocation } from 'wouter'
 
 function Page(): JSX.Element {
   const {
@@ -60,14 +60,16 @@ function LinkTo({
   const promotion = promotionDictionary[promotionType]
 
   return (
-    <ListItem
-      tag='a'
-      icon={<Icon name={promotion.icon} />}
-      href={appRoutes.newPromotion.makePath({ promotionSlug: promotion.slug })}
+    <Link
+      href={appRoutes.newPromotion.makePath({
+        promotionSlug: promotion.slug
+      })}
     >
-      <Text weight='semibold'>{promotion.titleList}</Text>
-      <Icon name='caretRight' />
-    </ListItem>
+      <ListItem tag='a' icon={<Icon name={promotion.icon} />}>
+        <Text weight='semibold'>{promotion.titleList}</Text>
+        <Icon name='caretRight' />
+      </ListItem>
+    </Link>
   )
 }
 
