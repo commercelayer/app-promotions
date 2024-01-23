@@ -1,6 +1,5 @@
-import type { GetParams } from '#data/route.utils'
 import { appRoutes } from '#data/routes'
-import { usePromotionRules } from '#data/ruleBuilder/config'
+import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   ButtonCard,
@@ -11,7 +10,8 @@ import {
   SkeletonTemplate,
   Spacer,
   useCoreSdkProvider,
-  useTokenProvider
+  useTokenProvider,
+  type GetParams
 } from '@commercelayer/app-elements'
 import { useCallback, useState } from 'react'
 import { useLocation, type RouteComponentProps } from 'wouter'

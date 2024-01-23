@@ -1,6 +1,6 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import { usePromotionRules } from '#data/ruleBuilder/config'
+import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteOverlay } from '#hooks/useDeleteOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import {
