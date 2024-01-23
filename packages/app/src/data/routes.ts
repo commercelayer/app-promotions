@@ -7,8 +7,9 @@ import { createRoute } from '@commercelayer/app-elements'
  * and `makePath` method to be used to generate the path used in navigation and links
  */
 export const appRoutes = {
+  /** Homepage */
   home: createRoute('/'),
-  list: createRoute('/list/'),
+  promotionList: createRoute('/list/'),
   filters: createRoute('/filters/'),
   promotionDetails: createRoute('/list/:promotionId/'),
   editPromotion: createRoute('/list/:promotionId/edit/'),

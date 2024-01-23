@@ -48,7 +48,7 @@ function HomePage(): JSX.Element {
             ) : undefined
           }
         >
-          <Link href={appRoutes.list.makePath({})}>
+          <Link href={appRoutes.promotionList.makePath({})}>
             <ListItem
               tag='a'
               icon={

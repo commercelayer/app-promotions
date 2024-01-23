@@ -17,7 +17,7 @@ function Page(): JSX.Element {
         icon: 'x',
         onClick() {
           setLocation(
-            appRoutes.list.makePath(
+            appRoutes.promotionList.makePath(
               adapters.adaptUrlQueryToUrlQuery({
                 queryString: location.search
               })
@@ -28,7 +28,7 @@ function Page(): JSX.Element {
     >
       <FiltersForm
         onSubmit={(filtersQueryString) => {
-          setLocation(appRoutes.list.makePath(filtersQueryString))
+          setLocation(appRoutes.promotionList.makePath(filtersQueryString))
         }}
       />
     </PageLayout>
