@@ -1,10 +1,14 @@
 import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
 import { isMockedId } from '#mocks'
-import { useCoreSdkProvider } from '@commercelayer/app-elements'
+import {
+  formatCentsToCurrency,
+  useCoreSdkProvider
+} from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { useEffect, useState } from 'react'
 import { matchers, ruleBuilderConfig, type RuleBuilderConfig } from './config'
+import { useCurrencyCodes } from './currency'
 
 /**
  * Returns a standard format to identify all promotion rules so that it's easier to read and display them.
@@ -14,6 +18,7 @@ export function usePromotionRules(promotion: Promotion): {
   rules: Rule[]
 } {
   const { sdkClient } = useCoreSdkProvider()
+  const { currencyCodes } = useCurrencyCodes(promotion)
 
   const [output, setOutput] = useState<{
     isLoading: boolean
@@ -41,24 +46,42 @@ export function usePromotionRules(promotion: Promotion): {
 
           return (
             rules?.flatMap(async (rule) => {
-              if (!rule.valid || rule.rel == null) {
+              if (rule.valid && rule.rel != null) {
+                const promise: Promise<Rule> = sdkClient[rule.rel]
+                  .list({
+                    filters: { id_in: rule.rawValues.join(',') }
+                  })
+                  .then((data) => data.map((d) => d.name))
+                  .then((values) => ({
+                    ...rule,
+                    values
+                  }))
+
+                return await promise
+              }
+
+              if (
+                currencyCodes.length === 1 &&
+                rule.valid &&
+                (rule.configKey === 'subtotal_amount_cents' ||
+                  rule.configKey === 'total_amount_cents')
+              ) {
                 return {
                   ...rule,
-                  value: rule.rawValue
+                  values: rule.rawValues.map((rawValue) =>
+                    formatCentsToCurrency(
+                      parseInt(rawValue),
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      currencyCodes[0]!
+                    )
+                  )
                 } satisfies Rule
               }
 
-              const promise: Promise<Rule> = sdkClient[rule.rel]
-                .list({
-                  filters: { id_in: rule.rawValue.split(',').join(',') }
-                })
-                .then((data) => data.map((d) => d.name))
-                .then((values) => ({
-                  ...rule,
-                  value: values.join(',')
-                }))
-
-              return await promise
+              return {
+                ...rule,
+                values: rule.rawValues
+              } satisfies Rule
             }) ?? []
           )
         })
@@ -70,7 +93,7 @@ export function usePromotionRules(promotion: Promotion): {
         })
       })
     }
-  }, [promotion])
+  }, [promotion, currencyCodes])
 
   return output
 }
@@ -78,7 +101,7 @@ export function usePromotionRules(promotion: Promotion): {
 type RawRule = {
   key: string
   label: string
-  rawValue: string
+  rawValues: string[]
 } & (
   | {
       /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
@@ -110,13 +133,13 @@ type RawRule = {
     }
 )
 
-export type Rule = { value: string } & RawRule
+export type Rule = { values: string[] } & RawRule
 
 function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
   switch (promotionRule.type) {
     case 'custom_promotion_rules':
       return Object.entries(promotionRule.filters ?? {}).map(
-        ([predicate, rawValue]) => {
+        ([predicate, value]) => {
           const regexp = new RegExp(
             `(?<matcher>${Object.keys(matchers)
               .map((matcher) => `_${matcher}`)
@@ -141,7 +164,7 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
               valid: false,
               key: predicate,
               label: predicate,
-              rawValue: rawValue.toString()
+              rawValues: value.toString().split(',')
             } satisfies RawRule
           }
 
@@ -156,7 +179,7 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
             config,
             rel: config.rel,
             matcherLabel,
-            rawValue: rawValue.toString()
+            rawValues: value.toString().split(',')
           } satisfies RawRule
         }
       )

@@ -55,7 +55,7 @@ function Page(
                 <ConditionItem
                   key={rule.key}
                   label={rule.label}
-                  values={rule.value.split(',')}
+                  values={rule.values}
                 />
               )
             }
@@ -78,7 +78,7 @@ function Page(
                         return await mutatePromotion()
                       })
                   }}
-                  values={rule.value.split(',')}
+                  values={rule.values}
                 />
               )
             }
