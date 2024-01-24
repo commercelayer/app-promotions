@@ -59,8 +59,8 @@ export type PromotionDictionary = {
 
 const genericPromotionOptions = z.object({
   name: z.string().min(1),
-  startOn: z.date(),
-  expiresOn: z.date()
+  starts_at: z.date(),
+  expires_at: z.date()
 })
 
 export const promotionDictionary = {

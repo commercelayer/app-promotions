@@ -64,9 +64,10 @@ export function PromotionForm({
           promotion = await resource.update({ id: promotionId, ...formValues })
         } else {
           // @ts-expect-error // TODO: I need to fix this
-          promotion = await resource.create(formValues)
-
-          await resource._disable(promotion.id)
+          promotion = await resource.create({
+            ...formValues,
+            _disable: true
+          })
         }
 
         setLocation(
@@ -108,7 +109,13 @@ export function PromotionForm({
       </Spacer>
       <Spacer top='14'>
         <Spacer top='8'>
-          <Button type='submit' fullWidth>
+          <Button
+            type='submit'
+            fullWidth
+            disabled={
+              methods.formState.isSubmitting || !methods.formState.isValid
+            }
+          >
             {promotionId != null ? 'Update promotion' : 'Create promotion'}
           </Button>
         </Spacer>
