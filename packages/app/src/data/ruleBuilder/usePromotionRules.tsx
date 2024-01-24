@@ -1,34 +1,42 @@
 import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
+import { isMockedId } from '#mocks'
 import { useCoreSdkProvider } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { useEffect, useState } from 'react'
-import { matchers, ruleBuilderConfig } from './config'
+import { matchers, ruleBuilderConfig, type RuleBuilderConfig } from './config'
 
 /**
  * Returns a standard format to identify all promotion rules so that it's easier to read and display them.
  */
-export function usePromotionRules(
-  promotionRules: Promotion['promotion_rules']
-): {
+export function usePromotionRules(promotion: Promotion): {
   isLoading: boolean
   rules: Rule[]
 } {
   const { sdkClient } = useCoreSdkProvider()
+
   const [output, setOutput] = useState<{
     isLoading: boolean
     rules: Rule[]
   }>({ isLoading: true, rules: [] })
+
   useEffect(() => {
-    if (promotionRules == null || promotionRules.length === 0) {
+    if (isMockedId(promotion.id)) {
+      return
+    }
+
+    if (
+      promotion.promotion_rules == null ||
+      promotion.promotion_rules.length === 0
+    ) {
       setOutput({
         isLoading: false,
         rules: []
       })
     } else {
       // The following code resolves the IDs inside `rawValue` when `rel` is set.
-      const resolvedValues: Array<Promise<Rule>> = promotionRules.flatMap(
-        (promotionRule) => {
+      const resolvedValues: Array<Promise<Rule>> =
+        promotion.promotion_rules.flatMap((promotionRule) => {
           const rules = toRawRules(promotionRule)
 
           return (
@@ -53,8 +61,7 @@ export function usePromotionRules(
               return await promise
             }) ?? []
           )
-        }
-      )
+        })
 
       void Promise.all(resolvedValues).then((data) => {
         setOutput({
@@ -63,7 +70,7 @@ export function usePromotionRules(
         })
       })
     }
-  }, [promotionRules])
+  }, [promotion])
 
   return output
 }
@@ -81,7 +88,9 @@ type RawRule = {
       /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
       valid: true
       /** Rule builder configuration */
-      config: (typeof ruleBuilderConfig)[keyof typeof ruleBuilderConfig]
+      configKey: keyof RuleBuilderConfig
+      /** Rule builder configuration */
+      config: RuleBuilderConfig[keyof RuleBuilderConfig]
       /** Related resource. (e.g. when `markets`, the `rawValue` contains market IDs) */
       rel?: Extract<ListableResourceType, 'markets' | 'tags'>
       /** Filter matcher. It represents the condition to be met by the query. */
@@ -120,9 +129,12 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
             | keyof typeof matchers
             | undefined
 
-          const attributes = predicate.replace(regexp, '')
+          const configKey = predicate.replace(
+            regexp,
+            ''
+          ) as keyof RuleBuilderConfig
 
-          const config = ruleBuilderConfig[attributes]
+          const config = ruleBuilderConfig[configKey]
           const matcherLabel = matcher != null ? matchers[matcher].label : null
           if (config == null || matcherLabel == null) {
             return {
@@ -135,11 +147,12 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
 
           return {
             valid: true,
-            type: 'custom_promotion_rules',
+            type: promotionRule.type,
             promotionRule,
             key: predicate,
             label: config.label,
             predicate,
+            configKey,
             config,
             rel: config.rel,
             matcherLabel,

@@ -255,7 +255,7 @@ const SectionConditions = withSkeletonTemplate<{
   promotion: Promotion
 }>(({ promotion }) => {
   const [, setLocation] = useLocation()
-  const { isLoading, rules } = usePromotionRules(promotion.promotion_rules)
+  const { isLoading, rules } = usePromotionRules(promotion)
 
   const editConditionLink = appRoutes.promotionConditions.makePath({
     promotionId: promotion.id

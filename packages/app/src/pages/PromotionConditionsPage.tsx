@@ -27,9 +27,7 @@ function Page(
 
   const { promotion, mutatePromotion } = usePromotion(props.params.promotionId)
 
-  const { isLoading: isLoadingRules, rules } = usePromotionRules(
-    promotion.promotion_rules
-  )
+  const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
 
   return (
     <PageLayout

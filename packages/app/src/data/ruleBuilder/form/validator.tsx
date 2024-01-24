@@ -29,5 +29,5 @@ export const ruleBuilderFormValidator = z.object({
   operator: z.enum(
     Object.keys(matchers) as TuplifyUnion<keyof typeof matchers>
   ),
-  value: z.string().min(1).or(z.string().array())
+  value: z.string().min(1).or(z.string().array()).or(z.number())
 })

@@ -1,5 +1,10 @@
 import { type Promotion } from '#data/dictionaries/promotion'
-import { ruleBuilderConfig, type matchers } from '#data/ruleBuilder/config'
+import { isDefined } from '#data/isValid'
+import {
+  ruleBuilderConfig,
+  type RuleBuilderConfig,
+  type matchers
+} from '#data/ruleBuilder/config'
 import { ruleBuilderFormValidator } from '#data/ruleBuilder/form/validator'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import {
@@ -14,20 +19,17 @@ import type { CustomPromotionRule } from '@commercelayer/sdk'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
+import { useCurrencyCodes } from '../currency'
 
-export function RuleBuilderForm({
-  promotion,
-  onSuccess
-}: {
-  promotion: Promotion
-  onSuccess: () => void
-}): JSX.Element {
-  const { rules } = usePromotionRules(promotion.promotion_rules)
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function useRuleBuilderFormFields(promotion: Promotion) {
+  const { rules } = usePromotionRules(promotion)
+  const { currencyCodes } = useCurrencyCodes(promotion)
 
   const methods = useForm<{
-    parameter: keyof typeof ruleBuilderConfig | null
+    parameter: keyof RuleBuilderConfig | null
     operator: keyof typeof matchers | null
-    value: string | string[] | null
+    value: string | number | string[] | null
   }>({
     defaultValues: {
       parameter: null,
@@ -38,24 +40,20 @@ export function RuleBuilderForm({
     mode: 'all'
   })
 
-  const { sdkClient } = useCoreSdkProvider()
-
   const watchParameter = methods.watch('parameter')
 
   const parameterInitialValues: InputSelectValue[] = useMemo(() => {
     return Object.entries(ruleBuilderConfig)
-      .map(([value, { label, isVisible }]) =>
-        isVisible(rules)
+      .map(([value, { label, isVisible }]): InputSelectValue | null =>
+        isVisible({ currencyCodes, rules })
           ? {
               label,
               value
             }
-          : undefined
+          : null
       )
       .filter(isDefined)
-  }, [rules])
-
-  console.log(parameterInitialValues, rules)
+  }, [ruleBuilderConfig, currencyCodes, rules])
 
   const operatorInitialValues: InputSelectValue[] = useMemo(() => {
     if (watchParameter == null) {
@@ -70,18 +68,59 @@ export function RuleBuilderForm({
     ) ?? []) satisfies InputSelectValue[]
   }, [watchParameter])
 
-  const component: JSX.Element | null = useMemo(() => {
+  const inputComponent: React.ReactNode | null = useMemo(() => {
     if (watchParameter == null) {
       return null
     }
 
-    return ruleBuilderConfig[watchParameter]?.component() ?? null
+    return (
+      ruleBuilderConfig[watchParameter]?.component({
+        currencyCode: currencyCodes[0]
+      }) ?? null
+    )
   }, [watchParameter])
 
   useEffect(() => {
     methods.resetField('operator')
     methods.resetField('value')
   }, [watchParameter])
+
+  return {
+    methods,
+    watchParameter,
+    inputComponent,
+    inputParameter: (
+      <HookedInputSelect
+        isSearchable={false}
+        initialValues={parameterInitialValues}
+        name='parameter'
+      />
+    ),
+    inputOperator: (
+      <HookedInputSelect
+        isSearchable={false}
+        initialValues={operatorInitialValues}
+        name='operator'
+      />
+    )
+  }
+}
+export function RuleBuilderForm({
+  promotion,
+  onSuccess
+}: {
+  promotion: Promotion
+  onSuccess: () => void
+}): JSX.Element {
+  const {
+    inputComponent,
+    inputOperator,
+    inputParameter,
+    methods,
+    watchParameter
+  } = useRuleBuilderFormFields(promotion)
+
+  const { sdkClient } = useCoreSdkProvider()
 
   return (
     <HookedForm
@@ -120,29 +159,17 @@ export function RuleBuilderForm({
             }
 
             onSuccess()
-
-            console.log(newFilter, promotionRules, config)
           }
         }
       }}
     >
-      <Spacer top='4'>
-        <HookedInputSelect
-          isSearchable={false}
-          initialValues={parameterInitialValues}
-          name='parameter'
-        />
-      </Spacer>
+      <Spacer top='4'>{inputParameter}</Spacer>
       {watchParameter != null && (
-        <Spacer top='4'>
-          <HookedInputSelect
-            isSearchable={false}
-            initialValues={operatorInitialValues}
-            name='operator'
-          />
-        </Spacer>
+        <>
+          <Spacer top='4'>{inputOperator}</Spacer>
+          <Spacer top='4'>{inputComponent}</Spacer>
+        </>
       )}
-      <Spacer top='4'>{component}</Spacer>
       <Spacer top='14'>
         <Button
           fullWidth
@@ -156,8 +183,4 @@ export function RuleBuilderForm({
       </Spacer>
     </HookedForm>
   )
-}
-
-function isDefined<T>(value: T | undefined | null): value is T {
-  return value != null
 }
