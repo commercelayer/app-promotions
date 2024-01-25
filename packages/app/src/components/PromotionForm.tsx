@@ -95,7 +95,7 @@ export function PromotionForm({
         </Section>
       </Spacer>
       <Spacer top='14'>
-        <Section title='Promotion info'>
+        <Section title='Discount'>
           <Spacer top='6'>
             <HookedInput
               name='percentage'

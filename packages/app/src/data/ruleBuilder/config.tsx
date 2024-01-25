@@ -39,12 +39,8 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     component: ({ promotion }) => (
       <SelectMarketComponent promotion={promotion} />
     ),
-    isVisible({ rules }) {
-      const isAlreadySet =
-        rules.find((rule) => rule.valid && rule.configKey === 'market_id') !=
-        null
-
-      return !isAlreadySet
+    isAvailable() {
+      return true
     }
   },
   currency_code: {
@@ -55,13 +51,8 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     component: ({ promotion }) => (
       <SelectCurrencyComponent promotion={promotion} />
     ),
-    isVisible({ currencyCodes, rules }) {
-      const marketIsSet =
-        rules.find((rule) => rule.valid && rule.configKey === 'market_id') !=
-        null
-      const currencyIsSet = currencyCodes.length > 0
-
-      return !marketIsSet && !currencyIsSet
+    isAvailable() {
+      return true
     }
   },
   // itemsInCart: {
@@ -70,36 +61,14 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
   //   operators: [matchers.eq, matchers.gteq, matchers.gt],
   //   component: () => <HookedInput name='value' />
   // },
-  total_amount_cents: {
-    resource: 'custom_promotion_rules',
-    rel: undefined,
-    label: 'Cart total',
-    operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: ({ promotion }) => (
-      <InputCurrencyComponent promotion={promotion} />
-    ),
-    isVisible({ currencyCodes, rules }) {
-      const isAlreadySet =
-        rules.find(
-          (rule) => rule.valid && rule.configKey === 'total_amount_cents'
-        ) != null
-
-      return !isAlreadySet && currencyCodes.length === 1
-    }
-  },
   line_items_sku_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
     label: 'SKU tag',
     operators: [matchers.in, matchers.not_in],
     component: () => <SelectTagComponent />,
-    isVisible({ rules }) {
-      const isAlreadySet =
-        rules.find(
-          (rule) => rule.valid && rule.configKey === 'line_items_sku_tags_id'
-        ) != null
-
-      return !isAlreadySet
+    isAvailable() {
+      return true
     }
   },
   subtotal_amount_cents: {
@@ -110,13 +79,20 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     component: ({ promotion }) => (
       <InputCurrencyComponent promotion={promotion} />
     ),
-    isVisible({ currencyCodes, rules }) {
-      const isAlreadySet =
-        rules.find(
-          (rule) => rule.valid && rule.configKey === 'subtotal_amount_cents'
-        ) != null
-
-      return !isAlreadySet && currencyCodes.length === 1
+    isAvailable({ currencyCodes }) {
+      return currencyCodes.length === 1
+    }
+  },
+  total_amount_cents: {
+    resource: 'custom_promotion_rules',
+    rel: undefined,
+    label: 'Cart total',
+    operators: [matchers.eq, matchers.gteq, matchers.gt],
+    component: ({ promotion }) => (
+      <InputCurrencyComponent promotion={promotion} />
+    ),
+    isAvailable({ currencyCodes }) {
+      return currencyCodes.length === 1
     }
   }
 }
@@ -133,7 +109,7 @@ export type RuleBuilderConfig = Record<
     label: string
     operators: Array<(typeof matchers)[keyof typeof matchers]>
     component: (props: { promotion: Promotion }) => React.ReactNode
-    isVisible: (config: {
+    isAvailable: (config: {
       rules: Rule[]
       currencyCodes: CurrencyCode[]
     }) => boolean

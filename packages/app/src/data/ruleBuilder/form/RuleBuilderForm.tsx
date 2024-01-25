@@ -15,96 +15,13 @@ import {
   useCoreSdkProvider,
   type InputSelectValue
 } from '@commercelayer/app-elements'
+import type { GroupedSelectValues } from '@commercelayer/app-elements/dist/ui/forms/InputSelect/InputSelect'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useCurrencyCodes } from '../currency'
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function useRuleBuilderFormFields(promotion: Promotion) {
-  const { rules } = usePromotionRules(promotion)
-  const { currencyCodes } = useCurrencyCodes(promotion)
-
-  const methods = useForm<{
-    parameter: keyof RuleBuilderConfig | null
-    operator: keyof typeof matchers | null
-    value: string | number | string[] | null
-  }>({
-    defaultValues: {
-      parameter: null,
-      operator: null,
-      value: null
-    },
-    resolver: zodResolver(ruleBuilderFormValidator),
-    mode: 'all'
-  })
-
-  const watchParameter = methods.watch('parameter')
-
-  const parameterInitialValues: InputSelectValue[] = useMemo(() => {
-    return Object.entries(ruleBuilderConfig)
-      .map(([value, { label, isVisible }]): InputSelectValue | null =>
-        isVisible({ currencyCodes, rules })
-          ? {
-              label,
-              value
-            }
-          : null
-      )
-      .filter(isDefined)
-  }, [ruleBuilderConfig, currencyCodes, rules])
-
-  const operatorInitialValues: InputSelectValue[] = useMemo(() => {
-    if (watchParameter == null) {
-      return []
-    }
-
-    return (ruleBuilderConfig[watchParameter]?.operators.map(
-      ({ label, value }) => ({
-        label,
-        value
-      })
-    ) ?? []) satisfies InputSelectValue[]
-  }, [watchParameter])
-
-  const inputComponent: React.ReactNode | null = useMemo(() => {
-    if (watchParameter == null) {
-      return null
-    }
-
-    return (
-      ruleBuilderConfig[watchParameter]?.component({
-        promotion
-      }) ?? null
-    )
-  }, [watchParameter, promotion])
-
-  useEffect(() => {
-    methods.resetField('operator')
-    methods.resetField('value')
-  }, [watchParameter])
-
-  return {
-    methods,
-    watchParameter,
-    inputComponent,
-    inputParameter: (
-      <HookedInputSelect
-        isSearchable={false}
-        initialValues={parameterInitialValues}
-        name='parameter'
-      />
-    ),
-    inputOperator: (
-      <HookedInputSelect
-        isSearchable={false}
-        initialValues={operatorInitialValues}
-        name='operator'
-      />
-    )
-  }
-}
 export function RuleBuilderForm({
   promotion,
   onSuccess
@@ -112,13 +29,8 @@ export function RuleBuilderForm({
   promotion: Promotion
   onSuccess: () => void
 }): JSX.Element {
-  const {
-    inputComponent,
-    inputOperator,
-    inputParameter,
-    methods,
-    watchParameter
-  } = useRuleBuilderFormFields(promotion)
+  const { inputParameter, methods, otherInputs, watchParameter } =
+    useRuleBuilderFormFields(promotion)
 
   const { sdkClient } = useCoreSdkProvider()
 
@@ -166,8 +78,11 @@ export function RuleBuilderForm({
       <Spacer top='4'>{inputParameter}</Spacer>
       {watchParameter != null && (
         <>
-          <Spacer top='4'>{inputOperator}</Spacer>
-          <Spacer top='4'>{inputComponent}</Spacer>
+          {otherInputs.map(([key, input]) => (
+            <Spacer top='4' key={key}>
+              {input}
+            </Spacer>
+          ))}
         </>
       )}
       <Spacer top='14'>
@@ -183,4 +98,120 @@ export function RuleBuilderForm({
       </Spacer>
     </HookedForm>
   )
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function useRuleBuilderFormFields(promotion: Promotion) {
+  const { rules } = usePromotionRules(promotion)
+  const { currencyCodes } = useCurrencyCodes(promotion)
+
+  const methods = useForm<{
+    parameter: keyof RuleBuilderConfig | null
+    operator: keyof typeof matchers | null
+    value: string | number | string[] | null
+  }>({
+    defaultValues: {
+      parameter: null,
+      operator: null,
+      value: null
+    },
+    resolver: zodResolver(ruleBuilderFormValidator),
+    mode: 'all'
+  })
+
+  const watchParameter = methods.watch('parameter')
+
+  const parameterInitialValues = useMemo<
+    GroupedSelectValues | InputSelectValue[]
+  >(() => {
+    const inputSelectValues = Object.entries(ruleBuilderConfig)
+      .map(([value, { label, isAvailable }]): InputSelectValue | null => {
+        const isAlreadySet =
+          rules.find((rule) => rule.valid && rule.configKey === value) != null
+        return !isAlreadySet
+          ? {
+              label,
+              value,
+              // @ts-expect-error This will be fixed in app-elements
+              isDisabled: !isAvailable({ currencyCodes, rules })
+            }
+          : null
+      })
+      .filter(isDefined)
+
+    const availableOptions = inputSelectValues.filter(
+      // @ts-expect-error This will be fixed in app-elements
+      (v) => v.isDisabled !== true
+    )
+
+    const notAvailableOptions = inputSelectValues.filter(
+      // @ts-expect-error This will be fixed in app-elements
+      (v) => v.isDisabled === true
+    )
+
+    return [
+      {
+        label: 'Available',
+        options: availableOptions
+      },
+      {
+        label: 'Not applicable with current conditions',
+        options: notAvailableOptions
+      }
+    ]
+  }, [ruleBuilderConfig, currencyCodes, rules])
+
+  const operatorInitialValues: InputSelectValue[] = useMemo(() => {
+    if (watchParameter == null) {
+      return []
+    }
+
+    return (ruleBuilderConfig[watchParameter]?.operators.map(
+      ({ label, value }) => ({
+        label,
+        value
+      })
+    ) ?? []) satisfies InputSelectValue[]
+  }, [watchParameter])
+
+  const inputComponent: React.ReactNode | null = useMemo(() => {
+    if (watchParameter == null) {
+      return null
+    }
+
+    return (
+      ruleBuilderConfig[watchParameter]?.component({
+        promotion
+      }) ?? null
+    )
+  }, [watchParameter, promotion])
+
+  const inputOperator = (
+    <HookedInputSelect
+      isSearchable={false}
+      initialValues={operatorInitialValues}
+      name='operator'
+    />
+  )
+
+  useEffect(() => {
+    methods.resetField('operator')
+    methods.resetField('value')
+  }, [watchParameter])
+
+  return {
+    methods,
+    watchParameter,
+    inputParameter: (
+      <HookedInputSelect
+        isSearchable={false}
+        initialValues={parameterInitialValues}
+        name='parameter'
+      />
+    ),
+    otherInputs: [
+      ['operator', inputOperator],
+      ['component', inputComponent]
+    ] as const
+  }
 }
