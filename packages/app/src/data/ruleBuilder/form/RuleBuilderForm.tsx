@@ -151,7 +151,7 @@ function useRuleBuilderFormFields(promotion: Promotion) {
 
     return [
       {
-        label: 'Available',
+        label: 'Applicable',
         options: availableOptions
       },
       {

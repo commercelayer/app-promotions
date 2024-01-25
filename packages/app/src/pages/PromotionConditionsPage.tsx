@@ -127,7 +127,7 @@ function ConditionItem({
             {values.map((value, i, list) => (
               <span key={value}>
                 <b>{value}</b>
-                {i < list.length - 1 ? <> or&nbsp;</> : null}
+                {i < list.length - 1 ? <>,&nbsp;</> : null}
               </span>
             ))}
           </div>

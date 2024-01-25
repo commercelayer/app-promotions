@@ -274,7 +274,8 @@ const SectionConditions = withSkeletonTemplate<{
       >
         {rules.length > 0 ? (
           rules.map((rule) => (
-            <ListDetailsItem key={rule.key} label={rule.label}>
+            <ListDetailsItem key={rule.key} label={rule.label} gutter='none'>
+              {rule.valid && `${rule.matcherLabel} `}
               {rule.values.join(', ')}
             </ListDetailsItem>
           ))
