@@ -75,10 +75,10 @@ function useRuleBuilderFormFields(promotion: Promotion) {
 
     return (
       ruleBuilderConfig[watchParameter]?.component({
-        currencyCode: currencyCodes[0]
+        promotion
       }) ?? null
     )
-  }, [watchParameter])
+  }, [watchParameter, promotion])
 
   useEffect(() => {
     methods.resetField('operator')

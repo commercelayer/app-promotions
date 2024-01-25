@@ -1,8 +1,7 @@
-import {
-  HookedInputCurrency,
-  type CurrencyCode
-} from '@commercelayer/app-elements'
+import type { Promotion } from '#data/dictionaries/promotion'
+import { type CurrencyCode } from '@commercelayer/app-elements'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
+import { InputCurrencyComponent } from './components/InputCurrencyComponent'
 import { SelectCurrencyComponent } from './components/SelectCurrencyComponent'
 import { SelectMarketComponent } from './components/SelectMarketComponent'
 import { SelectTagComponent } from './components/SelectTagComponent'
@@ -37,7 +36,9 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     rel: 'markets',
     label: 'Market',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectMarketComponent />,
+    component: ({ promotion }) => (
+      <SelectMarketComponent promotion={promotion} />
+    ),
     isVisible({ rules }) {
       const isAlreadySet =
         rules.find((rule) => rule.valid && rule.configKey === 'market_id') !=
@@ -51,7 +52,9 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     rel: undefined,
     label: 'Currency',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectCurrencyComponent />,
+    component: ({ promotion }) => (
+      <SelectCurrencyComponent promotion={promotion} />
+    ),
     isVisible({ currencyCodes, rules }) {
       const marketIsSet =
         rules.find((rule) => rule.valid && rule.configKey === 'market_id') !=
@@ -72,10 +75,9 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     rel: undefined,
     label: 'Cart total',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: ({ currencyCode }) =>
-      currencyCode != null ? (
-        <HookedInputCurrency name='value' currencyCode={currencyCode} />
-      ) : null,
+    component: ({ promotion }) => (
+      <InputCurrencyComponent promotion={promotion} />
+    ),
     isVisible({ currencyCodes, rules }) {
       const isAlreadySet =
         rules.find(
@@ -105,10 +107,9 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     rel: undefined,
     label: 'Cart subtotal',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: ({ currencyCode }) =>
-      currencyCode != null ? (
-        <HookedInputCurrency name='value' currencyCode={currencyCode} />
-      ) : null,
+    component: ({ promotion }) => (
+      <InputCurrencyComponent promotion={promotion} />
+    ),
     isVisible({ currencyCodes, rules }) {
       const isAlreadySet =
         rules.find(
@@ -131,7 +132,7 @@ export type RuleBuilderConfig = Record<
     rel: Extract<ListableResourceType, 'markets' | 'tags'> | undefined
     label: string
     operators: Array<(typeof matchers)[keyof typeof matchers]>
-    component: (props: { currencyCode?: CurrencyCode }) => React.ReactNode
+    component: (props: { promotion: Promotion }) => React.ReactNode
     isVisible: (config: {
       rules: Rule[]
       currencyCodes: CurrencyCode[]

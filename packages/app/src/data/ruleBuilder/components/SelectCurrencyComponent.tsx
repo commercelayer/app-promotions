@@ -1,16 +1,32 @@
+import type { Promotion } from '#data/dictionaries/promotion'
 import {
   HookedInputSelect,
   currencies,
+  type CurrencyCode,
   type InputSelectValue
 } from '@commercelayer/app-elements'
+import { useCurrencyCodes } from '../currency'
 
-export function SelectCurrencyComponent(): JSX.Element {
-  const currencyValues: InputSelectValue[] = Object.entries(currencies).map(
-    ([code, currency]) => ({
-      label: `${currency.name} (${code.toUpperCase()})`,
-      value: code.toUpperCase()
-    })
-  )
+export function SelectCurrencyComponent({
+  promotion
+}: {
+  promotion: Promotion
+}): JSX.Element {
+  const { currencyCodes } = useCurrencyCodes(promotion)
+  const currencyValues: InputSelectValue[] =
+    currencyCodes.length > 0
+      ? currencyCodes.map((currencyCode) => {
+          const currency =
+            currencies[currencyCode.toLowerCase() as Lowercase<CurrencyCode>]
+          return {
+            label: `${currency.name} (${currencyCode})`,
+            value: currencyCode
+          }
+        })
+      : Object.entries(currencies).map(([code, currency]) => ({
+          label: `${currency.name} (${code.toUpperCase()})`,
+          value: code.toUpperCase()
+        }))
   return (
     <HookedInputSelect name='value' initialValues={currencyValues} isMulti />
   )
