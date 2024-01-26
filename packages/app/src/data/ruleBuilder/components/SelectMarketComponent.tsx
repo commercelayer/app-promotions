@@ -1,8 +1,11 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import {
   HookedInputSelect,
-  useCoreSdkProvider
+  useCoreSdkProvider,
+  type CurrencyCode,
+  type InputSelectValue
 } from '@commercelayer/app-elements'
+import type { QueryParamsList } from '@commercelayer/sdk'
 import { useCurrencyCodes } from '../currency'
 
 export function SelectMarketComponent({
@@ -13,25 +16,49 @@ export function SelectMarketComponent({
   const { sdkClient } = useCoreSdkProvider()
   const { currencyCodes } = useCurrencyCodes(promotion)
 
+  // const { data: markets = [] } = useCoreApi('markets', 'list', [
+  //   getParams({ currencyCodes, name: '' })
+  // ])
+
   return (
     <HookedInputSelect
       key={currencyCodes.join(',')}
       name='value'
+      placeholder='Search...'
       initialValues={[]}
-      loadAsyncValues={async (value: string) => {
-        const markets = await sdkClient.markets.list({
-          filters: {
-            name_cont: value,
-            price_list_currency_code_in: currencyCodes.join(',')
-          }
-        })
+      loadAsyncValues={async (name) => {
+        const markets = await sdkClient.markets.list(
+          getParams({ currencyCodes, name })
+        )
 
-        return markets.map((market) => ({
-          label: market.name,
-          value: market.id
-        }))
+        return toInputSelectValues(markets)
       }}
       isMulti
     />
   )
+}
+
+function getParams({
+  currencyCodes,
+  name
+}: {
+  name: string
+  currencyCodes: CurrencyCode[]
+}): QueryParamsList {
+  return {
+    pageSize: 25,
+    filters: {
+      name_cont: name,
+      price_list_currency_code_in: currencyCodes.join(',')
+    }
+  }
+}
+
+function toInputSelectValues(
+  items: Array<{ name: string; id: string }>
+): InputSelectValue[] {
+  return items.map(({ name, id }) => ({
+    label: name,
+    value: id
+  }))
 }

@@ -115,8 +115,7 @@ function useRuleBuilderFormFields(promotion: Promotion) {
       operator: null,
       value: null
     },
-    resolver: zodResolver(ruleBuilderFormValidator),
-    mode: 'all'
+    resolver: zodResolver(ruleBuilderFormValidator)
   })
 
   const watchParameter = methods.watch('parameter')
@@ -132,7 +131,6 @@ function useRuleBuilderFormFields(promotion: Promotion) {
           ? {
               label,
               value,
-              // @ts-expect-error This will be fixed in app-elements
               isDisabled: !isAvailable({ currencyCodes, rules })
             }
           : null
@@ -140,12 +138,10 @@ function useRuleBuilderFormFields(promotion: Promotion) {
       .filter(isDefined)
 
     const availableOptions = inputSelectValues.filter(
-      // @ts-expect-error This will be fixed in app-elements
       (v) => v.isDisabled !== true
     )
 
     const notAvailableOptions = inputSelectValues.filter(
-      // @ts-expect-error This will be fixed in app-elements
       (v) => v.isDisabled === true
     )
 

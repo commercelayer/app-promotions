@@ -27,7 +27,13 @@ export function SelectCurrencyComponent({
           label: `${currency.name} (${code.toUpperCase()})`,
           value: code.toUpperCase()
         }))
+
   return (
-    <HookedInputSelect name='value' initialValues={currencyValues} isMulti />
+    <HookedInputSelect
+      name='value'
+      placeholder='Search...'
+      initialValues={currencyValues}
+      isMulti
+    />
   )
 }
