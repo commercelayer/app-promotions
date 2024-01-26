@@ -142,7 +142,13 @@ export const promotionDictionary = {
       z.object({
         percentage: z
           .number()
-          .or(z.string().min(1))
+          .max(100)
+          .or(
+            z
+              .string()
+              .min(1)
+              .regex(/^[1-9][0-9]?$|^100$/)
+          )
           .transform((p) => parseInt(p.toString()))
       })
     )

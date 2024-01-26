@@ -7,9 +7,7 @@ import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
-  Section,
   SkeletonTemplate,
-  Spacer,
   useTokenProvider
 } from '@commercelayer/app-elements'
 import { useLocation, type RouteComponentProps } from 'wouter'
@@ -43,15 +41,11 @@ function Page(
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
-        <Spacer top='10'>
-          <Section title='Basic info'>
-            <PromotionForm
-              promotionSlug={promotionConfig.slug}
-              promotionId={props.params.promotionId}
-              defaultValues={promotionToFormValues(promotion)}
-            />
-          </Section>
-        </Spacer>
+        <PromotionForm
+          promotionSlug={promotionConfig.slug}
+          promotionId={props.params.promotionId}
+          defaultValues={promotionToFormValues(promotion)}
+        />
       </SkeletonTemplate>
     </PageLayout>
   )

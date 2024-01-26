@@ -40,7 +40,8 @@ export function PromotionForm({
   const [, setLocation] = useLocation()
   const methods = useForm<z.infer<typeof promotionConfig.form>>({
     defaultValues,
-    resolver: zodResolver(promotionConfig.form)
+    resolver: zodResolver(promotionConfig.form),
+    mode: 'onTouched'
   })
 
   useEffect(
@@ -98,6 +99,9 @@ export function PromotionForm({
         <Section title='Discount'>
           <Spacer top='6'>
             <HookedInput
+              type='number'
+              min={1}
+              max={100}
               name='percentage'
               label='Percentage discount'
               hint={{
