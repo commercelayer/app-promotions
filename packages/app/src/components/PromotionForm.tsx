@@ -66,7 +66,8 @@ export function PromotionForm({
           // @ts-expect-error // TODO: I need to fix this
           promotion = await resource.create({
             ...formValues,
-            _disable: true
+            _disable: true,
+            reference_origin: 'app-promotions'
           })
         }
 
