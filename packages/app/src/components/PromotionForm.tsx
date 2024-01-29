@@ -40,8 +40,7 @@ export function PromotionForm({
   const [, setLocation] = useLocation()
   const methods = useForm<z.infer<typeof promotionConfig.form>>({
     defaultValues,
-    resolver: zodResolver(promotionConfig.form),
-    mode: 'onTouched'
+    resolver: zodResolver(promotionConfig.form)
   })
 
   useEffect(
@@ -93,10 +92,8 @@ export function PromotionForm({
               <HookedInputDate name='expires_at' label='Expires on' />
             </Grid>
           </Spacer>
-        </Section>
-      </Spacer>
-      <Spacer top='14'>
-        <Section title='Discount'>
+
+          {/* follows the promotion specific fields */}
           <Spacer top='6'>
             <HookedInput
               type='number'
@@ -105,7 +102,7 @@ export function PromotionForm({
               name='percentage'
               label='Percentage discount'
               hint={{
-                text: 'How much the order subtotal is discounted in percentage.'
+                text: 'The applied percentage discount.'
               }}
             />
           </Spacer>

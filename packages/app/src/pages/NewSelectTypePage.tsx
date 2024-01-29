@@ -26,7 +26,7 @@ function Page(): JSX.Element {
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Cancel',
+        label: 'Close',
         icon: 'x',
         onClick() {
           setLocation(appRoutes.home.makePath({}))

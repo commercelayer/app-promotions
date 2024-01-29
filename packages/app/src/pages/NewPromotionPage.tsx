@@ -1,20 +1,16 @@
 import { PromotionForm } from '#components/PromotionForm'
-import {
-  getPromotionConfigBySlug,
-  promotionToFormValues
-} from '#data/dictionaries/promotion'
+import { getPromotionConfigBySlug } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
-  SkeletonTemplate,
-  useTokenProvider
+  useTokenProvider,
+  type GetParams
 } from '@commercelayer/app-elements'
 import { useLocation, type RouteComponentProps } from 'wouter'
 import { ErrorNotFound } from './ErrorNotFound'
 
 function Page(
-  props: RouteComponentProps<{ promotionSlug: string; promotionId?: string }>
+  props: RouteComponentProps<GetParams<typeof appRoutes.newPromotion>>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -22,7 +18,6 @@ function Page(
   const [, setLocation] = useLocation()
 
   const promotionConfig = getPromotionConfigBySlug(props.params.promotionSlug)
-  const { isLoading, promotion } = usePromotion(props.params.promotionId)
 
   if (promotionConfig == null) {
     return <ErrorNotFound />
@@ -41,13 +36,7 @@ function Page(
         }
       }}
     >
-      <SkeletonTemplate isLoading={isLoading}>
-        <PromotionForm
-          promotionSlug={props.params.promotionSlug}
-          promotionId={props.params.promotionId}
-          defaultValues={promotionToFormValues(promotion)}
-        />
-      </SkeletonTemplate>
+      <PromotionForm promotionSlug={props.params.promotionSlug} />
     </PageLayout>
   )
 }

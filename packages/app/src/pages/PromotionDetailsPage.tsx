@@ -24,13 +24,14 @@ import {
   goBack,
   useCoreSdkProvider,
   useTokenProvider,
-  withSkeletonTemplate
+  withSkeletonTemplate,
+  type GetParams
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
 import { Link, useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<{ promotionId: string }>
+  props: RouteComponentProps<GetParams<typeof appRoutes.promotionDetails>>
 ): JSX.Element {
   const {
     settings: { mode }

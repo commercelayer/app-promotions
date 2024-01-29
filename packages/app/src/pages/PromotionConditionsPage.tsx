@@ -36,7 +36,7 @@ function Page(
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Cancel',
+        label: 'Close',
         icon: 'x',
         onClick() {
           setLocation(
@@ -88,7 +88,7 @@ function Page(
           <Spacer top='2'>
             <ButtonCard
               fullWidth
-              iconLabel='Add condition'
+              iconLabel='New condition'
               onClick={() => {
                 setLocation(
                   appRoutes.newPromotionCondition.makePath({

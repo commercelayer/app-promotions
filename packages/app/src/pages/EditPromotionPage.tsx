@@ -8,12 +8,13 @@ import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
   SkeletonTemplate,
-  useTokenProvider
+  useTokenProvider,
+  type GetParams
 } from '@commercelayer/app-elements'
 import { useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<{ promotionId: string }>
+  props: RouteComponentProps<GetParams<typeof appRoutes.editPromotion>>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -29,7 +30,7 @@ function Page(
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Cancel',
+        label: 'Close',
         icon: 'x',
         onClick() {
           setLocation(
