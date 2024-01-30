@@ -24,11 +24,11 @@ importers:
   packages/app:
     dependencies:
       '@commercelayer/app-elements':
-        specifier: ^1.11.1
-        version: 1.11.1(@commercelayer/sdk@5.28.0)(query-string@8.1.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.49.3)(react@18.2.0)(wouter@2.12.1)
+        specifier: ^1.12.5
+        version: 1.12.5(@commercelayer/sdk@5.30.0)(query-string@8.1.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.49.3)(react@18.2.0)(wouter@2.12.1)
       '@commercelayer/sdk':
-        specifier: 5.28.0
-        version: 5.28.0
+        specifier: 5.30.0
+        version: 5.30.0
       '@hookform/resolvers':
         specifier: ^3.3.4
         version: 3.3.4(react-hook-form@7.49.3)
@@ -368,8 +368,8 @@ packages:
     dev: true
     optional: true
 
-  /@commercelayer/app-elements@1.11.1(@commercelayer/sdk@5.28.0)(query-string@8.1.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.49.3)(react@18.2.0)(wouter@2.12.1):
-    resolution: {integrity: sha512-Un40l9pKc5tF5b9vrpBzFBxgtP9nKlmG8JiYdenM8fe4o738yuGw7fH59g9un+4dHUH73wzQ/06nV82TIzXyqQ==}
+  /@commercelayer/app-elements@1.12.5(@commercelayer/sdk@5.30.0)(query-string@8.1.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.49.3)(react@18.2.0)(wouter@2.12.1):
+    resolution: {integrity: sha512-6qvosYJStfT/hgIHH3GYMIG8LERNd29s3HS3V7Vv+xvOYTRkDA8BiM2VsQBz+S2Qp8MMJEQk+/S/CdKkRLx+Qw==}
     engines: {node: '>=18', pnpm: '>=7'}
     peerDependencies:
       '@commercelayer/sdk': ^5.x
@@ -380,7 +380,7 @@ packages:
       react-hook-form: ^7.43.x
       wouter: ^2.x
     dependencies:
-      '@commercelayer/sdk': 5.28.0
+      '@commercelayer/sdk': 5.30.0
       '@types/lodash': 4.14.202
       '@types/react': 18.2.48
       '@types/react-datepicker': 4.19.3(react-dom@18.2.0)(react@18.2.0)
@@ -449,8 +449,8 @@ packages:
       - supports-color
     dev: true
 
-  /@commercelayer/sdk@5.28.0:
-    resolution: {integrity: sha512-G86UxUO/BHgyUDJ7SZyehGi+qTFFQeU99DXJUoF8nxISWDLsFLq+SwAIT6fDTIi9UkWgBSAcYyH/e4/TjjdWpw==}
+  /@commercelayer/sdk@5.30.0:
+    resolution: {integrity: sha512-YgRXD1htPwSlQL0fWEobkY8yfVjTyQHpom6iJZIzcNjNvewqyfHmjsvNCqhdE+CL3moHcupfjEL+0JiqCELZCA==}
     engines: {node: '>=16 || ^14.17'}
     dependencies:
       axios: 1.6.5
@@ -2279,16 +2279,6 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios@1.6.2:
-    resolution: {integrity: sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==}
-    dependencies:
-      follow-redirects: 1.15.3
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: true
-
   /axios@1.6.5:
     resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
@@ -2297,7 +2287,6 @@ packages:
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
-    dev: false
 
   /babel-plugin-macros@3.1.0:
     resolution: {integrity: sha512-Cg7TFGpIr01vOQNODXOOaGz2NpCU5gl8x1qJFbb6hbZxR7XrcE2vtbAsTAbJ7/xwJtUuJEw8K8Zr/AE0LHlesg==}
@@ -3950,16 +3939,6 @@ packages:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
     dev: true
 
-  /follow-redirects@1.15.3:
-    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dev: true
-
   /follow-redirects@1.15.5:
     resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
     engines: {node: '>=4.0'}
@@ -3968,7 +3947,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -6256,7 +6234,7 @@ packages:
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.6
-      axios: 1.6.2
+      axios: 1.6.5
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1

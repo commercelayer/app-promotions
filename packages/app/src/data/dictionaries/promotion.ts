@@ -57,120 +57,114 @@ export type PromotionDictionary = {
   }
 }
 
+const genericPromotionOptions = z.object({
+  name: z.string().min(1),
+  starts_at: z.date(),
+  expires_at: z.date()
+})
+
 export const promotionDictionary = {
   buy_x_pay_y_promotions: {
+    enable: false,
     type: 'buy_x_pay_y_promotions',
     slug: 'buy-x-pay-y',
     icon: 'stack',
     titleList: 'Buy X pay Y',
     titleNew: 'buy X pay Y',
-    form: z.object({
-      name: z.string().min(1),
-      percentage1: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(
+      z.object({
+        x: z.number(),
+        y: z.number(),
+        sku_list: z.object({ type: z.literal('sku_lists'), id: z.string() })
+      })
+    )
   },
   external_promotions: {
+    enable: false,
     type: 'external_promotions',
     slug: 'external',
-    icon: 'stack',
+    icon: 'linkSimple',
     titleList: 'External promotion',
     titleNew: 'external promotion',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   fixed_amount_promotions: {
+    enable: false,
     type: 'fixed_amount_promotions',
     slug: 'fixed-amount',
-    icon: 'stack',
+    icon: 'currencyEur',
     titleList: 'Fixed amount discount',
     titleNew: 'fixed amount discount',
-    form: z.object({
-      name: z.string().min(1),
-      fixed_amount_cents: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      starts_at: z.date(),
-      expires_at: z.date()
-    })
+    form: genericPromotionOptions.merge(
+      z.object({
+        fixed_amount_cents: z
+          .string()
+          .min(1)
+          .transform((p) => parseInt(p))
+      })
+    )
   },
   fixed_price_promotions: {
+    enable: false,
     type: 'fixed_price_promotions',
     slug: 'fixed-price',
-    icon: 'stack',
+    icon: 'pushPin',
     titleList: 'Fixed price',
     titleNew: 'fixed price',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   free_gift_promotions: {
+    enable: false,
     type: 'free_gift_promotions',
     slug: 'free-gift',
-    icon: 'stack',
+    icon: 'gift',
     titleList: 'Free gift',
     titleNew: 'free gift',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   free_shipping_promotions: {
+    enable: false,
     type: 'free_shipping_promotions',
     slug: 'free-shipping',
     icon: 'truck',
     titleList: 'Free shipping',
     titleNew: 'free shipping',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .string()
-        .min(1)
-        .transform((p) => parseInt(p)),
-      startOn: z.date(),
-      expiresOn: z.date()
-    })
+    form: genericPromotionOptions.merge(z.object({}))
   },
   percentage_discount_promotions: {
+    enable: true,
     type: 'percentage_discount_promotions',
     slug: 'percentage-discount',
-    icon: 'stack',
+    icon: 'percent',
     titleList: 'Percentage discount',
     titleNew: 'percentage discount',
-    form: z.object({
-      name: z.string().min(1),
-      percentage: z
-        .number()
-        .or(z.string().min(1))
-        .transform((p) => parseInt(p.toString())),
-      starts_at: z.date(),
-      expires_at: z.date()
-    })
+    form: genericPromotionOptions.merge(
+      z.object({
+        percentage: z
+          .number()
+          .max(100)
+          .or(
+            z
+              .string()
+              .min(1)
+              .regex(/^[1-9][0-9]?$|^100$/)
+          )
+          .transform((p) => parseInt(p.toString()))
+      })
+    )
   }
-} as const
+} as const satisfies Record<
+  string,
+  {
+    enable: boolean
+    type: string
+    slug: string
+    icon: IconProps['name']
+    titleList: string
+    titleNew: string
+    form: z.AnyZodObject
+  }
+>
 
 // HELPER
 

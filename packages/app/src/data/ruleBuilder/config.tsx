@@ -1,109 +1,11 @@
-import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
-import {
-  HookedInput,
-  HookedInputSelect,
-  useCoreSdkProvider,
-  type InputSelectValue
-} from '@commercelayer/app-elements'
-import type { CustomPromotionRule } from '@commercelayer/sdk'
+import type { Promotion } from '#data/dictionaries/promotion'
+import { type CurrencyCode } from '@commercelayer/app-elements'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
-import { useEffect, useState } from 'react'
-import { currencies, type CurrencyCode } from './currencies'
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function usePromotionRules(promotion: Promotion) {
-  const { sdkClient } = useCoreSdkProvider()
-  const [output, setOutput] = useState<{
-    isLoading: boolean
-    rules: NonNullable<ReturnType<typeof toFormLabels>>
-  }>({ isLoading: true, rules: [] })
-  useEffect(() => {
-    if (
-      promotion.promotion_rules == null ||
-      promotion.promotion_rules.length === 0
-    ) {
-      setOutput({
-        isLoading: false,
-        rules: []
-      })
-    } else {
-      promotion.promotion_rules.forEach((promotionRule) => {
-        const formLabels = toFormLabels(promotionRule)
-
-        const data =
-          formLabels?.flatMap(async (formLabel) => {
-            if (formLabel.rel == null) {
-              return formLabel
-            }
-
-            const promise = sdkClient[formLabel.rel]
-              .list({
-                filters: { id_in: formLabel.value.split(',').join(',') }
-              })
-              .then((data) => data.map((d) => d.name))
-              .then((values) => ({
-                ...formLabel,
-                value: values.join(',')
-              }))
-
-            return await promise
-          }) ?? []
-
-        void Promise.all(data).then((data) => {
-          setOutput({
-            isLoading: false,
-            rules: data
-          })
-        })
-      })
-    }
-  }, [promotion])
-
-  return output
-}
-
-export function toFormLabels(promotionRule: PromotionRule): Array<{
-  promotionRule: PromotionRule
-  valid: boolean
-  predicate: string
-  parameter: keyof typeof ruleBuilderConfig
-  rel?: Extract<ListableResourceType, 'markets' | 'tags'>
-  operator?: string
-  value: string
-}> | null {
-  switch (promotionRule.type) {
-    case 'custom_promotion_rules':
-      return Object.entries(promotionRule.filters ?? {}).map(
-        ([predicate, value]) => {
-          const regexp = new RegExp(
-            `(?<matcher>${Object.keys(matchers)
-              .map((matcher) => `_${matcher}`)
-              .join('|')})`
-          )
-          const matcher = predicate
-            .match(regexp)
-            ?.groups?.matcher?.replace('_', '') as
-            | keyof typeof matchers
-            | undefined
-          const parameter = predicate.replace(regexp, '')
-          const valid = ruleBuilderConfig[parameter] != null
-          return {
-            promotionRule,
-            valid,
-            predicate,
-            rel: ruleBuilderConfig[parameter]?.rel,
-            parameter: ruleBuilderConfig[parameter]?.label ?? predicate,
-            operator:
-              valid && matcher != null ? matchers[matcher]?.label : undefined,
-            value: value.toString()
-          }
-        }
-      )
-
-    default:
-      return null
-  }
-}
+import { InputCurrencyComponent } from './components/InputCurrencyComponent'
+import { SelectCurrencyComponent } from './components/SelectCurrencyComponent'
+import { SelectMarketComponent } from './components/SelectMarketComponent'
+import { SelectTagComponent } from './components/SelectTagComponent'
+import type { Rule } from './usePromotionRules'
 
 export const matchers = {
   in: {
@@ -126,18 +28,7 @@ export const matchers = {
     label: 'is greater than',
     value: 'gt'
   }
-} as const
-
-type RuleBuilderConfig = Record<
-  string,
-  {
-    resource: 'custom_promotion_rules' | 'sku_list_promotion_rules'
-    rel?: 'markets' | 'tags'
-    label: string
-    operators: Array<(typeof matchers)[keyof typeof matchers]>
-    component: () => JSX.Element
-  }
->
+} as const satisfies Record<string, { label: string; value: string }>
 
 export const ruleBuilderConfig: RuleBuilderConfig = {
   market_id: {
@@ -145,147 +36,82 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     rel: 'markets',
     label: 'Market',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectMarketComponent />
+    component: ({ promotion }) => (
+      <SelectMarketComponent promotion={promotion} />
+    ),
+    isAvailable() {
+      return true
+    }
   },
   currency_code: {
     resource: 'custom_promotion_rules',
+    rel: undefined,
     label: 'Currency',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectCurrencyComponent />
+    component: ({ promotion }) => (
+      <SelectCurrencyComponent promotion={promotion} />
+    ),
+    isAvailable() {
+      return true
+    }
   },
-  itemsInCart: {
-    resource: 'sku_list_promotion_rules',
-    label: 'Items in cart',
-    operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: () => <HookedInput name='value' />
-  },
-  total_amount_cents: {
-    resource: 'custom_promotion_rules',
-    label: 'Cart total',
-    operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: () => <HookedInput name='value' />
-  },
+  // itemsInCart: {
+  //   resource: 'sku_list_promotion_rules',
+  //   label: 'Items in cart',
+  //   operators: [matchers.eq, matchers.gteq, matchers.gt],
+  //   component: () => <HookedInput name='value' />
+  // },
   line_items_sku_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
     label: 'SKU tag',
     operators: [matchers.in, matchers.not_in],
-    component: () => <SelectTagComponent />
+    component: () => <SelectTagComponent />,
+    isAvailable() {
+      return true
+    }
   },
   subtotal_amount_cents: {
     resource: 'custom_promotion_rules',
+    rel: undefined,
     label: 'Cart subtotal',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
-    component: () => <HookedInput name='value' />
+    component: ({ promotion }) => (
+      <InputCurrencyComponent promotion={promotion} />
+    ),
+    isAvailable({ currencyCodes }) {
+      return currencyCodes.length === 1
+    }
+  },
+  total_amount_cents: {
+    resource: 'custom_promotion_rules',
+    rel: undefined,
+    label: 'Cart total',
+    operators: [matchers.eq, matchers.gteq, matchers.gt],
+    component: ({ promotion }) => (
+      <InputCurrencyComponent promotion={promotion} />
+    ),
+    isAvailable({ currencyCodes }) {
+      return currencyCodes.length === 1
+    }
   }
 }
 
-function SelectMarketComponent(): JSX.Element {
-  const { sdkClient } = useCoreSdkProvider()
-  return (
-    <HookedInputSelect
-      name='value'
-      initialValues={[]}
-      loadAsyncValues={async (value) => {
-        const markets = await sdkClient.markets.list({
-          filters: {
-            name_cont: value
-          }
-        })
-
-        return markets.map((market) => ({
-          label: market.name,
-          value: market.id
-        }))
-      }}
-      isMulti
-    />
-  )
-}
-
-function SelectTagComponent(): JSX.Element {
-  const { sdkClient } = useCoreSdkProvider()
-  return (
-    <HookedInputSelect
-      name='value'
-      initialValues={[]}
-      loadAsyncValues={async (value) => {
-        const tags = await sdkClient.tags.list({
-          filters: {
-            name_cont: value
-          }
-        })
-
-        return tags.map((tag) => ({
-          label: tag.name,
-          value: tag.id
-        }))
-      }}
-      isMulti
-    />
-  )
-}
-
-function SelectCurrencyComponent(): JSX.Element {
-  const currencyValues: InputSelectValue[] = Object.entries(currencies).map(
-    ([code, currency]) => ({
-      label: `${currency.name} (${code.toUpperCase()})`,
-      value: code.toUpperCase()
-    })
-  )
-  return (
-    <HookedInputSelect name='value' initialValues={currencyValues} isMulti />
-  )
-}
-
-/**
- * Get the list of currency codes given a `Promotion`.
- */
-export function getCurrencyCodes(
-  promotion: Promotion
-): Array<Uppercase<CurrencyCode>> | null | undefined {
-  const ccPromotionCurrencyCode = promotion.currency_code as
-    | Uppercase<CurrencyCode>
-    | null
-    | undefined
-
-  const ccPromotionMarket = promotion.market?.price_list?.currency_code as
-    | Uppercase<CurrencyCode>
-    | null
-    | undefined
-
-  const customPromotionRule = promotion.promotion_rules?.find(
-    (pr): pr is CustomPromotionRule => pr.type === 'custom_promotion_rules'
-  )
-
-  const currencyCodeIn = customPromotionRule?.filters?.currency_code_in as
-    | string
-    | null
-    | undefined
-
-  const currencyCodeNotIn = customPromotionRule?.filters
-    ?.currency_code_not_in as string | null | undefined
-
-  const currencyCodeNotInAsArray =
-    currencyCodeNotIn != null ? currencyCodeNotIn.split(',') : null
-
-  const currencyCodeNotInList =
-    currencyCodeNotInAsArray != null
-      ? Object.values(currencies)
-          .map((obj) => obj.iso_code)
-          .filter((code) => !currencyCodeNotInAsArray.includes(code))
-      : null
-
-  const currencyCodes =
-    ccPromotionCurrencyCode != null
-      ? [ccPromotionCurrencyCode]
-      : ccPromotionMarket != null
-        ? [ccPromotionMarket]
-        : currencyCodeIn != null
-          ? (currencyCodeIn.split(',') as Array<Uppercase<CurrencyCode>>)
-          : currencyCodeNotInList != null
-            ? (currencyCodeNotInList as Array<Uppercase<CurrencyCode>>)
-            : null
-
-  return currencyCodes
-}
+export type RuleBuilderConfig = Record<
+  | 'market_id'
+  | 'currency_code'
+  | 'total_amount_cents'
+  | 'line_items_sku_tags_id'
+  | 'subtotal_amount_cents',
+  {
+    resource: 'custom_promotion_rules' | 'sku_list_promotion_rules'
+    rel: Extract<ListableResourceType, 'markets' | 'tags'> | undefined
+    label: string
+    operators: Array<(typeof matchers)[keyof typeof matchers]>
+    component: (props: { promotion: Promotion }) => React.ReactNode
+    isAvailable: (config: {
+      rules: Rule[]
+      currencyCodes: CurrencyCode[]
+    }) => boolean
+  }
+>

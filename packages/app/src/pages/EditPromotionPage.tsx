@@ -7,15 +7,14 @@ import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
-  Section,
   SkeletonTemplate,
-  Spacer,
-  useTokenProvider
+  useTokenProvider,
+  type GetParams
 } from '@commercelayer/app-elements'
 import { useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<{ promotionId: string }>
+  props: RouteComponentProps<GetParams<typeof appRoutes.editPromotion>>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -31,7 +30,7 @@ function Page(
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Cancel',
+        label: 'Close',
         icon: 'x',
         onClick() {
           setLocation(
@@ -43,15 +42,11 @@ function Page(
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
-        <Spacer top='10'>
-          <Section title='Basic info'>
-            <PromotionForm
-              promotionSlug={promotionConfig.slug}
-              promotionId={props.params.promotionId}
-              defaultValues={promotionToFormValues(promotion)}
-            />
-          </Section>
-        </Spacer>
+        <PromotionForm
+          promotionSlug={promotionConfig.slug}
+          promotionId={props.params.promotionId}
+          defaultValues={promotionToFormValues(promotion)}
+        />
       </SkeletonTemplate>
     </PageLayout>
   )

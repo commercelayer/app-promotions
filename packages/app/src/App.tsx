@@ -11,31 +11,8 @@ import { SWRConfig } from 'swr'
 import { Route, Router, Switch } from 'wouter'
 import { appRoutes } from './data/routes'
 
-const HomePage = lazy(async () => await import('#pages/HomePage'))
-const PromotionListPage = lazy(
-  async () => await import('#pages/PromotionListPage')
-)
-const FiltersPage = lazy(async () => await import('#pages/FiltersPage'))
-const PromotionDetailsPage = lazy(
-  async () => await import('#pages/PromotionDetailsPage')
-)
-const EditPromotionPage = lazy(
-  async () => await import('#pages/EditPromotionPage')
-)
-const NewSelectTypePage = lazy(
-  async () => await import('#pages/NewSelectTypePage')
-)
-const NewPromotionPage = lazy(
-  async () => await import('#pages/NewPromotionPage')
-)
-const PromotionConditionsPage = lazy(
-  async () => await import('#pages/PromotionConditionsPage')
-)
-const NewPromotionConditionPage = lazy(
-  async () => await import('#pages/NewPromotionConditionPage')
-)
-
 const isDev = Boolean(import.meta.env.DEV)
+
 const basePath =
   import.meta.env.PUBLIC_PROJECT_PATH != null
     ? `/${import.meta.env.PUBLIC_PROJECT_PATH}`
@@ -63,38 +40,54 @@ export function App(): JSX.Element {
             <Suspense fallback={<LoadingPage />}>
               <Router base={basePath}>
                 <Switch>
-                  <Route path={appRoutes.home.path} component={HomePage} />
                   <Route
-                    path={appRoutes.list.path}
-                    component={PromotionListPage}
+                    path={appRoutes.home.path}
+                    component={lazy(
+                      async () => await import('#pages/HomePage')
+                    )}
+                  />
+                  <Route
+                    path={appRoutes.promotionList.path}
+                    component={lazy(
+                      async () => await import('#pages/PromotionListPage')
+                    )}
                   />
                   <Route
                     path={appRoutes.filters.path}
-                    component={FiltersPage}
+                    component={lazy(
+                      async () => await import('#pages/FiltersPage')
+                    )}
                   />
                   <Route
                     path={appRoutes.promotionDetails.path}
-                    component={PromotionDetailsPage}
+                    component={lazy(
+                      async () => await import('#pages/PromotionDetailsPage')
+                    )}
                   />
                   <Route
                     path={appRoutes.editPromotion.path}
-                    component={EditPromotionPage}
+                    component={lazy(
+                      async () => await import('#pages/EditPromotionPage')
+                    )}
                   />
                   <Route
                     path={appRoutes.newSelectType.path}
-                    component={NewSelectTypePage}
+                    component={lazy(
+                      async () => await import('#pages/NewSelectTypePage')
+                    )}
                   />
                   <Route
                     path={appRoutes.newPromotion.path}
-                    component={NewPromotionPage}
-                  />
-                  <Route
-                    path={appRoutes.promotionConditions.path}
-                    component={PromotionConditionsPage}
+                    component={lazy(
+                      async () => await import('#pages/NewPromotionPage')
+                    )}
                   />
                   <Route
                     path={appRoutes.newPromotionCondition.path}
-                    component={NewPromotionConditionPage}
+                    component={lazy(
+                      async () =>
+                        await import('#pages/NewPromotionConditionPage')
+                    )}
                   />
                   <Route component={ErrorNotFound} />
                 </Switch>

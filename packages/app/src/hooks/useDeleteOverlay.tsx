@@ -22,14 +22,14 @@ export function useDeleteOverlay(): OverlayHook {
     show: open,
     Overlay: ({ promotion }) => {
       return (
-        <OverlayElement>
+        <OverlayElement backgroundColor='light'>
           <PageHeading
             title={`Confirm that you want to cancel the promotion ${promotion.name}`}
             navigationButton={{
               onClick: () => {
                 close()
               },
-              label: 'Cancel',
+              label: 'Close',
               icon: 'x'
             }}
             description='This action cannot be undone, proceed with caution.'

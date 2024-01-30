@@ -12,7 +12,7 @@ import {
   Text,
   useTokenProvider
 } from '@commercelayer/app-elements'
-import { useLocation } from 'wouter'
+import { Link, useLocation } from 'wouter'
 
 function Page(): JSX.Element {
   const {
@@ -26,7 +26,7 @@ function Page(): JSX.Element {
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Cancel',
+        label: 'Close',
         icon: 'x',
         onClick() {
           setLocation(appRoutes.home.makePath({}))
@@ -58,16 +58,22 @@ function LinkTo({
   promotionType: PromotionType
 }): JSX.Element {
   const promotion = promotionDictionary[promotionType]
+  const EnabledLink = promotion.enable ? Link : 'div'
 
   return (
-    <ListItem
-      tag='a'
-      icon={<Icon name={promotion.icon} />}
-      href={appRoutes.newPromotion.makePath({ promotionSlug: promotion.slug })}
+    <EnabledLink
+      href={appRoutes.newPromotion.makePath({
+        promotionSlug: promotion.slug
+      })}
     >
-      <Text weight='semibold'>{promotion.titleList}</Text>
-      <Icon name='caretRight' />
-    </ListItem>
+      <ListItem
+        tag={promotion.enable ? 'a' : 'div'}
+        icon={<Icon name={promotion.icon} size={24} />}
+      >
+        <Text weight='semibold'>{promotion.titleList}</Text>
+        {promotion.enable && <Icon name='caretRight' />}
+      </ListItem>
+    </EnabledLink>
   )
 }
 

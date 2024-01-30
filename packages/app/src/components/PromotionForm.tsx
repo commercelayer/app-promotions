@@ -64,9 +64,11 @@ export function PromotionForm({
           promotion = await resource.update({ id: promotionId, ...formValues })
         } else {
           // @ts-expect-error // TODO: I need to fix this
-          promotion = await resource.create(formValues)
-
-          await resource._disable(promotion.id)
+          promotion = await resource.create({
+            ...formValues,
+            _disable: true,
+            reference_origin: 'app-promotions'
+          })
         }
 
         setLocation(
@@ -91,16 +93,17 @@ export function PromotionForm({
               <HookedInputDate name='expires_at' label='Expires on' />
             </Grid>
           </Spacer>
-        </Section>
-      </Spacer>
-      <Spacer top='14'>
-        <Section title='Promotion info'>
+
+          {/* follows the promotion specific fields */}
           <Spacer top='6'>
             <HookedInput
+              type='number'
+              min={1}
+              max={100}
               name='percentage'
               label='Percentage discount'
               hint={{
-                text: 'How much the order subtotal is discounted in percentage.'
+                text: 'The applied percentage discount.'
               }}
             />
           </Spacer>
@@ -108,7 +111,13 @@ export function PromotionForm({
       </Spacer>
       <Spacer top='14'>
         <Spacer top='8'>
-          <Button type='submit' fullWidth>
+          <Button
+            type='submit'
+            fullWidth
+            disabled={
+              methods.formState.isSubmitting || !methods.formState.isValid
+            }
+          >
             {promotionId != null ? 'Update promotion' : 'Create promotion'}
           </Button>
         </Spacer>

@@ -1,6 +1,6 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import { usePromotionRules } from '#data/ruleBuilder/config'
+import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteOverlay } from '#hooks/useDeleteOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import {
@@ -11,7 +11,6 @@ import {
   Dropdown,
   DropdownItem,
   Icon,
-  ListDetails,
   ListDetailsItem,
   ListItem,
   PageLayout,
@@ -24,13 +23,15 @@ import {
   getPromotionDisplayStatus,
   goBack,
   useCoreSdkProvider,
-  useTokenProvider
+  useTokenProvider,
+  withSkeletonTemplate,
+  type GetParams
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
 import { Link, useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<{ promotionId: string }>
+  props: RouteComponentProps<GetParams<typeof appRoutes.promotionDetails>>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -38,16 +39,7 @@ function Page(
 
   const [, setLocation] = useLocation()
 
-  const { promotion, isLoading } = usePromotion(props.params.promotionId)
-  const { rules } = usePromotionRules(promotion)
-
-  const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
-
-  const editConditionLink = appRoutes.promotionConditions.makePath({
-    promotionId: promotion.id
-  })
-
-  // console.log('available currency codes', getCurrencyCodes(promotion))
+  const { isLoading, promotion } = usePromotion(props.params.promotionId)
 
   return (
     <PageLayout
@@ -56,30 +48,7 @@ function Page(
           {promotion.name}
         </SkeletonTemplate>
       }
-      actionButton={
-        <Dropdown
-          dropdownItems={[
-            <DropdownItem
-              key='edit'
-              label='Edit'
-              onClick={() => {
-                setLocation(
-                  appRoutes.editPromotion.makePath({
-                    promotionId: props.params.promotionId
-                  })
-                )
-              }}
-            />,
-            <DropdownItem
-              key='delete'
-              label='Delete'
-              onClick={() => {
-                showDeleteOverlay()
-              }}
-            />
-          ]}
-        />
-      }
+      actionButton={<ActionButton promotion={promotion} />}
       mode={mode}
       gap='only-top'
       navigationButton={{
@@ -93,58 +62,60 @@ function Page(
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
-        <DeleteOverlay promotion={promotion} />
         <Spacer top='14'>
           <CardStatus promotionId={props.params.promotionId} />
         </Spacer>
 
         <Spacer top='14'>
-          <ListDetails title='Info'>
-            <Info promotion={promotion} />
-          </ListDetails>
+          <SectionInfo promotion={promotion} />
         </Spacer>
 
         <Spacer top='14'>
-          <Section
-            title='Conditions'
-            border={rules.length > 0 ? undefined : 'none'}
-            actionButton={
-              rules.length > 0 ? (
-                <Link href={editConditionLink}>Edit</Link>
-              ) : undefined
-            }
-          >
-            {rules.length > 0 ? (
-              rules.map((rule) => (
-                <ListDetailsItem key={rule.predicate} label={rule.parameter}>
-                  {rule.value.split(',').join(', ')}
-                </ListDetailsItem>
-              ))
-            ) : (
-              <ButtonCard
-                icon='sliders'
-                padding='6'
-                fullWidth
-                onClick={() => {
-                  setLocation(editConditionLink)
-                }}
-              >
-                <Text align='left' variant='info'>
-                  <a>Set conditions</a> to limit the promotion to specific
-                  orders.
-                  <br />
-                  Promotion applies only if all conditions are met.
-                </Text>
-              </ButtonCard>
-            )}
-          </Section>
+          <SectionConditions promotionId={props.params.promotionId} />
         </Spacer>
       </SkeletonTemplate>
     </PageLayout>
   )
 }
 
-function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
+const ActionButton = withSkeletonTemplate<{
+  promotion: Promotion
+}>(({ promotion }) => {
+  const [, setLocation] = useLocation()
+  const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
+
+  return (
+    <>
+      <DeleteOverlay promotion={promotion} />
+      <Dropdown
+        dropdownItems={[
+          <DropdownItem
+            key='edit'
+            label='Edit'
+            onClick={() => {
+              setLocation(
+                appRoutes.editPromotion.makePath({
+                  promotionId: promotion.id
+                })
+              )
+            }}
+          />,
+          <DropdownItem
+            key='delete'
+            label='Delete'
+            onClick={() => {
+              showDeleteOverlay()
+            }}
+          />
+        ]}
+      />
+    </>
+  )
+})
+
+const CardStatus = withSkeletonTemplate<{
+  promotionId: string
+}>(({ promotionId }) => {
   const { user } = useTokenProvider()
   const { sdkClient } = useCoreSdkProvider()
   const { promotion, mutatePromotion } = usePromotion(promotionId)
@@ -234,9 +205,11 @@ function CardStatus({ promotionId }: { promotionId: string }): JSX.Element {
       </ListItem>
     </Card>
   )
-}
+})
 
-function Info({ promotion }: { promotion: Promotion }): JSX.Element {
+const SectionInfo = withSkeletonTemplate<{
+  promotion: Promotion
+}>(({ promotion }) => {
   const { user } = useTokenProvider()
   const specificDetails = useMemo(() => {
     switch (promotion.type) {
@@ -254,7 +227,7 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
   }, [promotion])
 
   return (
-    <>
+    <Section title='Info'>
       {specificDetails}
       <ListDetailsItem label='Activation period' gutter='none'>
         {formatDateRange({
@@ -275,8 +248,103 @@ function Info({ promotion }: { promotion: Promotion }): JSX.Element {
           </Text>
         </ListDetailsItem>
       )}
-    </>
+    </Section>
   )
-}
+})
+
+const SectionConditions = withSkeletonTemplate<{
+  promotionId: string
+}>(({ promotionId }) => {
+  const { sdkClient } = useCoreSdkProvider()
+  const [, setLocation] = useLocation()
+  const {
+    isLoading: isLoadingPromotion,
+    promotion,
+    mutatePromotion
+  } = usePromotion(promotionId)
+  const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
+
+  const addConditionLink = appRoutes.newPromotionCondition.makePath({
+    promotionId: promotion.id
+  })
+
+  return (
+    <SkeletonTemplate isLoading={isLoadingPromotion || isLoadingRules}>
+      <Section
+        title='Conditions'
+        border='none'
+        actionButton={
+          rules.length > 0 ? (
+            <Link href={addConditionLink}>Add</Link>
+          ) : undefined
+        }
+      >
+        {rules.length > 0 ? (
+          <Card backgroundColor='light' overflow='visible' gap='4'>
+            {rules.map((rule, index) => (
+              <Spacer key={rule.key} top={index > 0 ? '2' : undefined}>
+                <Card overflow='visible' gap='4'>
+                  <ListItem tag='div' padding='none' borderStyle='none'>
+                    <div>
+                      {rule.label} {rule.valid && `${rule.matcherLabel} `}
+                      {rule.values.map((value, i, list) => (
+                        <span key={value}>
+                          <b>{value}</b>
+                          {i < list.length - 1 ? <>,&nbsp;</> : null}
+                        </span>
+                      ))}
+                    </div>
+                    {rule.valid && rule.type === 'custom_promotion_rules' && (
+                      <div>
+                        <Dropdown
+                          dropdownItems={
+                            <>
+                              <DropdownItem
+                                label='Delete'
+                                onClick={function () {
+                                  void sdkClient.custom_promotion_rules
+                                    .update({
+                                      id: rule.promotionRule.id,
+                                      filters: {
+                                        ...rule.promotionRule.filters,
+                                        [rule.predicate]: undefined
+                                      }
+                                    })
+                                    .then(async () => {
+                                      return await mutatePromotion()
+                                    })
+                                }}
+                              />
+                            </>
+                          }
+                          dropdownLabel={<Icon name='dotsThree' size={24} />}
+                        />
+                      </div>
+                    )}
+                  </ListItem>
+                </Card>
+              </Spacer>
+            ))}
+          </Card>
+        ) : (
+          <ButtonCard
+            icon='sliders'
+            padding='6'
+            fullWidth
+            onClick={() => {
+              setLocation(addConditionLink)
+            }}
+          >
+            <Text align='left' variant='info'>
+              <a>Add conditions</a> to limit the promotion to specific orders.
+              <br />
+              Promotion applies only if all conditions are met.
+            </Text>
+          </ButtonCard>
+        )}
+      </Section>
+    </SkeletonTemplate>
+  )
+})
 
 export default Page
