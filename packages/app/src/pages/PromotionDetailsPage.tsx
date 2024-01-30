@@ -71,7 +71,7 @@ function Page(
         </Spacer>
 
         <Spacer top='14'>
-          <SectionConditions promotion={promotion} />
+          <SectionConditions promotionId={props.params.promotionId} />
         </Spacer>
       </SkeletonTemplate>
     </PageLayout>
@@ -253,44 +253,90 @@ const SectionInfo = withSkeletonTemplate<{
 })
 
 const SectionConditions = withSkeletonTemplate<{
-  promotion: Promotion
-}>(({ promotion }) => {
+  promotionId: string
+}>(({ promotionId }) => {
+  const { sdkClient } = useCoreSdkProvider()
   const [, setLocation] = useLocation()
-  const { isLoading, rules } = usePromotionRules(promotion)
+  const {
+    isLoading: isLoadingPromotion,
+    promotion,
+    mutatePromotion
+  } = usePromotion(promotionId)
+  const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
 
-  const editConditionLink = appRoutes.promotionConditions.makePath({
+  const addConditionLink = appRoutes.newPromotionCondition.makePath({
     promotionId: promotion.id
   })
 
   return (
-    <SkeletonTemplate isLoading={isLoading}>
+    <SkeletonTemplate isLoading={isLoadingPromotion || isLoadingRules}>
       <Section
         title='Conditions'
-        border={rules.length > 0 ? undefined : 'none'}
+        border='none'
         actionButton={
           rules.length > 0 ? (
-            <Link href={editConditionLink}>Edit</Link>
+            <Link href={addConditionLink}>Add</Link>
           ) : undefined
         }
       >
         {rules.length > 0 ? (
-          rules.map((rule) => (
-            <ListDetailsItem key={rule.key} label={rule.label} gutter='none'>
-              {rule.valid && `${rule.matcherLabel} `}
-              {rule.values.join(', ')}
-            </ListDetailsItem>
-          ))
+          <Card backgroundColor='light' overflow='visible' gap='4'>
+            {rules.map((rule, index) => (
+              <Spacer key={rule.key} top={index > 0 ? '2' : undefined}>
+                <Card overflow='visible' gap='4'>
+                  <ListItem tag='div' padding='none' borderStyle='none'>
+                    <div>
+                      {rule.label} {rule.valid && `${rule.matcherLabel} `}
+                      {rule.values.map((value, i, list) => (
+                        <span key={value}>
+                          <b>{value}</b>
+                          {i < list.length - 1 ? <>,&nbsp;</> : null}
+                        </span>
+                      ))}
+                    </div>
+                    {rule.valid && rule.type === 'custom_promotion_rules' && (
+                      <div>
+                        <Dropdown
+                          dropdownItems={
+                            <>
+                              <DropdownItem
+                                label='Delete'
+                                onClick={function () {
+                                  void sdkClient.custom_promotion_rules
+                                    .update({
+                                      id: rule.promotionRule.id,
+                                      filters: {
+                                        ...rule.promotionRule.filters,
+                                        [rule.predicate]: undefined
+                                      }
+                                    })
+                                    .then(async () => {
+                                      return await mutatePromotion()
+                                    })
+                                }}
+                              />
+                            </>
+                          }
+                          dropdownLabel={<Icon name='dotsThree' size={24} />}
+                        />
+                      </div>
+                    )}
+                  </ListItem>
+                </Card>
+              </Spacer>
+            ))}
+          </Card>
         ) : (
           <ButtonCard
             icon='sliders'
             padding='6'
             fullWidth
             onClick={() => {
-              setLocation(editConditionLink)
+              setLocation(addConditionLink)
             }}
           >
             <Text align='left' variant='info'>
-              <a>Set conditions</a> to limit the promotion to specific orders.
+              <a>Add conditions</a> to limit the promotion to specific orders.
               <br />
               Promotion applies only if all conditions are met.
             </Text>

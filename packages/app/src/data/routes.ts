@@ -15,6 +15,5 @@ export const appRoutes = {
   editPromotion: createRoute('/list/:promotionId/edit/'),
   newSelectType: createRoute('/new/'),
   newPromotion: createRoute('/new/:promotionSlug/'),
-  promotionConditions: createRoute('/list/:promotionId/conditions/'),
   newPromotionCondition: createRoute('/list/:promotionId/conditions/new/')
 }

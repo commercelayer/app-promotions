@@ -11,7 +11,7 @@ import {
 import { useLocation, type RouteComponentProps } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<GetParams<typeof appRoutes.promotionConditions>>
+  props: RouteComponentProps<GetParams<typeof appRoutes.newPromotionCondition>>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -26,10 +26,11 @@ function Page(
       mode={mode}
       gap='only-top'
       navigationButton={{
-        label: 'Back',
+        label: 'Close',
+        icon: 'x',
         onClick() {
           setLocation(
-            appRoutes.promotionConditions.makePath({
+            appRoutes.promotionDetails.makePath({
               promotionId: props.params.promotionId
             })
           )
@@ -42,7 +43,7 @@ function Page(
             promotion={promotion}
             onSuccess={() => {
               setLocation(
-                appRoutes.promotionConditions.makePath({
+                appRoutes.promotionDetails.makePath({
                   promotionId: props.params.promotionId
                 })
               )

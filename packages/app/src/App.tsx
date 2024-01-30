@@ -83,12 +83,6 @@ export function App(): JSX.Element {
                     )}
                   />
                   <Route
-                    path={appRoutes.promotionConditions.path}
-                    component={lazy(
-                      async () => await import('#pages/PromotionConditionsPage')
-                    )}
-                  />
-                  <Route
                     path={appRoutes.newPromotionCondition.path}
                     component={lazy(
                       async () =>
