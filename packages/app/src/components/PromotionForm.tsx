@@ -120,40 +120,62 @@ export function PromotionForm({
             <HookedInputCheckbox
               name='show_sku_list'
               checkedElement={
-                <HookedInputSelect
-                  name='sku_list'
-                  isClearable
-                  hint={{
-                    text: 'Apply the discount promotion only to the SKUs within the selected SKU list.'
-                  }}
-                  placeholder='Search...'
-                  initialValues={
-                    promotion?.sku_list != null
-                      ? [
-                          {
-                            label: promotion.sku_list.name,
-                            value: promotion.sku_list.id
-                          }
-                        ]
-                      : []
-                  }
-                  loadAsyncValues={async (name) => {
-                    const skuLists = await sdkClient.sku_lists.list({
-                      pageSize: 25,
-                      filters: {
-                        name_cont: name
-                      }
-                    })
+                <Spacer bottom='6'>
+                  <HookedInputSelect
+                    name='sku_list'
+                    isClearable
+                    hint={{
+                      text: 'Apply the promotion only to the SKUs within the selected SKU list.'
+                    }}
+                    placeholder='Search...'
+                    initialValues={
+                      promotion?.sku_list != null
+                        ? [
+                            {
+                              label: promotion.sku_list.name,
+                              value: promotion.sku_list.id
+                            }
+                          ]
+                        : []
+                    }
+                    loadAsyncValues={async (name) => {
+                      const skuLists = await sdkClient.sku_lists.list({
+                        pageSize: 25,
+                        filters: {
+                          name_cont: name
+                        }
+                      })
 
-                    return skuLists.map(({ name, id }) => ({
-                      label: name,
-                      value: id
-                    }))
-                  }}
-                />
+                      return skuLists.map(({ name, id }) => ({
+                        label: name,
+                        value: id
+                      }))
+                    }}
+                  />
+                </Spacer>
               }
             >
               Restrict to specific SKUs
+            </HookedInputCheckbox>
+          </Spacer>
+
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_total_usage_limit'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <HookedInput
+                    type='number'
+                    min={1}
+                    name='total_usage_limit'
+                    hint={{
+                      text: 'How many times this promotion can be used.'
+                    }}
+                  />
+                </Spacer>
+              }
+            >
+              Limit usage
             </HookedInputCheckbox>
           </Spacer>
         </Section>

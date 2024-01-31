@@ -151,7 +151,15 @@ export const promotionDictionary = {
               .regex(/^[1-9][0-9]?$|^100$/)
           )
           .transform((p) => parseInt(p.toString())),
-        sku_list: z.string().optional()
+        sku_list: z.string().nullish(),
+        total_usage_limit: z
+          .number()
+          .min(1)
+          .or(z.string().regex(/^[1-9][0-9]+$|^[1-9]$|^$/))
+          .nullish()
+          .transform((p) =>
+            p != null && p !== '' ? parseInt(p.toString()) : undefined
+          )
       })
     )
   }
@@ -191,6 +199,7 @@ export function promotionToFormValues(promotion?: Promotion) {
     starts_at: new Date(promotion.starts_at),
     expires_at: new Date(promotion.expires_at),
     show_sku_list: promotion.sku_list != null,
+    show_total_usage_limit: promotion.total_usage_limit != null,
     sku_list: promotion.sku_list?.id
   }
 }
@@ -207,6 +216,10 @@ export function formValuesToPromotion(
 
   return {
     ...formValues,
+    total_usage_limit:
+      'total_usage_limit' in formValues && formValues.total_usage_limit != null
+        ? formValues.total_usage_limit
+        : null,
     sku_list: {
       type: 'sku_lists',
       id:
