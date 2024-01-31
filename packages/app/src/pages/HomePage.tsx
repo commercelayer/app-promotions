@@ -1,3 +1,4 @@
+import type { PageProps } from '#components/Routes'
 import { appRoutes } from '#data/routes'
 import {
   Icon,
@@ -11,7 +12,7 @@ import {
 } from '@commercelayer/app-elements'
 import { Link } from 'wouter'
 
-function HomePage(): JSX.Element {
+function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
   const {
     dashboardUrl,
     settings: { mode },
@@ -20,6 +21,7 @@ function HomePage(): JSX.Element {
 
   return (
     <PageLayout
+      overlay={props.overlay}
       title='Promotions'
       mode={mode}
       gap='only-top'

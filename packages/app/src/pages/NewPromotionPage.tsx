@@ -1,17 +1,11 @@
 import { PromotionForm } from '#components/PromotionForm'
+import { GenericPageNotFound, type PageProps } from '#components/Routes'
 import { getPromotionConfigBySlug } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
-import {
-  PageLayout,
-  useTokenProvider,
-  type GetParams
-} from '@commercelayer/app-elements'
-import { useLocation, type RouteComponentProps } from 'wouter'
-import { ErrorNotFound } from './ErrorNotFound'
+import { PageLayout, useTokenProvider } from '@commercelayer/app-elements'
+import { useLocation } from 'wouter'
 
-function Page(
-  props: RouteComponentProps<GetParams<typeof appRoutes.newPromotion>>
-): JSX.Element {
+function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
   const {
     settings: { mode }
   } = useTokenProvider()
@@ -20,13 +14,14 @@ function Page(
   const promotionConfig = getPromotionConfigBySlug(props.params.promotionSlug)
 
   if (promotionConfig == null) {
-    return <ErrorNotFound />
+    return <GenericPageNotFound />
   }
 
   return (
     <PageLayout
       title={`New ${promotionConfig.titleNew}`}
       description='Enter basic details to create the promotion, then set conditions or coupons to limit its reach after creation.'
+      overlay={props.overlay}
       mode={mode}
       gap='only-top'
       navigationButton={{
@@ -36,7 +31,7 @@ function Page(
         }
       }}
     >
-      <PromotionForm promotionSlug={props.params.promotionSlug} />
+      <PromotionForm promotionConfig={promotionConfig} />
     </PageLayout>
   )
 }

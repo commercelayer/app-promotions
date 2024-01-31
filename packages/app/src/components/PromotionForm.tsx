@@ -1,5 +1,4 @@
 import {
-  getPromotionConfigBySlug,
   type Promotion,
   type PromotionType,
   type promotionDictionary
@@ -22,7 +21,7 @@ import { useLocation } from 'wouter'
 import { type z } from 'zod'
 
 interface Props {
-  promotionSlug: string
+  promotionConfig: (typeof promotionDictionary)[keyof typeof promotionDictionary]
   promotionId?: string
   defaultValues?: Partial<
     z.infer<(typeof promotionDictionary)[PromotionType]['form']>
@@ -30,12 +29,10 @@ interface Props {
 }
 
 export function PromotionForm({
+  promotionConfig,
   defaultValues,
-  promotionId,
-  promotionSlug
+  promotionId
 }: Props): React.ReactNode {
-  const promotionConfig = getPromotionConfigBySlug(promotionSlug)
-
   const { sdkClient } = useCoreSdkProvider()
   const [, setLocation] = useLocation()
   const methods = useForm<z.infer<typeof promotionConfig.form>>({

@@ -1,5 +1,6 @@
 import { ListEmptyState } from '#components/ListEmptyState'
 import { ListItemPromotion } from '#components/ListItemPromotion'
+import type { PageProps } from '#components/Routes'
 import { instructions } from '#data/filters'
 import { presets } from '#data/lists'
 import { appRoutes } from '#data/routes'
@@ -12,7 +13,7 @@ import {
 import { useLocation } from 'wouter'
 import { navigate, useSearch } from 'wouter/use-location'
 
-function Page(): JSX.Element {
+function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
   const {
     settings: { mode }
   } = useTokenProvider()
@@ -34,6 +35,7 @@ function Page(): JSX.Element {
   return (
     <PageLayout
       title='Promotions'
+      overlay={props.overlay}
       mode={mode}
       navigationButton={{
         label: 'Promotions',

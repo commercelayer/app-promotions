@@ -1,3 +1,4 @@
+import { GenericPageNotFound, type PageProps } from '#components/Routes'
 import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
@@ -24,14 +25,13 @@ import {
   goBack,
   useCoreSdkProvider,
   useTokenProvider,
-  withSkeletonTemplate,
-  type GetParams
+  withSkeletonTemplate
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
-import { Link, useLocation, type RouteComponentProps } from 'wouter'
+import { Link, useLocation } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<GetParams<typeof appRoutes.promotionDetails>>
+  props: PageProps<typeof appRoutes.promotionDetails>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -39,7 +39,11 @@ function Page(
 
   const [, setLocation] = useLocation()
 
-  const { isLoading, promotion } = usePromotion(props.params.promotionId)
+  const { isLoading, promotion, error } = usePromotion(props.params.promotionId)
+
+  if (error != null) {
+    return <GenericPageNotFound />
+  }
 
   return (
     <PageLayout
@@ -48,6 +52,7 @@ function Page(
           {promotion.name}
         </SkeletonTemplate>
       }
+      overlay={props.overlay}
       actionButton={<ActionButton promotion={promotion} />}
       mode={mode}
       gap='only-top'

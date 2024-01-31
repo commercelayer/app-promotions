@@ -1,15 +1,13 @@
-import { ErrorNotFound } from '#pages/ErrorNotFound'
-import LoadingPage from '#pages/LoadingPage'
+import { Routes } from '#components/Routes'
+import { appRoutes } from '#data/routes'
 import {
   CoreSdkProvider,
   ErrorBoundary,
   MetaTags,
   TokenProvider
 } from '@commercelayer/app-elements'
-import { Suspense, lazy } from 'react'
 import { SWRConfig } from 'swr'
-import { Route, Router, Switch } from 'wouter'
-import { appRoutes } from './data/routes'
+import { Router } from 'wouter'
 
 const isDev = Boolean(import.meta.env.DEV)
 
@@ -37,62 +35,47 @@ export function App(): JSX.Element {
         >
           <MetaTags />
           <CoreSdkProvider>
-            <Suspense fallback={<LoadingPage />}>
-              <Router base={basePath}>
-                <Switch>
-                  <Route
-                    path={appRoutes.home.path}
-                    component={lazy(
-                      async () => await import('#pages/HomePage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.promotionList.path}
-                    component={lazy(
-                      async () => await import('#pages/PromotionListPage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.filters.path}
-                    component={lazy(
-                      async () => await import('#pages/FiltersPage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.promotionDetails.path}
-                    component={lazy(
-                      async () => await import('#pages/PromotionDetailsPage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.editPromotion.path}
-                    component={lazy(
-                      async () => await import('#pages/EditPromotionPage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.newSelectType.path}
-                    component={lazy(
-                      async () => await import('#pages/NewSelectTypePage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.newPromotion.path}
-                    component={lazy(
-                      async () => await import('#pages/NewPromotionPage')
-                    )}
-                  />
-                  <Route
-                    path={appRoutes.newPromotionCondition.path}
-                    component={lazy(
-                      async () =>
-                        await import('#pages/NewPromotionConditionPage')
-                    )}
-                  />
-                  <Route component={ErrorNotFound} />
-                </Switch>
-              </Router>
-            </Suspense>
+            <Router base={basePath}>
+              <Routes
+                routes={appRoutes}
+                list={{
+                  home: {
+                    component: async () => await import('#pages/HomePage')
+                  },
+                  promotionList: {
+                    component: async () =>
+                      await import('#pages/PromotionListPage')
+                  },
+                  filters: {
+                    component: async () => await import('#pages/FiltersPage')
+                  },
+                  promotionDetails: {
+                    component: async () =>
+                      await import('#pages/PromotionDetailsPage')
+                  },
+                  editPromotion: {
+                    component: async () =>
+                      await import('#pages/EditPromotionPage'),
+                    overlay: true
+                  },
+                  newSelectType: {
+                    component: async () =>
+                      await import('#pages/NewSelectTypePage'),
+                    overlay: true
+                  },
+                  newPromotion: {
+                    component: async () =>
+                      await import('#pages/NewPromotionPage'),
+                    overlay: true
+                  },
+                  newPromotionCondition: {
+                    component: async () =>
+                      await import('#pages/NewPromotionConditionPage'),
+                    overlay: true
+                  }
+                }}
+              />
+            </Router>
           </CoreSdkProvider>
         </TokenProvider>
       </SWRConfig>
