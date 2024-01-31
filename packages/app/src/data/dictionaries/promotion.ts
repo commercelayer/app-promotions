@@ -75,7 +75,7 @@ export const promotionDictionary = {
       z.object({
         x: z.number(),
         y: z.number(),
-        sku_list: z.object({ type: z.literal('sku_lists'), id: z.string() })
+        sku_list: z.string().optional()
       })
     )
   },
@@ -142,6 +142,7 @@ export const promotionDictionary = {
       z.object({
         percentage: z
           .number()
+          .min(1)
           .max(100)
           .or(
             z
@@ -149,7 +150,8 @@ export const promotionDictionary = {
               .min(1)
               .regex(/^[1-9][0-9]?$|^100$/)
           )
-          .transform((p) => parseInt(p.toString()))
+          .transform((p) => parseInt(p.toString())),
+        sku_list: z.string().optional()
       })
     )
   }
@@ -187,6 +189,30 @@ export function promotionToFormValues(promotion?: Promotion) {
   return {
     ...promotion,
     starts_at: new Date(promotion.starts_at),
-    expires_at: new Date(promotion.expires_at)
+    expires_at: new Date(promotion.expires_at),
+    show_sku_list: promotion.sku_list != null,
+    sku_list: promotion.sku_list?.id
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function formValuesToPromotion(
+  formValues?: z.infer<
+    (typeof promotionDictionary)[keyof typeof promotionDictionary]['form']
+  >
+) {
+  if (formValues == null) {
+    return undefined
+  }
+
+  return {
+    ...formValues,
+    sku_list: {
+      type: 'sku_lists',
+      id:
+        'sku_list' in formValues && formValues.sku_list != null
+          ? formValues.sku_list
+          : null
+    }
   }
 }

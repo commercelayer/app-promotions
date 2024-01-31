@@ -253,6 +253,11 @@ const SectionInfo = withSkeletonTemplate<{
           </Text>
         </ListDetailsItem>
       )}
+      {promotion.sku_list != null && (
+        <ListDetailsItem label='SKU list' gutter='none'>
+          {promotion.sku_list.name}
+        </ListDetailsItem>
+      )}
     </Section>
   )
 })
