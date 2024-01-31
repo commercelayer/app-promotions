@@ -1,3 +1,4 @@
+import type { PageProps } from '#components/Routes'
 import {
   promotionDictionary,
   type PromotionType
@@ -14,7 +15,7 @@ import {
 } from '@commercelayer/app-elements'
 import { Link, useLocation } from 'wouter'
 
-function Page(): JSX.Element {
+function Page(props: PageProps<typeof appRoutes.newSelectType>): JSX.Element {
   const {
     settings: { mode }
   } = useTokenProvider()
@@ -23,6 +24,7 @@ function Page(): JSX.Element {
   return (
     <PageLayout
       title='Select type'
+      overlay={props.overlay}
       mode={mode}
       gap='only-top'
       navigationButton={{

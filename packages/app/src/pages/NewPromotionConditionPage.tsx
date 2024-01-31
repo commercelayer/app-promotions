@@ -1,3 +1,4 @@
+import type { PageProps } from '#components/Routes'
 import { appRoutes } from '#data/routes'
 import { RuleBuilderForm } from '#data/ruleBuilder/form/RuleBuilderForm'
 import { usePromotion } from '#hooks/usePromotion'
@@ -5,13 +6,12 @@ import {
   PageLayout,
   SkeletonTemplate,
   Spacer,
-  useTokenProvider,
-  type GetParams
+  useTokenProvider
 } from '@commercelayer/app-elements'
-import { useLocation, type RouteComponentProps } from 'wouter'
+import { useLocation } from 'wouter'
 
 function Page(
-  props: RouteComponentProps<GetParams<typeof appRoutes.newPromotionCondition>>
+  props: PageProps<typeof appRoutes.newPromotionCondition>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -23,6 +23,7 @@ function Page(
   return (
     <PageLayout
       title='New condition'
+      overlay={props.overlay}
       mode={mode}
       gap='only-top'
       navigationButton={{

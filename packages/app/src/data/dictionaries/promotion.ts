@@ -168,32 +168,14 @@ export const promotionDictionary = {
 
 // HELPER
 
-export function isPromotionType(
-  promotionType: string
-): promotionType is PromotionType {
-  return Object.keys(promotionDictionary).includes(promotionType)
-}
-
-export function isPromotionSlug(
-  promotionSlug: (typeof promotionDictionary)[keyof typeof promotionDictionary]['slug']
-): promotionSlug is PromotionSlug {
-  return Object.values(promotionDictionary)
-    .map((v) => v.slug)
-    .includes(promotionSlug)
-}
-
 export function getPromotionConfigBySlug(
   promotionSlug: string
-): (typeof promotionDictionary)[PromotionType] {
+): (typeof promotionDictionary)[PromotionType] | null {
   const configuration = Object.values(promotionDictionary).find(
     (v) => v.slug === promotionSlug
   )
 
-  if (configuration == null) {
-    throw new Error(`Cannot find the slug "${promotionSlug}"`)
-  }
-
-  return configuration
+  return configuration ?? null
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

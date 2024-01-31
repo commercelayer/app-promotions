@@ -1,9 +1,10 @@
+import type { PageProps } from '#components/Routes'
 import { instructions } from '#data/filters'
 import { appRoutes } from '#data/routes'
 import { PageLayout, useResourceFilters } from '@commercelayer/app-elements'
 import { useLocation } from 'wouter'
 
-function Page(): JSX.Element {
+function Page(props: PageProps<typeof appRoutes.filters>): JSX.Element {
   const [, setLocation] = useLocation()
   const { FiltersForm, adapters } = useResourceFilters({
     instructions
@@ -12,6 +13,7 @@ function Page(): JSX.Element {
   return (
     <PageLayout
       title='Filters'
+      overlay={props.overlay}
       navigationButton={{
         label: 'Cancel',
         icon: 'x',

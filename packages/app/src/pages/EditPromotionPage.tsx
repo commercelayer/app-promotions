@@ -1,4 +1,5 @@
 import { PromotionForm } from '#components/PromotionForm'
+import type { PageProps } from '#components/Routes'
 import {
   promotionDictionary,
   promotionToFormValues
@@ -8,14 +9,11 @@ import { usePromotion } from '#hooks/usePromotion'
 import {
   PageLayout,
   SkeletonTemplate,
-  useTokenProvider,
-  type GetParams
+  useTokenProvider
 } from '@commercelayer/app-elements'
-import { useLocation, type RouteComponentProps } from 'wouter'
+import { useLocation } from 'wouter'
 
-function Page(
-  props: RouteComponentProps<GetParams<typeof appRoutes.editPromotion>>
-): JSX.Element {
+function Page(props: PageProps<typeof appRoutes.editPromotion>): JSX.Element {
   const {
     settings: { mode }
   } = useTokenProvider()
@@ -26,6 +24,7 @@ function Page(
 
   return (
     <PageLayout
+      overlay={props.overlay}
       title='Edit promotion'
       mode={mode}
       gap='only-top'
@@ -43,7 +42,7 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <PromotionForm
-          promotionSlug={promotionConfig.slug}
+          promotionConfig={promotionConfig}
           promotionId={props.params.promotionId}
           defaultValues={promotionToFormValues(promotion)}
         />
