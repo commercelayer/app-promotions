@@ -178,6 +178,12 @@ export function PromotionForm({
               Limit usage
             </HookedInputCheckbox>
           </Spacer>
+
+          <Spacer top='2'>
+            <HookedInputCheckbox name='exclusive'>
+              Make exclusive
+            </HookedInputCheckbox>
+          </Spacer>
         </Section>
       </Spacer>
       <Spacer top='14'>
