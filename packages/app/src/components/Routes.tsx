@@ -55,10 +55,8 @@ export function Routes<T extends Record<string, { path: string }>>({
 export type PageProps<
   Route extends {
     makePath: (...arg: any[]) => string
-  },
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  Props extends Record<string, unknown> = {}
-> = RouteComponentProps<GetParams<Route>> & { overlay?: boolean } & Props
+  }
+> = RouteComponentProps<GetParams<Route>> & { overlay?: boolean }
 
 function Route({
   path,

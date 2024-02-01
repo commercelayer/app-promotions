@@ -69,7 +69,15 @@ const genericPromotionOptions = z.object({
     .transform((p) =>
       p != null && p !== '' ? parseInt(p.toString()) : undefined
     ),
-  exclusive: z.boolean().default(false)
+  exclusive: z.boolean().default(false),
+  priority: z
+    .number()
+    .min(1)
+    .or(z.string().regex(/^[1-9][0-9]+$|^[1-9]$|^$/))
+    .nullish()
+    .transform((p) =>
+      p != null && p !== '' ? parseInt(p.toString()) : undefined
+    )
 })
 
 export const promotionDictionary = {
@@ -201,6 +209,7 @@ export function promotionToFormValues(promotion?: Promotion) {
     expires_at: new Date(promotion.expires_at),
     show_sku_list: promotion.sku_list != null,
     show_total_usage_limit: promotion.total_usage_limit != null,
+    show_priority: promotion.priority != null,
     sku_list: promotion.sku_list?.id
   }
 }
@@ -220,6 +229,10 @@ export function formValuesToPromotion(
     total_usage_limit:
       'total_usage_limit' in formValues && formValues.total_usage_limit != null
         ? formValues.total_usage_limit
+        : null,
+    priority:
+      'priority' in formValues && formValues.priority != null
+        ? formValues.priority
         : null,
     sku_list: {
       type: 'sku_lists',

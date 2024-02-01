@@ -184,6 +184,38 @@ export function PromotionForm({
               Make exclusive
             </HookedInputCheckbox>
           </Spacer>
+
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_priority'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <HookedInput
+                    type='number'
+                    min={1}
+                    name='priority'
+                    hint={{
+                      text: (
+                        <div>
+                          Lower index means higher priority, overriding the{' '}
+                          <a
+                            target='_blank'
+                            href='https://docs.commercelayer.io/core/v/api-reference/promotions#priority-and-order-of-application'
+                            rel='noreferrer'
+                          >
+                            default priority
+                          </a>
+                          .
+                        </div>
+                      )
+                    }}
+                  />
+                </Spacer>
+              }
+            >
+              Custom priority
+            </HookedInputCheckbox>
+          </Spacer>
         </Section>
       </Spacer>
       <Spacer top='14'>

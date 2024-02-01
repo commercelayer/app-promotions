@@ -241,6 +241,11 @@ const SectionInfo = withSkeletonTemplate<{
           timezone: user?.timezone
         })}
       </ListDetailsItem>
+      {promotion.sku_list != null && (
+        <ListDetailsItem label='SKU list' gutter='none'>
+          {promotion.sku_list.name}
+        </ListDetailsItem>
+      )}
       {promotion.total_usage_limit != null && (
         <ListDetailsItem label='Used' gutter='none'>
           {promotion.total_usage_count} / {promotion.total_usage_limit}
@@ -253,9 +258,9 @@ const SectionInfo = withSkeletonTemplate<{
           </Text>
         </ListDetailsItem>
       )}
-      {promotion.sku_list != null && (
-        <ListDetailsItem label='SKU list' gutter='none'>
-          {promotion.sku_list.name}
+      {promotion.priority != null && (
+        <ListDetailsItem label='Custom priority' gutter='none'>
+          {promotion.priority}
         </ListDetailsItem>
       )}
     </Section>
