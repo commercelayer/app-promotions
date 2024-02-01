@@ -10,6 +10,7 @@ import {
   ButtonCard,
   Card,
   Dropdown,
+  DropdownDivider,
   DropdownItem,
   Icon,
   ListDetailsItem,
@@ -93,26 +94,27 @@ const ActionButton = withSkeletonTemplate<{
     <>
       <DeleteOverlay promotion={promotion} />
       <Dropdown
-        dropdownItems={[
-          <DropdownItem
-            key='edit'
-            label='Edit'
-            onClick={() => {
-              setLocation(
-                appRoutes.editPromotion.makePath({
-                  promotionId: promotion.id
-                })
-              )
-            }}
-          />,
-          <DropdownItem
-            key='delete'
-            label='Delete'
-            onClick={() => {
-              showDeleteOverlay()
-            }}
-          />
-        ]}
+        dropdownItems={
+          <>
+            <DropdownItem
+              label='Edit'
+              onClick={() => {
+                setLocation(
+                  appRoutes.editPromotion.makePath({
+                    promotionId: promotion.id
+                  })
+                )
+              }}
+            />
+            <DropdownDivider />
+            <DropdownItem
+              label='Delete'
+              onClick={() => {
+                showDeleteOverlay()
+              }}
+            />
+          </>
+        }
       />
     </>
   )
@@ -241,6 +243,11 @@ const SectionInfo = withSkeletonTemplate<{
           timezone: user?.timezone
         })}
       </ListDetailsItem>
+      {promotion.sku_list != null && (
+        <ListDetailsItem label='SKU list' gutter='none'>
+          {promotion.sku_list.name}
+        </ListDetailsItem>
+      )}
       {promotion.total_usage_limit != null && (
         <ListDetailsItem label='Used' gutter='none'>
           {promotion.total_usage_count} / {promotion.total_usage_limit}
@@ -251,6 +258,11 @@ const SectionInfo = withSkeletonTemplate<{
           <Text variant='success'>
             <Icon name='check' />
           </Text>
+        </ListDetailsItem>
+      )}
+      {promotion.priority != null && (
+        <ListDetailsItem label='Custom priority' gutter='none'>
+          {promotion.priority}
         </ListDetailsItem>
       )}
     </Section>

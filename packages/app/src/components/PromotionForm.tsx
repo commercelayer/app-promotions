@@ -1,15 +1,19 @@
 import {
+  formValuesToPromotion,
   type Promotion,
   type PromotionType,
   type promotionDictionary
 } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
+import { usePromotion } from '#hooks/usePromotion'
 import {
   Button,
   Grid,
   HookedForm,
   HookedInput,
+  HookedInputCheckbox,
   HookedInputDate,
+  HookedInputSelect,
   Section,
   Spacer,
   useCoreSdkProvider
@@ -35,6 +39,7 @@ export function PromotionForm({
 }: Props): React.ReactNode {
   const { sdkClient } = useCoreSdkProvider()
   const [, setLocation] = useLocation()
+  const { promotion } = usePromotion(promotionId)
   const methods = useForm<z.infer<typeof promotionConfig.form>>({
     defaultValues,
     resolver: zodResolver(promotionConfig.form)
@@ -58,11 +63,14 @@ export function PromotionForm({
 
         if (promotionId != null) {
           // @ts-expect-error // TODO: I need to fix this
-          promotion = await resource.update({ id: promotionId, ...formValues })
+          promotion = await resource.update({
+            id: promotionId,
+            ...formValuesToPromotion(formValues)
+          })
         } else {
           // @ts-expect-error // TODO: I need to fix this
           promotion = await resource.create({
-            ...formValues,
+            ...formValuesToPromotion(formValues),
             _disable: true,
             reference_origin: 'app-promotions'
           })
@@ -100,9 +108,113 @@ export function PromotionForm({
               name='percentage'
               label='Percentage discount'
               hint={{
-                text: 'The applied percentage discount.'
+                text: 'How much the order is discounted in percentage.'
               }}
             />
+          </Spacer>
+        </Section>
+      </Spacer>
+      <Spacer top='14'>
+        <Section title='Options'>
+          <Spacer top='6'>
+            <HookedInputCheckbox
+              name='show_sku_list'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <HookedInputSelect
+                    name='sku_list'
+                    isClearable
+                    hint={{
+                      text: 'Apply the promotion only to the SKUs within the selected SKU list.'
+                    }}
+                    placeholder='Search...'
+                    initialValues={
+                      promotion?.sku_list != null
+                        ? [
+                            {
+                              label: promotion.sku_list.name,
+                              value: promotion.sku_list.id
+                            }
+                          ]
+                        : []
+                    }
+                    loadAsyncValues={async (name) => {
+                      const skuLists = await sdkClient.sku_lists.list({
+                        pageSize: 25,
+                        filters: {
+                          name_cont: name
+                        }
+                      })
+
+                      return skuLists.map(({ name, id }) => ({
+                        label: name,
+                        value: id
+                      }))
+                    }}
+                  />
+                </Spacer>
+              }
+            >
+              Restrict to specific SKUs
+            </HookedInputCheckbox>
+          </Spacer>
+
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_total_usage_limit'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <HookedInput
+                    type='number'
+                    min={1}
+                    name='total_usage_limit'
+                    hint={{
+                      text: 'How many times this promotion can be used.'
+                    }}
+                  />
+                </Spacer>
+              }
+            >
+              Limit usage
+            </HookedInputCheckbox>
+          </Spacer>
+
+          <Spacer top='2'>
+            <HookedInputCheckbox name='exclusive'>
+              Make exclusive
+            </HookedInputCheckbox>
+          </Spacer>
+
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_priority'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <HookedInput
+                    type='number'
+                    min={1}
+                    name='priority'
+                    hint={{
+                      text: (
+                        <div>
+                          Lower index means higher priority, overriding the{' '}
+                          <a
+                            target='_blank'
+                            href='https://docs.commercelayer.io/core/v/api-reference/promotions#priority-and-order-of-application'
+                            rel='noreferrer'
+                          >
+                            default priority
+                          </a>
+                          .
+                        </div>
+                      )
+                    }}
+                  />
+                </Spacer>
+              }
+            >
+              Custom priority
+            </HookedInputCheckbox>
           </Spacer>
         </Section>
       </Spacer>

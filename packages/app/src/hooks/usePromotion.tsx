@@ -3,7 +3,11 @@ import { isMockedId, makePercentageDiscountPromotion } from '#mocks'
 import { useCoreApi } from '@commercelayer/app-elements'
 import type { KeyedMutator } from 'swr'
 
-export const promotionIncludeAttribute = ['promotion_rules', 'coupons']
+export const promotionIncludeAttribute = [
+  'promotion_rules',
+  'coupons',
+  'sku_list'
+]
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function usePromotion<Id extends string | undefined>(id: Id) {
