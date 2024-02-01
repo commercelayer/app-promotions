@@ -10,6 +10,7 @@ import {
   ButtonCard,
   Card,
   Dropdown,
+  DropdownDivider,
   DropdownItem,
   Icon,
   ListDetailsItem,
@@ -93,26 +94,27 @@ const ActionButton = withSkeletonTemplate<{
     <>
       <DeleteOverlay promotion={promotion} />
       <Dropdown
-        dropdownItems={[
-          <DropdownItem
-            key='edit'
-            label='Edit'
-            onClick={() => {
-              setLocation(
-                appRoutes.editPromotion.makePath({
-                  promotionId: promotion.id
-                })
-              )
-            }}
-          />,
-          <DropdownItem
-            key='delete'
-            label='Delete'
-            onClick={() => {
-              showDeleteOverlay()
-            }}
-          />
-        ]}
+        dropdownItems={
+          <>
+            <DropdownItem
+              label='Edit'
+              onClick={() => {
+                setLocation(
+                  appRoutes.editPromotion.makePath({
+                    promotionId: promotion.id
+                  })
+                )
+              }}
+            />
+            <DropdownDivider />
+            <DropdownItem
+              label='Delete'
+              onClick={() => {
+                showDeleteOverlay()
+              }}
+            />
+          </>
+        }
       />
     </>
   )
