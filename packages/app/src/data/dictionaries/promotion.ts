@@ -158,15 +158,12 @@ export const promotionDictionary = {
     form: genericPromotionOptions.merge(
       z.object({
         percentage: z
-          .number()
-          .min(1)
-          .max(100)
-          .or(
-            z
-              .string()
-              .min(1)
-              .regex(/^[1-9][0-9]?$|^100$/)
+          .string()
+          .refine(
+            (value) => /^[1-9][0-9]?$|^100$/.test(value),
+            'Enter a valid number between 1 and 100'
           )
+          .or(z.number().min(1).max(100))
           .transform((p) => parseInt(p.toString())),
         sku_list: z.string().nullish()
       })

@@ -42,7 +42,8 @@ export function PromotionForm({
   const { promotion } = usePromotion(promotionId)
   const methods = useForm<z.infer<typeof promotionConfig.form>>({
     defaultValues,
-    resolver: zodResolver(promotionConfig.form)
+    resolver: zodResolver(promotionConfig.form),
+    mode: 'onTouched'
   })
 
   useEffect(
@@ -94,7 +95,7 @@ export function PromotionForm({
           </Spacer>
           <Spacer top='6'>
             <Grid columns='2'>
-              <HookedInputDate name='starts_at' label='Start on' />
+              <HookedInputDate name='starts_at' label='Starts on' />
               <HookedInputDate name='expires_at' label='Expires on' />
             </Grid>
           </Spacer>
