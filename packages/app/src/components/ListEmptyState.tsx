@@ -66,13 +66,13 @@ export function ListEmptyState({ scope = 'history' }: Props): JSX.Element {
 
   return (
     <EmptyState
-      title='No orders yet!'
+      title='No promotions yet!'
       description={
         <div>
-          <p>Add an order with the API, or use the CLI.</p>
+          <p>Add a promotion with the API, or use the CLI.</p>
           <A
             target='_blank'
-            href='https://docs.commercelayer.io/core/v/api-reference/orders'
+            href='https://docs.commercelayer.io/core/v/api-reference/promotions'
             rel='noreferrer'
           >
             View API reference.
