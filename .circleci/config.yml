@@ -27,7 +27,10 @@ jobs:
       - checkout
       - <<: *setup
       - run:
-          name: Test 
+          name: Audit
+          command: pnpm audit --audit-level high && pnpm audit || exit 0
+      - run:
+          name: Test
           command: pnpm --if-present lint && pnpm --if-present ts:check && pnpm --if-present test
   build:
     <<: *image
