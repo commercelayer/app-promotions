@@ -11,7 +11,7 @@ import {
   useTokenProvider
 } from '@commercelayer/app-elements'
 import { useLocation } from 'wouter'
-import { navigate, useSearch } from 'wouter/use-location'
+import { navigate, useSearch } from 'wouter/use-browser-location'
 
 function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
   const {

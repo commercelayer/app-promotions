@@ -15,7 +15,7 @@
     "prepare": "touch ./public/config.local.js"
   },
   "dependencies": {
-    "@commercelayer/app-elements": "^1.13.3",
+    "@commercelayer/app-elements": "^1.14.0",
     "@commercelayer/sdk": "5.31.1",
     "@hookform/resolvers": "^3.3.4",
     "lodash": "^4.17.21",
@@ -24,7 +24,7 @@
     "react-hook-form": "^7.50.1",
     "swr": "^2.2.4",
     "type-fest": "^4.10.2",
-    "wouter": "^2.12.1",
+    "wouter": "^3.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -33,10 +33,10 @@
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.55",
-    "@types/react-dom": "^18.2.18",
+    "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.56.0",
-    "jsdom": "^23.2.0",
+    "jsdom": "^24.0.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-tsconfig-paths": "^4.3.1",
