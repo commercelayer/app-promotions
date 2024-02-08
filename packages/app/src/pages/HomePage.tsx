@@ -44,13 +44,13 @@ function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
             canUser('create', 'free_gift_promotions') ||
             canUser('create', 'free_shipping_promotions') ||
             canUser('create', 'percentage_discount_promotions') ? (
-              <Link href={appRoutes.newSelectType.makePath({})}>
+              <Link asChild href={appRoutes.newSelectType.makePath({})}>
                 <a>Add promo</a>
               </Link>
             ) : undefined
           }
         >
-          <Link href={appRoutes.promotionList.makePath({})}>
+          <Link asChild href={appRoutes.promotionList.makePath({})}>
             <ListItem
               tag='a'
               icon={
