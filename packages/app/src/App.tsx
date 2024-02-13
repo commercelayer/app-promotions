@@ -72,6 +72,15 @@ export function App(): JSX.Element {
                     component: async () =>
                       await import('#pages/NewPromotionConditionPage'),
                     overlay: true
+                  },
+                  newCoupon: {
+                    component: async () => await import('#pages/NewCouponPage'),
+                    overlay: true
+                  },
+                  editCoupon: {
+                    component: async () =>
+                      await import('#pages/EditCouponPage'),
+                    overlay: true
                   }
                 }}
               />

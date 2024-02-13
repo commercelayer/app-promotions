@@ -13,7 +13,7 @@ interface OverlayHook {
   Overlay: React.FC<{ promotion: Promotion }>
 }
 
-export function useDeleteOverlay(): OverlayHook {
+export function useDeletePromotionOverlay(): OverlayHook {
   const { Overlay: OverlayElement, open, close } = useOverlay()
   const { sdkClient } = useCoreSdkProvider()
   const [, setLocation] = useLocation()

@@ -2,7 +2,8 @@ import { GenericPageNotFound, type PageProps } from '#components/Routes'
 import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
-import { useDeleteOverlay } from '#hooks/useDeleteOverlay'
+import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
+import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import {
   Badge,
@@ -19,7 +20,12 @@ import {
   Section,
   SkeletonTemplate,
   Spacer,
+  Table,
+  Td,
   Text,
+  Th,
+  Tr,
+  formatDate,
   formatDateRange,
   formatDateWithPredicate,
   getPromotionDisplayStatus,
@@ -79,6 +85,10 @@ function Page(
         <Spacer top='14'>
           <SectionConditions promotionId={props.params.promotionId} />
         </Spacer>
+
+        <Spacer top='14'>
+          <SectionCoupon promotionId={props.params.promotionId} />
+        </Spacer>
       </SkeletonTemplate>
     </PageLayout>
   )
@@ -88,7 +98,8 @@ const ActionButton = withSkeletonTemplate<{
   promotion: Promotion
 }>(({ promotion }) => {
   const [, setLocation] = useLocation()
-  const { show: showDeleteOverlay, Overlay: DeleteOverlay } = useDeleteOverlay()
+  const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
+    useDeletePromotionOverlay()
 
   return (
     <>
@@ -285,18 +296,18 @@ const SectionConditions = withSkeletonTemplate<{
     promotionId: promotion.id
   })
 
+  const hasRules = rules.length > 0
+
   return (
     <SkeletonTemplate isLoading={isLoadingPromotion || isLoadingRules}>
       <Section
         title='Conditions'
         border='none'
         actionButton={
-          rules.length > 0 ? (
-            <Link href={addConditionLink}>Add</Link>
-          ) : undefined
+          hasRules ? <Link href={addConditionLink}>Add</Link> : undefined
         }
       >
-        {rules.length > 0 ? (
+        {hasRules ? (
           <Card backgroundColor='light' overflow='visible' gap='4'>
             {rules.map((rule, index) => (
               <Spacer key={rule.key} top={index > 0 ? '2' : undefined}>
@@ -356,6 +367,122 @@ const SectionConditions = withSkeletonTemplate<{
               <a>Add conditions</a> to limit the promotion to specific orders.
               <br />
               Promotion applies only if all conditions are met.
+            </Text>
+          </ButtonCard>
+        )}
+      </Section>
+    </SkeletonTemplate>
+  )
+})
+
+const SectionCoupon = withSkeletonTemplate<{
+  promotionId: string
+}>(({ promotionId }) => {
+  const [, setLocation] = useLocation()
+  const { user } = useTokenProvider()
+  const {
+    isLoading: isLoadingPromotion,
+    promotion,
+    mutatePromotion
+  } = usePromotion(promotionId)
+
+  const { show: showDeleteCouponOverlay, Overlay: CouponOverlay } =
+    useDeleteCouponOverlay()
+
+  const addCouponLink = appRoutes.newCoupon.makePath({
+    promotionId: promotion.id
+  })
+
+  const hasCoupons = promotion.coupons != null && promotion.coupons.length > 0
+
+  return (
+    <SkeletonTemplate isLoading={isLoadingPromotion}>
+      <CouponOverlay
+        onClose={() => {
+          void mutatePromotion()
+        }}
+      />
+      <Section
+        title='Coupons'
+        border='none'
+        actionButton={
+          hasCoupons ? <Link href={addCouponLink}>Add</Link> : undefined
+        }
+      >
+        {hasCoupons ? (
+          <Table
+            thead={
+              <Tr>
+                <Th>Code</Th>
+                <Th>Used</Th>
+                <Th>Expiry</Th>
+                <Th />
+              </Tr>
+            }
+            tbody={
+              <>
+                {promotion.coupons?.map((coupon) => (
+                  <Tr key={coupon.id}>
+                    <Td>{coupon.code}</Td>
+                    <Td>
+                      {coupon.usage_count}
+                      {coupon.usage_limit != null
+                        ? ` / ${coupon.usage_limit}`
+                        : ''}
+                    </Td>
+                    <Td>
+                      {coupon.expires_at == null
+                        ? 'Never'
+                        : formatDate({
+                            format: 'distanceToNow',
+                            isoDate: coupon.expires_at,
+                            timezone: user?.timezone
+                          })}
+                    </Td>
+                    <Td align='right'>
+                      <Dropdown
+                        dropdownItems={
+                          <>
+                            <DropdownItem
+                              label='Edit'
+                              onClick={() => {
+                                setLocation(
+                                  appRoutes.editCoupon.makePath({
+                                    promotionId: promotion.id,
+                                    couponId: coupon.id
+                                  })
+                                )
+                              }}
+                            />
+                            <DropdownDivider />
+                            <DropdownItem
+                              label='Delete'
+                              onClick={() => {
+                                showDeleteCouponOverlay(coupon)
+                              }}
+                            />
+                          </>
+                        }
+                        dropdownLabel={<Icon name='dotsThree' size={24} />}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
+              </>
+            }
+          />
+        ) : (
+          <ButtonCard
+            icon='ticket'
+            padding='6'
+            fullWidth
+            onClick={() => {
+              setLocation(addCouponLink)
+            }}
+          >
+            <Text align='left' variant='info'>
+              <a>Add coupons</a> to activate the promotion only if customer
+              enter a specific coupon code at checkout.
             </Text>
           </ButtonCard>
         )}
