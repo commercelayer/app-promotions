@@ -9,11 +9,13 @@ import { createRoute } from '@commercelayer/app-elements'
 export const appRoutes = {
   /** Homepage */
   home: createRoute('/'),
-  promotionList: createRoute('/list/'),
   filters: createRoute('/filters/'),
+  promotionList: createRoute('/list/'),
   promotionDetails: createRoute('/list/:promotionId/'),
   editPromotion: createRoute('/list/:promotionId/edit/'),
   newSelectType: createRoute('/new/'),
   newPromotion: createRoute('/new/:promotionSlug/'),
-  newPromotionCondition: createRoute('/list/:promotionId/conditions/new/')
+  newPromotionCondition: createRoute('/list/:promotionId/conditions/new/'),
+  newCoupon: createRoute('/list/:promotionId/coupons/new/'),
+  editCoupon: createRoute('/list/:promotionId/coupons/list/:couponId/')
 }
