@@ -14,8 +14,11 @@ import {
   HookedInputCheckbox,
   HookedInputDate,
   HookedInputSelect,
+  Icon,
   Section,
   Spacer,
+  Text,
+  Tooltip,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -156,7 +159,7 @@ export function PromotionForm({
                 </Spacer>
               }
             >
-              Restrict to specific SKUs
+              <Text weight='semibold'>Restrict to specific SKUs</Text>
             </HookedInputCheckbox>
           </Spacer>
 
@@ -176,13 +179,26 @@ export function PromotionForm({
                 </Spacer>
               }
             >
-              Limit usage
+              <Text weight='semibold'>Limit usage</Text>
             </HookedInputCheckbox>
           </Spacer>
 
           <Spacer top='2'>
             <HookedInputCheckbox name='exclusive'>
-              Make exclusive
+              <Text weight='semibold'>Make exclusive</Text>{' '}
+              <Tooltip
+                id='make-exclusive'
+                direction='top-start'
+                label={
+                  <Icon
+                    style={{ display: 'inline-block' }}
+                    name='info'
+                    weight='bold'
+                    size={18}
+                  />
+                }
+                content='No concurrent promotions apply.'
+              />
             </HookedInputCheckbox>
           </Spacer>
 
@@ -214,7 +230,7 @@ export function PromotionForm({
                 </Spacer>
               }
             >
-              Custom priority
+              <Text weight='semibold'>Custom priority</Text>
             </HookedInputCheckbox>
           </Spacer>
         </Section>
@@ -228,7 +244,7 @@ export function PromotionForm({
               methods.formState.isSubmitting || !methods.formState.isValid
             }
           >
-            {promotionId != null ? 'Update promotion' : 'Create promotion'}
+            {promotionId != null ? 'Update' : 'Create promotion'}
           </Button>
         </Spacer>
       </Spacer>
