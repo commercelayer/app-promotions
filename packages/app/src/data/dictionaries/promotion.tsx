@@ -4,8 +4,10 @@ import {
   HookedInputSelect,
   Spacer,
   Text,
+  useCoreApi,
   useCoreSdkProvider,
-  type IconProps
+  type IconProps,
+  type InputSelectValue
 } from '@commercelayer/app-elements'
 import type {
   BuyXPayYPromotion,
@@ -18,6 +20,7 @@ import type {
   FreeShippingPromotion,
   OrderAmountPromotionRule,
   PercentageDiscountPromotion,
+  QueryParamsList,
   SkuListPromotionRule
 } from '@commercelayer/sdk'
 import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
@@ -268,6 +271,10 @@ const PromotionSkuListSelector: React.FC<{
 }> = ({ hint, label, promotion }) => {
   const { sdkClient } = useCoreSdkProvider()
 
+  const { data: skuLists = [] } = useCoreApi('sku_lists', 'list', [
+    getParams({ name: '' })
+  ])
+
   return (
     <HookedInputSelect
       name='sku_list'
@@ -285,7 +292,7 @@ const PromotionSkuListSelector: React.FC<{
                 value: promotion.sku_list.id
               }
             ]
-          : []
+          : toInputSelectValues(skuLists)
       }
       loadAsyncValues={async (name) => {
         const skuLists = await sdkClient.sku_lists.list({
@@ -302,6 +309,27 @@ const PromotionSkuListSelector: React.FC<{
       }}
     />
   )
+}
+
+function getParams({ name }: { name: string }): QueryParamsList {
+  return {
+    pageSize: 25,
+    sort: {
+      name: 'asc'
+    },
+    filters: {
+      name_cont: name
+    }
+  }
+}
+
+function toInputSelectValues(
+  items: Array<{ name: string; id: string }>
+): InputSelectValue[] {
+  return items.map(({ name, id }) => ({
+    label: name,
+    value: id
+  }))
 }
 
 // HELPER
