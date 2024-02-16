@@ -9,6 +9,7 @@ import {
   HookedInputCheckbox,
   HookedInputDate,
   Spacer,
+  Text,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -93,47 +94,49 @@ export function CouponForm({
         />
       </Spacer>
 
-      <Spacer top='6'>
-        <HookedInputCheckbox
-          name='show_usage_limit'
-          checkedElement={
-            <Spacer bottom='6'>
-              <HookedInput
-                type='number'
-                min={1}
-                name='usage_limit'
-                hint={{
-                  text: 'How many times this coupon can be used.'
-                }}
-              />
-            </Spacer>
-          }
-        >
-          Limit usage
-        </HookedInputCheckbox>
-      </Spacer>
+      <Spacer top='14'>
+        <Spacer bottom='2'>
+          <HookedInputCheckbox
+            name='show_usage_limit'
+            checkedElement={
+              <Spacer bottom='6'>
+                <HookedInput
+                  type='number'
+                  min={1}
+                  name='usage_limit'
+                  hint={{
+                    text: 'How many times this coupon can be used.'
+                  }}
+                />
+              </Spacer>
+            }
+          >
+            <Text weight='semibold'>Limit usage</Text>
+          </HookedInputCheckbox>
+        </Spacer>
 
-      <Spacer top='6'>
-        <HookedInputCheckbox
-          name='show_recipient_email'
-          checkedElement={
-            <Spacer bottom='6'>
-              <HookedInput
-                type='text'
-                name='recipient_email'
-                placeholder='Recipient email'
-              />
-            </Spacer>
-          }
-        >
-          Assign to a customer
-        </HookedInputCheckbox>
-      </Spacer>
+        <Spacer bottom='2'>
+          <HookedInputCheckbox
+            name='show_recipient_email'
+            checkedElement={
+              <Spacer bottom='6'>
+                <HookedInput
+                  type='text'
+                  name='recipient_email'
+                  placeholder='Recipient email'
+                />
+              </Spacer>
+            }
+          >
+            <Text weight='semibold'>Assign to a customer</Text>
+          </HookedInputCheckbox>
+        </Spacer>
 
-      <Spacer top='6'>
-        <HookedInputCheckbox name='customer_single_use'>
-          Single use per customer
-        </HookedInputCheckbox>
+        <Spacer bottom='2'>
+          <HookedInputCheckbox name='customer_single_use'>
+            <Text weight='semibold'>Single use per customer</Text>
+          </HookedInputCheckbox>
+        </Spacer>
       </Spacer>
 
       <Spacer top='14'>
@@ -144,7 +147,7 @@ export function CouponForm({
             methods.formState.isSubmitting || !methods.formState.isValid
           }
         >
-          {couponId != null ? 'Edit' : 'Add'} coupon
+          {couponId != null ? 'Update' : 'Create coupon'}
         </Button>
       </Spacer>
     </HookedForm>

@@ -67,7 +67,7 @@ function LinkTo({
       href={appRoutes.newPromotion.makePath({
         promotionSlug: promotion.slug
       })}
-      asChild={promotion.enable}
+      {...(promotion.enable ? { asChild: true } : {})}
     >
       <ListItem
         tag={promotion.enable ? 'a' : 'div'}
