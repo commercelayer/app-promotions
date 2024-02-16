@@ -1,6 +1,7 @@
 import type { Promotion } from '#data/dictionaries/promotion'
 import {
   HookedInputSelect,
+  useCoreApi,
   useCoreSdkProvider,
   type CurrencyCode,
   type InputSelectValue
@@ -16,16 +17,16 @@ export function SelectMarketComponent({
   const { sdkClient } = useCoreSdkProvider()
   const { currencyCodes } = useCurrencyCodes(promotion)
 
-  // const { data: markets = [] } = useCoreApi('markets', 'list', [
-  //   getParams({ currencyCodes, name: '' })
-  // ])
+  const { data: markets = [] } = useCoreApi('markets', 'list', [
+    getParams({ currencyCodes, name: '' })
+  ])
 
   return (
     <HookedInputSelect
       key={currencyCodes.join(',')}
       name='value'
       placeholder='Search...'
-      initialValues={[]}
+      initialValues={toInputSelectValues(markets)}
       loadAsyncValues={async (name) => {
         const markets = await sdkClient.markets.list(
           getParams({ currencyCodes, name })
@@ -47,6 +48,9 @@ function getParams({
 }): QueryParamsList {
   return {
     pageSize: 25,
+    sort: {
+      name: 'asc'
+    },
     filters: {
       name_cont: name,
       price_list_currency_code_in: currencyCodes.join(',')

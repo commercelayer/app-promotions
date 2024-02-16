@@ -1,5 +1,6 @@
 import {
   HookedInputSelect,
+  useCoreApi,
   useCoreSdkProvider,
   type InputSelectValue
 } from '@commercelayer/app-elements'
@@ -8,15 +9,15 @@ import type { QueryParamsList } from '@commercelayer/sdk'
 export function SelectTagComponent(): JSX.Element {
   const { sdkClient } = useCoreSdkProvider()
 
-  // const { data: tags = [] } = useCoreApi('tags', 'list', [
-  //   getParams({ name: '' })
-  // ])
+  const { data: tags = [] } = useCoreApi('tags', 'list', [
+    getParams({ name: '' })
+  ])
 
   return (
     <HookedInputSelect
       name='value'
       placeholder='Search...'
-      initialValues={[]}
+      initialValues={toInputSelectValues(tags)}
       loadAsyncValues={async (name) => {
         const tags = await sdkClient.tags.list(getParams({ name }))
 
@@ -30,6 +31,9 @@ export function SelectTagComponent(): JSX.Element {
 function getParams({ name }: { name: string }): QueryParamsList {
   return {
     pageSize: 25,
+    sort: {
+      name: 'asc'
+    },
     filters: {
       name_cont: name
     }
