@@ -1,4 +1,14 @@
-import type { IconProps } from '@commercelayer/app-elements'
+import {
+  HookedInput,
+  HookedInputCheckbox,
+  HookedInputSelect,
+  Spacer,
+  Text,
+  useCoreApi,
+  useCoreSdkProvider,
+  type IconProps,
+  type InputSelectValue
+} from '@commercelayer/app-elements'
 import type {
   BuyXPayYPromotion,
   CouponCodesPromotionRule,
@@ -10,6 +20,7 @@ import type {
   FreeShippingPromotion,
   OrderAmountPromotionRule,
   PercentageDiscountPromotion,
+  QueryParamsList,
   SkuListPromotionRule
 } from '@commercelayer/sdk'
 import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
@@ -48,12 +59,15 @@ export type PromotionSlug = Sanitize<PromotionType>
 
 export type PromotionDictionary = {
   [type in PromotionType]: {
+    enable: boolean
     type: type
     slug: Sanitize<type>
     titleList: string
     titleNew: string
     icon: IconProps['name']
-    form: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
+    formType: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
+    Fields: React.FC<{ promotion?: Promotion }>
+    Options: React.FC<{ promotion?: Promotion }>
   }
 }
 
@@ -80,7 +94,7 @@ const genericPromotionOptions = z.object({
     )
 })
 
-export const promotionDictionary = {
+export const promotionDictionary: PromotionDictionary = {
   buy_x_pay_y_promotions: {
     enable: false,
     type: 'buy_x_pay_y_promotions',
@@ -88,13 +102,15 @@ export const promotionDictionary = {
     icon: 'stack',
     titleList: 'Buy X pay Y',
     titleNew: 'buy X pay Y',
-    form: genericPromotionOptions.merge(
+    formType: genericPromotionOptions.merge(
       z.object({
         x: z.number(),
         y: z.number(),
         sku_list: z.string().optional()
       })
-    )
+    ),
+    Fields: () => <></>,
+    Options: () => <></>
   },
   external_promotions: {
     enable: false,
@@ -103,7 +119,9 @@ export const promotionDictionary = {
     icon: 'linkSimple',
     titleList: 'External promotion',
     titleNew: 'external promotion',
-    form: genericPromotionOptions.merge(z.object({}))
+    formType: genericPromotionOptions,
+    Fields: () => <></>,
+    Options: () => <></>
   },
   fixed_amount_promotions: {
     enable: false,
@@ -112,14 +130,16 @@ export const promotionDictionary = {
     icon: 'currencyEur',
     titleList: 'Fixed amount discount',
     titleNew: 'fixed amount discount',
-    form: genericPromotionOptions.merge(
+    formType: genericPromotionOptions.merge(
       z.object({
         fixed_amount_cents: z
           .string()
           .min(1)
           .transform((p) => parseInt(p))
       })
-    )
+    ),
+    Fields: () => <></>,
+    Options: () => <></>
   },
   fixed_price_promotions: {
     enable: false,
@@ -128,7 +148,39 @@ export const promotionDictionary = {
     icon: 'pushPin',
     titleList: 'Fixed price',
     titleNew: 'fixed price',
-    form: genericPromotionOptions.merge(z.object({}))
+    formType: genericPromotionOptions.merge(
+      z.object({
+        sku_list: z.string(),
+        fixed_amount_cents: z
+          .string()
+          .or(z.number())
+          .transform((p) => parseInt(p.toString()))
+      })
+    ),
+    Fields: ({ promotion }) => (
+      <>
+        <Spacer top='6'>
+          <PromotionSkuListSelector
+            promotion={promotion}
+            label='SKU list'
+            hint='Impose a fixed price to the SKUs within this list.'
+          />
+        </Spacer>
+        <Spacer top='6'>
+          <HookedInput
+            type='number'
+            min={1}
+            max={100}
+            name='fixed_amount_cents'
+            label='Fixed price'
+            hint={{
+              text: 'The price of the SKUs in the list.'
+            }}
+          />
+        </Spacer>
+      </>
+    ),
+    Options: () => <></>
   },
   free_gift_promotions: {
     enable: false,
@@ -137,7 +189,9 @@ export const promotionDictionary = {
     icon: 'gift',
     titleList: 'Free gift',
     titleNew: 'free gift',
-    form: genericPromotionOptions.merge(z.object({}))
+    formType: genericPromotionOptions,
+    Fields: () => <></>,
+    Options: () => <></>
   },
   free_shipping_promotions: {
     enable: false,
@@ -146,7 +200,9 @@ export const promotionDictionary = {
     icon: 'truck',
     titleList: 'Free shipping',
     titleNew: 'free shipping',
-    form: genericPromotionOptions.merge(z.object({}))
+    formType: genericPromotionOptions,
+    Fields: () => <></>,
+    Options: () => <></>
   },
   percentage_discount_promotions: {
     enable: true,
@@ -155,7 +211,7 @@ export const promotionDictionary = {
     icon: 'percent',
     titleList: 'Percentage discount',
     titleNew: 'percentage discount',
-    form: genericPromotionOptions.merge(
+    formType: genericPromotionOptions.merge(
       z.object({
         percentage: z
           .string()
@@ -167,20 +223,114 @@ export const promotionDictionary = {
           .transform((p) => parseInt(p.toString())),
         sku_list: z.string().nullish()
       })
-    )
+    ),
+    Fields: () => (
+      <>
+        <Spacer top='6'>
+          <HookedInput
+            type='number'
+            min={1}
+            max={100}
+            name='percentage'
+            label='Percentage discount'
+            hint={{
+              text: 'How much the order is discounted in percentage.'
+            }}
+          />
+        </Spacer>
+      </>
+    ),
+    Options: ({ promotion }) => {
+      return (
+        <>
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_sku_list'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <PromotionSkuListSelector
+                    promotion={promotion}
+                    hint='Apply the promotion only to the SKUs within the selected SKU list.'
+                  />
+                </Spacer>
+              }
+            >
+              <Text weight='semibold'>Restrict to specific SKUs</Text>
+            </HookedInputCheckbox>
+          </Spacer>
+        </>
+      )
+    }
   }
-} as const satisfies Record<
-  string,
-  {
-    enable: boolean
-    type: string
-    slug: string
-    icon: IconProps['name']
-    titleList: string
-    titleNew: string
-    form: z.AnyZodObject
+}
+
+const PromotionSkuListSelector: React.FC<{
+  label?: string
+  hint: string
+  promotion?: Promotion
+}> = ({ hint, label, promotion }) => {
+  const { sdkClient } = useCoreSdkProvider()
+
+  const { data: skuLists = [] } = useCoreApi('sku_lists', 'list', [
+    getParams({ name: '' })
+  ])
+
+  return (
+    <HookedInputSelect
+      name='sku_list'
+      label={label}
+      isClearable
+      hint={{
+        text: hint
+      }}
+      placeholder='Search...'
+      initialValues={
+        promotion?.sku_list != null
+          ? [
+              {
+                label: promotion.sku_list.name,
+                value: promotion.sku_list.id
+              }
+            ]
+          : toInputSelectValues(skuLists)
+      }
+      loadAsyncValues={async (name) => {
+        const skuLists = await sdkClient.sku_lists.list({
+          pageSize: 25,
+          filters: {
+            name_cont: name
+          }
+        })
+
+        return skuLists.map(({ name, id }) => ({
+          label: name,
+          value: id
+        }))
+      }}
+    />
+  )
+}
+
+function getParams({ name }: { name: string }): QueryParamsList {
+  return {
+    pageSize: 25,
+    sort: {
+      name: 'asc'
+    },
+    filters: {
+      name_cont: name
+    }
   }
->
+}
+
+function toInputSelectValues(
+  items: Array<{ name: string; id: string }>
+): InputSelectValue[] {
+  return items.map(({ name, id }) => ({
+    label: name,
+    value: id
+  }))
+}
 
 // HELPER
 
@@ -214,7 +364,7 @@ export function promotionToFormValues(promotion?: Promotion) {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function formValuesToPromotion(
   formValues?: z.infer<
-    (typeof promotionDictionary)[keyof typeof promotionDictionary]['form']
+    (typeof promotionDictionary)[keyof typeof promotionDictionary]['formType']
   >
 ) {
   if (formValues == null) {

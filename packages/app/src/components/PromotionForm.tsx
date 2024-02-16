@@ -13,7 +13,6 @@ import {
   HookedInput,
   HookedInputCheckbox,
   HookedInputDate,
-  HookedInputSelect,
   Icon,
   Section,
   Spacer,
@@ -31,7 +30,7 @@ interface Props {
   promotionConfig: (typeof promotionDictionary)[keyof typeof promotionDictionary]
   promotionId?: string
   defaultValues?: Partial<
-    z.infer<(typeof promotionDictionary)[PromotionType]['form']>
+    z.infer<(typeof promotionDictionary)[PromotionType]['formType']>
   >
 }
 
@@ -43,9 +42,9 @@ export function PromotionForm({
   const { sdkClient } = useCoreSdkProvider()
   const [, setLocation] = useLocation()
   const { promotion } = usePromotion(promotionId)
-  const methods = useForm<z.infer<typeof promotionConfig.form>>({
+  const methods = useForm<z.infer<typeof promotionConfig.formType>>({
     defaultValues,
-    resolver: zodResolver(promotionConfig.form),
+    resolver: zodResolver(promotionConfig.formType),
     mode: 'onTouched'
   })
 
@@ -66,7 +65,7 @@ export function PromotionForm({
         let promotion: Promotion
 
         if (promotionId != null) {
-          // @ts-expect-error // TODO: I need to fix this
+          // @ts-expect-error // TODO: I need to fix thi
           promotion = await resource.update({
             id: promotionId,
             ...formValuesToPromotion(formValues)
@@ -103,135 +102,84 @@ export function PromotionForm({
             </Grid>
           </Spacer>
 
-          {/* follows the promotion specific fields */}
-          <Spacer top='6'>
-            <HookedInput
-              type='number'
-              min={1}
-              max={100}
-              name='percentage'
-              label='Percentage discount'
-              hint={{
-                text: 'How much the order is discounted in percentage.'
-              }}
-            />
-          </Spacer>
+          <promotionConfig.Fields promotion={promotion} />
         </Section>
       </Spacer>
       <Spacer top='14'>
         <Section title='Options'>
           <Spacer top='6'>
-            <HookedInputCheckbox
-              name='show_sku_list'
-              checkedElement={
-                <Spacer bottom='6'>
-                  <HookedInputSelect
-                    name='sku_list'
-                    isClearable
-                    hint={{
-                      text: 'Apply the promotion only to the SKUs within the selected SKU list.'
-                    }}
-                    placeholder='Search...'
-                    initialValues={
-                      promotion?.sku_list != null
-                        ? [
-                            {
-                              label: promotion.sku_list.name,
-                              value: promotion.sku_list.id
-                            }
-                          ]
-                        : []
-                    }
-                    loadAsyncValues={async (name) => {
-                      const skuLists = await sdkClient.sku_lists.list({
-                        pageSize: 25,
-                        filters: {
-                          name_cont: name
-                        }
-                      })
+            <promotionConfig.Options promotion={promotion} />
 
-                      return skuLists.map(({ name, id }) => ({
-                        label: name,
-                        value: id
-                      }))
-                    }}
-                  />
-                </Spacer>
-              }
-            >
-              <Text weight='semibold'>Restrict to specific SKUs</Text>
-            </HookedInputCheckbox>
-          </Spacer>
-
-          <Spacer top='2'>
-            <HookedInputCheckbox
-              name='show_total_usage_limit'
-              checkedElement={
-                <Spacer bottom='6'>
-                  <HookedInput
-                    type='number'
-                    min={1}
-                    name='total_usage_limit'
-                    hint={{
-                      text: 'How many times this promotion can be used.'
-                    }}
-                  />
-                </Spacer>
-              }
-            >
-              <Text weight='semibold'>Limit usage</Text>
-            </HookedInputCheckbox>
-          </Spacer>
-
-          <Spacer top='2'>
-            <HookedInputCheckbox name='exclusive'>
-              <Text weight='semibold'>Make exclusive</Text>{' '}
-              <Tooltip
-                id='make-exclusive'
-                direction='top-start'
-                label={
-                  <Icon
-                    style={{ display: 'inline-block' }}
-                    name='info'
-                    weight='bold'
-                    size={18}
-                  />
+            <Spacer top='2'>
+              <HookedInputCheckbox
+                name='show_total_usage_limit'
+                checkedElement={
+                  <Spacer bottom='6'>
+                    <HookedInput
+                      type='number'
+                      min={1}
+                      name='total_usage_limit'
+                      hint={{
+                        text: 'How many times this promotion can be used.'
+                      }}
+                    />
+                  </Spacer>
                 }
-                content='No concurrent promotions apply.'
-              />
-            </HookedInputCheckbox>
-          </Spacer>
+              >
+                <Text weight='semibold'>Limit usage</Text>
+              </HookedInputCheckbox>
+            </Spacer>
 
-          <Spacer top='2'>
-            <HookedInputCheckbox
-              name='show_priority'
-              checkedElement={
-                <Spacer bottom='6'>
-                  <HookedInput
-                    type='number'
-                    min={1}
-                    name='priority'
-                    hint={{
-                      text: (
-                        <div>
-                          Lower index means higher priority, overriding the{' '}
-                          <a
-                            target='_blank'
-                            href='https://docs.commercelayer.io/core/v/api-reference/promotions#priority-and-order-of-application'
-                            rel='noreferrer'
-                          >
-                            default priority
-                          </a>
-                          .
-                        </div>
-                      )
-                    }}
-                  />
-                </Spacer>
-              }
-            >
-              <Text weight='semibold'>Custom priority</Text>
-            </HookedInputCheckbox>
+            <Spacer top='2'>
+              <HookedInputCheckbox name='exclusive'>
+                <Text weight='semibold'>Make exclusive</Text>{' '}
+                <Tooltip
+                  id='make-exclusive'
+                  direction='top-start'
+                  label={
+                    <Icon
+                      style={{ display: 'inline-block' }}
+                      name='info'
+                      weight='bold'
+                      size={18}
+                    />
+                  }
+                  content='No concurrent promotions apply.'
+                />
+              </HookedInputCheckbox>
+            </Spacer>
+
+            <Spacer top='2'>
+              <HookedInputCheckbox
+                name='show_priority'
+                checkedElement={
+                  <Spacer bottom='6'>
+                    <HookedInput
+                      type='number'
+                      min={1}
+                      name='priority'
+                      hint={{
+                        text: (
+                          <div>
+                            Lower index means higher priority, overriding the{' '}
+                            <a
+                              target='_blank'
+                              href='https://docs.commercelayer.io/core/v/api-reference/promotions#priority-and-order-of-application'
+                              rel='noreferrer'
+                            >
+                              default priority
+                            </a>
+                            .
+                          </div>
+                        )
+                      }}
+                    />
+                  </Spacer>
+                }
+              >
+                <Text weight='semibold'>Custom priority</Text>
+              </HookedInputCheckbox>
+            </Spacer>
           </Spacer>
         </Section>
       </Spacer>
