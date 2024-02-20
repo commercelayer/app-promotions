@@ -1,9 +1,7 @@
 import { PromotionForm } from '#components/PromotionForm'
 import type { PageProps } from '#components/Routes'
-import {
-  promotionDictionary,
-  promotionToFormValues
-} from '#data/dictionaries/promotion'
+import { promotionToFormValues } from '#data/formConverters/promotion'
+import { promotionDictionary } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import {

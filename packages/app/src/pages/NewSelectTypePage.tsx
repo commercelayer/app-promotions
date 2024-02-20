@@ -1,8 +1,6 @@
 import type { PageProps } from '#components/Routes'
-import {
-  promotionDictionary,
-  type PromotionType
-} from '#data/dictionaries/promotion'
+import { promotionDictionary } from '#data/promotions/config'
+import type { PromotionType } from '#data/promotions/configs/promotions'
 import { appRoutes } from '#data/routes'
 import {
   Icon,

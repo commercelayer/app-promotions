@@ -1,11 +1,9 @@
-import {
-  formValuesToPromotion,
-  type Promotion,
-  type PromotionType,
-  type promotionDictionary
-} from '#data/dictionaries/promotion'
+import { formValuesToPromotion } from '#data/formConverters/promotion'
+import type { promotionDictionary } from '#data/promotions/config'
+import type { PromotionType } from '#data/promotions/configs/promotions'
 import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
+import { type Promotion } from '#types'
 import {
   Button,
   Grid,

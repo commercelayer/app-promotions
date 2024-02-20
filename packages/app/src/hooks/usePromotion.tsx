@@ -1,5 +1,5 @@
-import type { Promotion } from '#data/dictionaries/promotion'
 import { isMockedId, makePercentageDiscountPromotion } from '#mocks'
+import type { Promotion } from '#types'
 import { useCoreApi } from '@commercelayer/app-elements'
 import type { KeyedMutator } from 'swr'
 

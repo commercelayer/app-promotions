@@ -1,4 +1,3 @@
-import { type Promotion } from '#data/dictionaries/promotion'
 import { isDefined } from '#data/isValid'
 import {
   ruleBuilderConfig,
@@ -7,6 +6,7 @@ import {
 } from '#data/ruleBuilder/config'
 import { ruleBuilderFormValidator } from '#data/ruleBuilder/form/validator'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
+import { type Promotion } from '#types'
 import {
   Button,
   HookedForm,

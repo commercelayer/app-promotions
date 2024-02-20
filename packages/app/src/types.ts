@@ -1,48 +1,33 @@
-export type Predicate =
-  | '_eq'
-  | '_not_eq'
-  | '_matches'
-  | '_does_not_match'
-  | '_matches_any'
-  | '_matches_all'
-  | '_does_not_match_any'
-  | '_does_not_match_all'
-  | '_lt'
-  | '_lteq'
-  | '_gt'
-  | '_gteq'
-  | '_present'
-  | '_blank'
-  | '_null'
-  | '_not_null'
-  | '_in'
-  | '_not_in'
-  | '_lt_any'
-  | '_lteq_any'
-  | '_gt_any'
-  | '_gteq_any'
-  | '_lt_all'
-  | '_lteq_all'
-  | '_gt_all'
-  | '_gteq_all'
-  | '_not_eq_all'
-  | '_start'
-  | '_not_start'
-  | '_start_any'
-  | '_start_all'
-  | '_not_start_any'
-  | '_not_start_all'
-  | '_end'
-  | '_not_end'
-  | '_end_any'
-  | '_end_all'
-  | '_not_end_any'
-  | '_not_end_all'
-  | '_cont'
-  | '_not_cont'
-  | '_cont_any'
-  | '_cont_all'
-  | '_not_cont_all'
-  | '_jcont'
-  | '_true'
-  | '_false'
+import type {
+  BuyXPayYPromotion,
+  CouponCodesPromotionRule,
+  CustomPromotionRule,
+  ExternalPromotion,
+  FixedAmountPromotion,
+  FixedPricePromotion,
+  FreeGiftPromotion,
+  FreeShippingPromotion,
+  OrderAmountPromotionRule,
+  PercentageDiscountPromotion,
+  SkuListPromotionRule
+} from '@commercelayer/sdk'
+
+// TODO: this is a temporary fix. We should manage this kind of type directly into the SDK.
+export type Promotion = (
+  | Omit<BuyXPayYPromotion, 'promotion_rules'>
+  | Omit<ExternalPromotion, 'promotion_rules'>
+  | Omit<FixedAmountPromotion, 'promotion_rules'>
+  | Omit<FixedPricePromotion, 'promotion_rules'>
+  | Omit<FreeGiftPromotion, 'promotion_rules'>
+  | Omit<FreeShippingPromotion, 'promotion_rules'>
+  | Omit<PercentageDiscountPromotion, 'promotion_rules'>
+) & {
+  promotion_rules?: PromotionRule[] | null
+}
+
+// TODO: this is a temporary fix. We should manage this kind of type directly into the SDK.
+export type PromotionRule =
+  | CustomPromotionRule
+  | SkuListPromotionRule
+  | CouponCodesPromotionRule
+  | OrderAmountPromotionRule

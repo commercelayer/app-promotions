@@ -1,6 +1,6 @@
 import { CouponForm } from '#components/CouponForm'
 import type { PageProps } from '#components/Routes'
-import { couponToFormValues } from '#data/dictionaries/coupon'
+import { couponToFormValues } from '#data/formConverters/coupon'
 import { appRoutes } from '#data/routes'
 import { useCoupon } from '#hooks/useCoupon'
 import { usePromotion } from '#hooks/usePromotion'

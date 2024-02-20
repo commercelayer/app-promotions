@@ -1,10 +1,10 @@
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
-import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
 import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
+import type { Promotion } from '#types'
 import {
   Badge,
   Button,

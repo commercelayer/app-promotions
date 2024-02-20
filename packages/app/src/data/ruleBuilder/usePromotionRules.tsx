@@ -1,5 +1,5 @@
-import type { Promotion, PromotionRule } from '#data/dictionaries/promotion'
 import { isMockedId } from '#mocks'
+import type { Promotion, PromotionRule } from '#types'
 import {
   formatCentsToCurrency,
   useCoreSdkProvider
