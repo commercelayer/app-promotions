@@ -1,7 +1,3 @@
-import type { Promotion } from '#types'
-import { type IconProps } from '@commercelayer/app-elements'
-import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
-import type { Replace } from 'type-fest'
 import { z } from 'zod'
 
 export const genericPromotionOptions = z.object({
@@ -26,26 +22,3 @@ export const genericPromotionOptions = z.object({
       p != null && p !== '' ? parseInt(p.toString()) : undefined
     )
 })
-
-type Sanitize<PT extends PromotionType> = Replace<
-  Replace<PT, '_promotions', ''>,
-  '_',
-  '-',
-  { all: true }
->
-
-export type PromotionType = Extract<ResourceTypeLock, `${string}_promotions`>
-
-export type PromotionDictionary = {
-  [type in PromotionType]: {
-    enable: boolean
-    type: type
-    slug: Sanitize<type>
-    titleList: string
-    titleNew: string
-    icon: IconProps['name']
-    formType: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
-    Fields: React.FC<{ promotion?: Promotion }>
-    Options: React.FC<{ promotion?: Promotion }>
-  }
-}

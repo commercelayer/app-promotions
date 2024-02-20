@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { genericPromotionOptions, type PromotionDictionary } from './promotions'
+import type { PromotionConfig } from '../config'
+import { genericPromotionOptions } from './promotions'
 
 export default {
   buy_x_pay_y_promotions: {
@@ -19,4 +20,4 @@ export default {
     Fields: () => <></>,
     Options: () => <></>
   }
-} satisfies Pick<PromotionDictionary, 'buy_x_pay_y_promotions'>
+} satisfies Pick<PromotionConfig, 'buy_x_pay_y_promotions'>

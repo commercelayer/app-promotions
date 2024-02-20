@@ -1,7 +1,7 @@
 import { PromotionForm } from '#components/PromotionForm'
 import type { PageProps } from '#components/Routes'
 import { promotionToFormValues } from '#data/formConverters/promotion'
-import { promotionDictionary } from '#data/promotions/config'
+import { promotionConfig } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import {
@@ -18,7 +18,6 @@ function Page(props: PageProps<typeof appRoutes.editPromotion>): JSX.Element {
   const [, setLocation] = useLocation()
 
   const { isLoading, promotion } = usePromotion(props.params.promotionId)
-  const promotionConfig = promotionDictionary[promotion.type]
 
   return (
     <PageLayout
@@ -40,7 +39,7 @@ function Page(props: PageProps<typeof appRoutes.editPromotion>): JSX.Element {
     >
       <SkeletonTemplate isLoading={isLoading}>
         <PromotionForm
-          promotionConfig={promotionConfig}
+          promotionConfig={promotionConfig[promotion.type]}
           promotionId={props.params.promotionId}
           defaultValues={promotionToFormValues(promotion)}
         />

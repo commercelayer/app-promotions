@@ -6,7 +6,8 @@ import {
 } from '@commercelayer/app-elements'
 import { z } from 'zod'
 import { PromotionSkuListSelector } from '../components/PromotionSkuListSelector'
-import { genericPromotionOptions, type PromotionDictionary } from './promotions'
+import type { PromotionConfig } from '../config'
+import { genericPromotionOptions } from './promotions'
 
 export default {
   percentage_discount_promotions: {
@@ -67,4 +68,4 @@ export default {
       )
     }
   }
-} satisfies Pick<PromotionDictionary, 'percentage_discount_promotions'>
+} satisfies Pick<PromotionConfig, 'percentage_discount_promotions'>

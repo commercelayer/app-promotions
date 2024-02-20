@@ -1,6 +1,5 @@
 import { formValuesToPromotion } from '#data/formConverters/promotion'
-import type { promotionDictionary } from '#data/promotions/config'
-import type { PromotionType } from '#data/promotions/configs/promotions'
+import type { PromotionType, promotionConfig } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import { type Promotion } from '#types'
@@ -25,10 +24,10 @@ import { useLocation } from 'wouter'
 import { type z } from 'zod'
 
 interface Props {
-  promotionConfig: (typeof promotionDictionary)[keyof typeof promotionDictionary]
+  promotionConfig: (typeof promotionConfig)[keyof typeof promotionConfig]
   promotionId?: string
   defaultValues?: Partial<
-    z.infer<(typeof promotionDictionary)[PromotionType]['formType']>
+    z.infer<(typeof promotionConfig)[PromotionType]['formType']>
   >
 }
 

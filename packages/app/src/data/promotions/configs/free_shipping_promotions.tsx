@@ -1,4 +1,5 @@
-import { genericPromotionOptions, type PromotionDictionary } from './promotions'
+import type { PromotionConfig } from '../config'
+import { genericPromotionOptions } from './promotions'
 
 export default {
   free_shipping_promotions: {
@@ -12,4 +13,4 @@ export default {
     Fields: () => <></>,
     Options: () => <></>
   }
-} satisfies Pick<PromotionDictionary, 'free_shipping_promotions'>
+} satisfies Pick<PromotionConfig, 'free_shipping_promotions'>

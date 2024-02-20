@@ -9,7 +9,8 @@ import {
 import { useFormContext } from 'react-hook-form'
 import { z } from 'zod'
 import { PromotionSkuListSelector } from '../components/PromotionSkuListSelector'
-import { genericPromotionOptions, type PromotionDictionary } from './promotions'
+import type { PromotionConfig } from '../config'
+import { genericPromotionOptions } from './promotions'
 
 export default {
   fixed_price_promotions: {
@@ -80,4 +81,4 @@ export default {
     },
     Options: () => <></>
   }
-} satisfies Pick<PromotionDictionary, 'fixed_price_promotions'>
+} satisfies Pick<PromotionConfig, 'fixed_price_promotions'>

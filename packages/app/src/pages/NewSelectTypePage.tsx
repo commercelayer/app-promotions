@@ -1,6 +1,5 @@
 import type { PageProps } from '#components/Routes'
-import { promotionDictionary } from '#data/promotions/config'
-import type { PromotionType } from '#data/promotions/configs/promotions'
+import { promotionConfig, type PromotionType } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import {
   Icon,
@@ -57,22 +56,22 @@ function LinkTo({
 }: {
   promotionType: PromotionType
 }): JSX.Element {
-  const promotion = promotionDictionary[promotionType]
-  const EnabledLink = promotion.enable ? Link : 'div'
+  const config = promotionConfig[promotionType]
+  const EnabledLink = config.enable ? Link : 'div'
 
   return (
     <EnabledLink
       href={appRoutes.newPromotion.makePath({
-        promotionType: promotion.type
+        promotionType: config.type
       })}
-      {...(promotion.enable ? { asChild: true } : {})}
+      {...(config.enable ? { asChild: true } : {})}
     >
       <ListItem
-        tag={promotion.enable ? 'a' : 'div'}
-        icon={<Icon name={promotion.icon} size={24} />}
+        tag={config.enable ? 'a' : 'div'}
+        icon={<Icon name={config.icon} size={24} />}
       >
-        <Text weight='semibold'>{promotion.titleList}</Text>
-        {promotion.enable && <Icon name='caretRight' />}
+        <Text weight='semibold'>{config.titleList}</Text>
+        {config.enable && <Icon name='caretRight' />}
       </ListItem>
     </EnabledLink>
   )

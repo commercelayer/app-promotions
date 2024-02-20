@@ -1,4 +1,4 @@
-import type { promotionDictionary } from '#data/promotions/config'
+import type { promotionConfig } from '#data/promotions/config'
 import type { Promotion } from '#types'
 import { type z } from 'zod'
 
@@ -22,7 +22,7 @@ export function promotionToFormValues(promotion?: Promotion) {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function formValuesToPromotion(
   formValues?: z.infer<
-    (typeof promotionDictionary)[keyof typeof promotionDictionary]['formType']
+    (typeof promotionConfig)[keyof typeof promotionConfig]['formType']
   >
 ) {
   if (formValues == null) {
