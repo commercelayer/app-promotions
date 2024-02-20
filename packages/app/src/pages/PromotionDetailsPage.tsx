@@ -25,6 +25,7 @@ import {
   Text,
   Th,
   Tr,
+  formatCentsToCurrency,
   formatDate,
   formatDateRange,
   formatDateWithPredicate,
@@ -32,7 +33,8 @@ import {
   goBack,
   useCoreSdkProvider,
   useTokenProvider,
-  withSkeletonTemplate
+  withSkeletonTemplate,
+  type CurrencyCode
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
 import { Link, useLocation } from 'wouter'
@@ -236,6 +238,17 @@ const SectionInfo = withSkeletonTemplate<{
           <>
             <ListDetailsItem label='Discount' gutter='none'>
               {promotion.percentage}%
+            </ListDetailsItem>
+          </>
+        )
+      case 'fixed_price_promotions':
+        return (
+          <>
+            <ListDetailsItem label='Fixed price' gutter='none'>
+              {formatCentsToCurrency(
+                promotion.fixed_amount_cents,
+                promotion.currency_code as CurrencyCode
+              )}
             </ListDetailsItem>
           </>
         )

@@ -1,11 +1,15 @@
 import {
   HookedInput,
   HookedInputCheckbox,
+  HookedInputCurrency,
   HookedInputSelect,
+  ListItem,
   Spacer,
   Text,
+  currencies,
   useCoreApi,
   useCoreSdkProvider,
+  type CurrencyCode,
   type IconProps,
   type InputSelectValue
 } from '@commercelayer/app-elements'
@@ -24,6 +28,7 @@ import type {
   SkuListPromotionRule
 } from '@commercelayer/sdk'
 import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
+import { useFormContext } from 'react-hook-form'
 import type { Replace } from 'type-fest'
 import { z } from 'zod'
 
@@ -142,7 +147,7 @@ export const promotionDictionary: PromotionDictionary = {
     Options: () => <></>
   },
   fixed_price_promotions: {
-    enable: false,
+    enable: true,
     type: 'fixed_price_promotions',
     slug: 'fixed-price',
     icon: 'pushPin',
@@ -154,32 +159,59 @@ export const promotionDictionary: PromotionDictionary = {
         fixed_amount_cents: z
           .string()
           .or(z.number())
-          .transform((p) => parseInt(p.toString()))
+          .transform((p) => parseInt(p.toString())),
+        currency_code: z.string()
       })
     ),
-    Fields: ({ promotion }) => (
-      <>
-        <Spacer top='6'>
-          <PromotionSkuListSelector
-            promotion={promotion}
-            label='SKU list'
-            hint='Impose a fixed price to the SKUs within this list.'
-          />
-        </Spacer>
-        <Spacer top='6'>
-          <HookedInput
-            type='number'
-            min={1}
-            max={100}
-            name='fixed_amount_cents'
-            label='Fixed price'
-            hint={{
-              text: 'The price of the SKUs in the list.'
-            }}
-          />
-        </Spacer>
-      </>
-    ),
+    Fields: ({ promotion }) => {
+      const { watch } = useFormContext()
+      const watchedCurrencyCode = watch('currency_code')
+
+      console.log('watchedCurrencyCode', watchedCurrencyCode)
+
+      const currencyCode: CurrencyCode =
+        watchedCurrencyCode ??
+        (promotion?.currency_code as CurrencyCode) ??
+        'USD'
+
+      return (
+        <>
+          <Spacer top='6'>
+            <PromotionSkuListSelector
+              promotion={promotion}
+              label='SKU list'
+              hint='Impose a fixed price to the SKUs within this list.'
+            />
+          </Spacer>
+          <Spacer top='6'>
+            <ListItem
+              tag='div'
+              padding='none'
+              borderStyle='none'
+              alignItems='top'
+            >
+              <HookedInputCurrency
+                name='fixed_amount_cents'
+                currencyCode={currencyCode}
+                label='Fixed price'
+                hint={{
+                  text: 'The price of the SKUs in the list.'
+                }}
+              />
+              <HookedInputSelect
+                name='currency_code'
+                label='&nbsp;'
+                placeholder=''
+                initialValues={Object.entries(currencies).map(([code]) => ({
+                  label: code.toUpperCase(),
+                  value: code.toUpperCase()
+                }))}
+              />
+            </ListItem>
+          </Spacer>
+        </>
+      )
+    },
     Options: () => <></>
   },
   free_gift_promotions: {
