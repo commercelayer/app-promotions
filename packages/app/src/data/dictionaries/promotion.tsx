@@ -226,7 +226,7 @@ export const promotionDictionary: PromotionDictionary = {
     Options: () => <></>
   },
   free_shipping_promotions: {
-    enable: false,
+    enable: true,
     type: 'free_shipping_promotions',
     slug: 'free-shipping',
     icon: 'truck',
