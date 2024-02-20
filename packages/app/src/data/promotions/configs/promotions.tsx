@@ -35,7 +35,6 @@ type Sanitize<PT extends PromotionType> = Replace<
 >
 
 export type PromotionType = Extract<ResourceTypeLock, `${string}_promotions`>
-export type PromotionSlug = Sanitize<PromotionType>
 
 export type PromotionDictionary = {
   [type in PromotionType]: {

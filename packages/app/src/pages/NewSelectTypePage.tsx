@@ -63,7 +63,7 @@ function LinkTo({
   return (
     <EnabledLink
       href={appRoutes.newPromotion.makePath({
-        promotionSlug: promotion.slug
+        promotionType: promotion.type
       })}
       {...(promotion.enable ? { asChild: true } : {})}
     >

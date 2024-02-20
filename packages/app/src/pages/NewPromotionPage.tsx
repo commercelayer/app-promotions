@@ -1,6 +1,6 @@
 import { PromotionForm } from '#components/PromotionForm'
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
-import { getPromotionConfigBySlug } from '#data/promotions/config'
+import { promotionDictionary } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { PageLayout, useTokenProvider } from '@commercelayer/app-elements'
 import { useLocation } from 'wouter'
@@ -11,7 +11,8 @@ function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
   } = useTokenProvider()
   const [, setLocation] = useLocation()
 
-  const promotionConfig = getPromotionConfigBySlug(props.params.promotionSlug)
+  // @ts-expect-error This will be solved in next element release
+  const promotionConfig = promotionDictionary[props.params.promotionType]
 
   if (promotionConfig == null) {
     return <GenericPageNotFound />

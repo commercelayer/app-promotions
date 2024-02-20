@@ -5,10 +5,7 @@ import fixed_price_promotions from './configs/fixed_price_promotions'
 import free_gift_promotions from './configs/free_gift_promotions'
 import free_shipping_promotions from './configs/free_shipping_promotions'
 import percentage_discount_promotions from './configs/percentage_discount_promotions'
-import {
-  type PromotionDictionary,
-  type PromotionType
-} from './configs/promotions'
+import { type PromotionDictionary } from './configs/promotions'
 
 export const promotionDictionary: PromotionDictionary = {
   ...buy_x_pay_y_promotions,
@@ -18,16 +15,4 @@ export const promotionDictionary: PromotionDictionary = {
   ...free_gift_promotions,
   ...free_shipping_promotions,
   ...percentage_discount_promotions
-}
-
-// HELPER
-
-export function getPromotionConfigBySlug(
-  promotionSlug: string
-): (typeof promotionDictionary)[PromotionType] | null {
-  const configuration = Object.values(promotionDictionary).find(
-    (v) => v.slug === promotionSlug
-  )
-
-  return configuration ?? null
 }
