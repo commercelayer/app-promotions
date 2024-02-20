@@ -14,7 +14,6 @@ import { genericPromotionOptions } from './promotions'
 
 export default {
   fixed_price_promotions: {
-    enable: true,
     type: 'fixed_price_promotions',
     slug: 'fixed-price',
     icon: 'pushPin',

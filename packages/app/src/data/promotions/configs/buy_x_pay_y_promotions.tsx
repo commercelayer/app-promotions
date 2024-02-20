@@ -4,7 +4,7 @@ import { genericPromotionOptions } from './promotions'
 
 export default {
   buy_x_pay_y_promotions: {
-    enable: false,
+    visible: false,
     type: 'buy_x_pay_y_promotions',
     slug: 'buy-x-pay-y',
     icon: 'stack',

@@ -3,7 +3,7 @@ import { genericPromotionOptions } from './promotions'
 
 export default {
   external_promotions: {
-    enable: false,
+    visible: false,
     type: 'external_promotions',
     slug: 'external',
     icon: 'linkSimple',

@@ -11,7 +11,6 @@ import { genericPromotionOptions } from './promotions'
 
 export default {
   percentage_discount_promotions: {
-    enable: true,
     type: 'percentage_discount_promotions',
     slug: 'percentage-discount',
     icon: 'percent',

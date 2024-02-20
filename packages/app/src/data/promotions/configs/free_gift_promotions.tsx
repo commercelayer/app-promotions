@@ -3,7 +3,7 @@ import { genericPromotionOptions } from './promotions'
 
 export default {
   free_gift_promotions: {
-    enable: false,
+    visible: false,
     type: 'free_gift_promotions',
     slug: 'free-gift',
     icon: 'gift',

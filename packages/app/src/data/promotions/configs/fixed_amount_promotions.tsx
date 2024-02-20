@@ -4,7 +4,7 @@ import { genericPromotionOptions } from './promotions'
 
 export default {
   fixed_amount_promotions: {
-    enable: false,
+    visible: false,
     type: 'fixed_amount_promotions',
     slug: 'fixed-amount',
     icon: 'currencyEur',

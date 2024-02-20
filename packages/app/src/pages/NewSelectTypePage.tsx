@@ -57,21 +57,21 @@ function LinkTo({
   promotionType: PromotionType
 }): JSX.Element {
   const config = promotionConfig[promotionType]
-  const EnabledLink = config.enable ? Link : 'div'
+  const EnabledLink = config.visible !== false ? Link : 'div'
 
   return (
     <EnabledLink
       href={appRoutes.newPromotion.makePath({
         promotionType: config.type
       })}
-      {...(config.enable ? { asChild: true } : {})}
+      {...(config.visible !== false ? { asChild: true } : {})}
     >
       <ListItem
-        tag={config.enable ? 'a' : 'div'}
+        tag={config.visible !== false ? 'a' : 'div'}
         icon={<Icon name={config.icon} size={24} />}
       >
         <Text weight='semibold'>{config.titleList}</Text>
-        {config.enable && <Icon name='caretRight' />}
+        {config.visible !== false && <Icon name='caretRight' />}
       </ListItem>
     </EnabledLink>
   )
