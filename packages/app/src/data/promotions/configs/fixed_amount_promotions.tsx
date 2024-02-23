@@ -1,10 +1,23 @@
+import {
+  HookedInputCheckbox,
+  HookedInputCurrency,
+  HookedInputSelect,
+  ListDetailsItem,
+  ListItem,
+  Spacer,
+  Text,
+  currencies,
+  formatCentsToCurrency,
+  type CurrencyCode
+} from '@commercelayer/app-elements'
+import { useFormContext } from 'react-hook-form'
 import { z } from 'zod'
+import { PromotionSkuListSelector } from '../components/PromotionSkuListSelector'
 import type { PromotionConfig } from '../config'
 import { genericPromotionOptions } from './promotions'
 
 export default {
   fixed_amount_promotions: {
-    visible: false,
     type: 'fixed_amount_promotions',
     slug: 'fixed-amount',
     icon: 'currencyEur',
@@ -12,13 +25,84 @@ export default {
     titleNew: 'fixed amount discount',
     formType: genericPromotionOptions.merge(
       z.object({
+        sku_list: z.string().nullish(),
         fixed_amount_cents: z
           .string()
-          .min(1)
-          .transform((p) => parseInt(p))
+          .or(z.number())
+          .transform((p) => parseInt(p.toString())),
+        currency_code: z.string()
       })
     ),
-    Fields: () => <></>,
-    Options: () => <></>
+    Fields: ({ promotion }) => {
+      const { watch } = useFormContext()
+      const watchedCurrencyCode = watch('currency_code')
+
+      const currencyCode: CurrencyCode =
+        watchedCurrencyCode ??
+        (promotion?.currency_code as CurrencyCode) ??
+        'USD'
+
+      return (
+        <>
+          <Spacer top='6'>
+            <ListItem
+              tag='div'
+              padding='none'
+              borderStyle='none'
+              alignItems='top'
+            >
+              <HookedInputCurrency
+                name='fixed_amount_cents'
+                currencyCode={currencyCode}
+                label='Fixed amount discount'
+                hint={{
+                  text: 'How much the order is discounted.'
+                }}
+              />
+              <HookedInputSelect
+                name='currency_code'
+                label='&nbsp;'
+                placeholder=''
+                initialValues={Object.entries(currencies).map(([code]) => ({
+                  label: code.toUpperCase(),
+                  value: code.toUpperCase()
+                }))}
+              />
+            </ListItem>
+          </Spacer>
+        </>
+      )
+    },
+    Options: ({ promotion }) => {
+      return (
+        <>
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_sku_list'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <PromotionSkuListSelector
+                    promotion={promotion}
+                    hint='Apply the promotion only to the SKUs within the selected SKU list.'
+                  />
+                </Spacer>
+              }
+            >
+              <Text weight='semibold'>Restrict to specific SKUs</Text>
+            </HookedInputCheckbox>
+          </Spacer>
+        </>
+      )
+    },
+    DetailsSectionInfo: ({ promotion }) => (
+      <>
+        <ListDetailsItem label='Fixed amount' gutter='none'>
+          {formatCentsToCurrency(
+            promotion.fixed_amount_cents,
+            promotion.currency_code as CurrencyCode
+          )}
+        </ListDetailsItem>
+      </>
+    )
   }
 } satisfies Pick<PromotionConfig, 'fixed_amount_promotions'>

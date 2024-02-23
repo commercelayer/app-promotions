@@ -1,9 +1,11 @@
 import {
   HookedInputCurrency,
   HookedInputSelect,
+  ListDetailsItem,
   ListItem,
   Spacer,
   currencies,
+  formatCentsToCurrency,
   type CurrencyCode
 } from '@commercelayer/app-elements'
 import { useFormContext } from 'react-hook-form'
@@ -32,8 +34,6 @@ export default {
     Fields: ({ promotion }) => {
       const { watch } = useFormContext()
       const watchedCurrencyCode = watch('currency_code')
-
-      console.log('watchedCurrencyCode', watchedCurrencyCode)
 
       const currencyCode: CurrencyCode =
         watchedCurrencyCode ??
@@ -78,6 +78,16 @@ export default {
         </>
       )
     },
-    Options: () => <></>
+    Options: () => <></>,
+    DetailsSectionInfo: ({ promotion }) => (
+      <>
+        <ListDetailsItem label='Fixed price' gutter='none'>
+          {formatCentsToCurrency(
+            promotion.fixed_amount_cents,
+            promotion.currency_code as CurrencyCode
+          )}
+        </ListDetailsItem>
+      </>
+    )
   }
 } satisfies Pick<PromotionConfig, 'fixed_price_promotions'>

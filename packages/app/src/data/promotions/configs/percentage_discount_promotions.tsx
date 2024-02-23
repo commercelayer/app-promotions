@@ -1,6 +1,7 @@
 import {
   HookedInput,
   HookedInputCheckbox,
+  ListDetailsItem,
   Spacer,
   Text
 } from '@commercelayer/app-elements'
@@ -65,6 +66,13 @@ export default {
           </Spacer>
         </>
       )
-    }
+    },
+    DetailsSectionInfo: ({ promotion }) => (
+      <>
+        <ListDetailsItem label='Discount' gutter='none'>
+          {promotion.percentage}%
+        </ListDetailsItem>
+      </>
+    )
   }
 } satisfies Pick<PromotionConfig, 'percentage_discount_promotions'>

@@ -1,4 +1,5 @@
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
+import { promotionConfig } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
@@ -25,7 +26,6 @@ import {
   Text,
   Th,
   Tr,
-  formatCentsToCurrency,
   formatDate,
   formatDateRange,
   formatDateWithPredicate,
@@ -33,8 +33,7 @@ import {
   goBack,
   useCoreSdkProvider,
   useTokenProvider,
-  withSkeletonTemplate,
-  type CurrencyCode
+  withSkeletonTemplate
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
 import { Link, useLocation } from 'wouter'
@@ -231,35 +230,14 @@ const SectionInfo = withSkeletonTemplate<{
   promotion: Promotion
 }>(({ promotion }) => {
   const { user } = useTokenProvider()
-  const specificDetails = useMemo(() => {
-    switch (promotion.type) {
-      case 'percentage_discount_promotions':
-        return (
-          <>
-            <ListDetailsItem label='Discount' gutter='none'>
-              {promotion.percentage}%
-            </ListDetailsItem>
-          </>
-        )
-      case 'fixed_price_promotions':
-        return (
-          <>
-            <ListDetailsItem label='Fixed price' gutter='none'>
-              {formatCentsToCurrency(
-                promotion.fixed_amount_cents,
-                promotion.currency_code as CurrencyCode
-              )}
-            </ListDetailsItem>
-          </>
-        )
-      default:
-        return null
-    }
-  }, [promotion])
+  const config = promotionConfig[promotion.type]
 
   return (
     <Section title='Info'>
-      {specificDetails}
+      <config.DetailsSectionInfo
+        // @ts-expect-error TS cannot infer the right promotion
+        promotion={promotion}
+      />
       <ListDetailsItem label='Activation period' gutter='none'>
         {formatDateRange({
           rangeFrom: promotion.starts_at,

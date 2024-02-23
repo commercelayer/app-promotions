@@ -11,6 +11,7 @@ export default {
     titleNew: 'external promotion',
     formType: genericPromotionOptions,
     Fields: () => <></>,
-    Options: () => <></>
+    Options: () => <></>,
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'external_promotions'>

@@ -42,5 +42,8 @@ export type PromotionConfig = {
     formType: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
     Fields: React.FC<{ promotion?: Promotion }>
     Options: React.FC<{ promotion?: Promotion }>
+    DetailsSectionInfo: React.FC<{
+      promotion: Extract<Promotion, { type: type }>
+    }>
   }
 }

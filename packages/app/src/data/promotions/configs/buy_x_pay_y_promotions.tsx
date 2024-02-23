@@ -18,6 +18,7 @@ export default {
       })
     ),
     Fields: () => <></>,
-    Options: () => <></>
+    Options: () => <></>,
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'buy_x_pay_y_promotions'>

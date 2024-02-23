@@ -11,6 +11,7 @@ export default {
     titleNew: 'free gift',
     formType: genericPromotionOptions,
     Fields: () => <></>,
-    Options: () => <></>
+    Options: () => <></>,
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'free_gift_promotions'>

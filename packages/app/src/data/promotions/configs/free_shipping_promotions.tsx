@@ -10,6 +10,7 @@ export default {
     titleNew: 'free shipping',
     formType: genericPromotionOptions,
     Fields: () => <></>,
-    Options: () => <></>
+    Options: () => <></>,
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'free_shipping_promotions'>
