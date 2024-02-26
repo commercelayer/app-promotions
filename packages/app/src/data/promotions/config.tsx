@@ -32,8 +32,6 @@ export type PromotionType = Extract<ResourceTypeLock, `${string}_promotions`>
 
 export type PromotionConfig = {
   [type in PromotionType]: {
-    // TODO: this is a temporary field. We'll need to remove it before final release
-    visible?: false
     type: type
     slug: Sanitize<type>
     titleList: string
