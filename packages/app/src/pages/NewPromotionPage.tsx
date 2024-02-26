@@ -34,7 +34,7 @@ function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
     >
       <PromotionForm
         promotionConfig={config}
-        defaultValues={{ currency_code: 'USD' }}
+        defaultValues={{ currency_code: 'USD', max_quantity: 1 }}
       />
     </PageLayout>
   )
