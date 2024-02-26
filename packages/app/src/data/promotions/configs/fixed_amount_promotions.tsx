@@ -1,11 +1,9 @@
 import {
-  HookedInputCheckbox,
   HookedInputCurrency,
   HookedInputSelect,
   ListDetailsItem,
   ListItem,
   Spacer,
-  Text,
   currencies,
   formatCentsToCurrency,
   type CurrencyCode
@@ -77,19 +75,11 @@ export default {
       return (
         <>
           <Spacer top='2'>
-            <HookedInputCheckbox
-              name='show_sku_list'
-              checkedElement={
-                <Spacer bottom='6'>
-                  <PromotionSkuListSelector
-                    promotion={promotion}
-                    hint='Apply the promotion only to the SKUs within the selected SKU list.'
-                  />
-                </Spacer>
-              }
-            >
-              <Text weight='semibold'>Restrict to specific SKUs</Text>
-            </HookedInputCheckbox>
+            <PromotionSkuListSelector
+              optional
+              promotion={promotion}
+              hint='Apply the promotion only to the SKUs within the selected SKU list.'
+            />
           </Spacer>
         </>
       )

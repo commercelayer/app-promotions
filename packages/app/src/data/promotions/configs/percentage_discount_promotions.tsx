@@ -1,9 +1,7 @@
 import {
   HookedInput,
-  HookedInputCheckbox,
   ListDetailsItem,
-  Spacer,
-  Text
+  Spacer
 } from '@commercelayer/app-elements'
 import { z } from 'zod'
 import { PromotionSkuListSelector } from '../components/PromotionSkuListSelector'
@@ -50,19 +48,11 @@ export default {
       return (
         <>
           <Spacer top='2'>
-            <HookedInputCheckbox
-              name='show_sku_list'
-              checkedElement={
-                <Spacer bottom='6'>
-                  <PromotionSkuListSelector
-                    promotion={promotion}
-                    hint='Apply the promotion only to the SKUs within the selected SKU list.'
-                  />
-                </Spacer>
-              }
-            >
-              <Text weight='semibold'>Restrict to specific SKUs</Text>
-            </HookedInputCheckbox>
+            <PromotionSkuListSelector
+              optional
+              promotion={promotion}
+              hint='Apply the promotion only to the SKUs within the selected SKU list.'
+            />
           </Spacer>
         </>
       )

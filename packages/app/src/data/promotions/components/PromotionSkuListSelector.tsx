@@ -1,6 +1,9 @@
 import type { Promotion } from '#types'
 import {
+  HookedInputCheckbox,
   HookedInputSelect,
+  Spacer,
+  Text,
   useCoreApi,
   useCoreSdkProvider,
   type InputSelectValue
@@ -8,6 +11,36 @@ import {
 import type { QueryParamsList } from '@commercelayer/sdk'
 
 export const PromotionSkuListSelector: React.FC<{
+  label?: string
+  hint: string
+  promotion?: Promotion
+  optional?: boolean
+}> = ({ hint, label, promotion, optional = false }) => {
+  if (!optional) {
+    return (
+      <InternalPromotionSkuListSelector
+        label={label}
+        hint={hint}
+        promotion={promotion}
+      />
+    )
+  }
+
+  return (
+    <HookedInputCheckbox
+      name='show_sku_list'
+      checkedElement={
+        <Spacer bottom='6'>
+          <InternalPromotionSkuListSelector promotion={promotion} hint={hint} />
+        </Spacer>
+      }
+    >
+      <Text weight='semibold'>Restrict to specific SKUs</Text>
+    </HookedInputCheckbox>
+  )
+}
+
+const InternalPromotionSkuListSelector: React.FC<{
   label?: string
   hint: string
   promotion?: Promotion
