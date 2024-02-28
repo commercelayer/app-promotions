@@ -1,88 +1,135 @@
 import type { FiltersInstructions } from '@commercelayer/app-elements'
 
-export const instructions: FiltersInstructions = [
+export const filtersInstructions: FiltersInstructions = [
+  // {
+  //   label: 'Status',
+  //   type: 'options',
+  //   sdk: [
+  //     {
+  //       predicate: 'starts_at_lteq',
+  //       parseFormValue: (value) => value === 'active' ? new Date().toJSON() : null
+  //     },
+  //     {
+  //       predicate: 'expires_at_gteq',
+  //       parseFormValue: (value) => value === 'active' ? new Date().toJSON() : null
+  //     },
+  //     {
+  //       predicate: 'starts_at_gteq',
+  //       parseFormValue: (value) => value === 'upcoming' ? new Date().toJSON() : null
+  //     },
+  //     {
+  //       predicate: 'expires_at_lteq',
+  //       parseFormValue: (value) => value === 'expired' ? new Date().toJSON() : null
+  //     },
+  //     {
+  //       predicate: 'disabled_at',
+  //       parseFormValue: (value) => value === 'disabled' ? 'true' : null
+  //     }
+  //   ],
+  //   render: {
+  //     component: 'inputToggleButton',
+  //     props: {
+  //       mode: 'multi',
+  //       options: [
+  //         { value: 'active', label: 'Active' },
+  //         { value: 'upcoming', label: 'Upcoming' },
+  //         { value: 'expired', label: 'Expired' },
+  //         { value: 'disabled', label: 'Disabled' }
+  //       ]
+  //     }
+  //   }
+  // },
+
+  // {
+  //   label: 'Type',
+  //   type: 'options',
+  //   sdk: {
+  //     predicate: 'type_in'
+  //   },
+  //   render: {
+  //     component: 'inputToggleButton',
+  //     props: {
+  //       mode: 'multi',
+  //       options: [
+  //         { value: 'buy_x_pay_y_promotions', label: 'Buy X pay Y' },
+  //         { value: 'fixed_amount_promotions', label: 'Fixed amount' },
+  //         { value: 'fixed_price_promotions', label: 'Fixed price' },
+  //         { value: 'free_gift_promotions', label: 'Free gift' },
+  //         { value: 'free_shipping_promotions', label: 'Free shipping' },
+  //         { value: 'percentage_discount_promotions', label: 'Perc. discount' },
+  //         { value: 'external_promotions', label: 'External' }
+  //       ] as Array<{ value: PromotionType; label: string }>
+  //     }
+  //   }
+  // },
+
   {
-    label: 'Status',
+    label: 'Coupons',
     type: 'options',
     sdk: {
-      predicate: 'status_in',
-      defaultOptions: ['prospect', 'acquired', 'repeat']
+      predicate: 'coupons_code_present'
     },
     render: {
       component: 'inputToggleButton',
       props: {
-        mode: 'multi',
+        mode: 'single',
         options: [
-          { value: 'prospect', label: 'Prospect' },
-          { value: 'acquired', label: 'Acquired' },
-          { value: 'repeat', label: 'Repeat' }
+          { value: 'true', label: 'With coupons' },
+          { value: 'false', label: 'Without coupons' }
         ]
       }
     }
   },
-  {
-    label: 'Type',
-    type: 'options',
-    sdk: {
-      predicate: 'password_present',
-      parseFormValue: (value) =>
-        Array.isArray(value) && value.length === 1
-          ? value[0] === 'registered'
-          : undefined
-    },
-    render: {
-      component: 'inputToggleButton',
-      props: {
-        mode: 'multi',
-        options: [
-          { value: 'guest', label: 'Guest' },
-          { value: 'registered', label: 'Registered' }
-        ]
-      }
-    }
-  },
-  {
-    label: 'Groups',
-    type: 'options',
-    sdk: {
-      predicate: 'customer_group_id_in'
-    },
-    render: {
-      component: 'inputResourceGroup',
-      props: {
-        fieldForLabel: 'name',
-        fieldForValue: 'id',
-        resource: 'customer_groups',
-        searchBy: 'name_cont',
-        sortBy: { attribute: 'name', direction: 'asc' },
-        previewLimit: 5
-      }
-    }
-  },
-  {
-    label: 'Tags',
-    type: 'options',
-    sdk: {
-      predicate: 'tags_id_in'
-    },
-    render: {
-      component: 'inputResourceGroup',
-      props: {
-        fieldForLabel: 'name',
-        fieldForValue: 'id',
-        resource: 'tags',
-        searchBy: 'name_cont',
-        sortBy: { attribute: 'name', direction: 'asc' },
-        previewLimit: 5,
-        showCheckboxIcon: false
-      }
-    }
-  },
+
+  // {
+  //   hidden: true,
+  //   label: 'Starts at',
+  //   type: 'textSearch',
+  //   sdk: {
+  //     predicate: 'starts_at_lteq'
+  //   },
+  //   render: {
+  //     component: 'input'
+  //   }
+  // },
+  // {
+  //   hidden: true,
+  //   label: 'Starts at gt',
+  //   type: 'textSearch',
+  //   sdk: {
+  //     predicate: 'starts_at_gt'
+  //   },
+  //   render: {
+  //     component: 'input'
+  //   }
+  // },
+  // {
+  //   hidden: true,
+  //   label: 'Expires at',
+  //   type: 'textSearch',
+  //   sdk: {
+  //     predicate: 'expires_at_gteq'
+  //   },
+  //   render: {
+  //     component: 'input'
+  //   }
+  // },
+  // {
+  //   label: 'Disable',
+  //   type: 'textSearch',
+  //   sdk: {
+  //     predicate: 'disabled_at_null'
+  //   },
+  //   render: {
+  //     component: 'input'
+  //   }
+  // },
+
   {
     label: 'Search',
     type: 'textSearch',
     sdk: {
-      predicate: ['email', 'customer_group_name'].join('_or_') + '_cont'
+      predicate: ['name'].join('_or_') + '_cont'
     },
     render: {
       component: 'searchBar'

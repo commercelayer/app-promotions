@@ -1,5 +1,5 @@
 import type { PageProps } from '#components/Routes'
-import { instructions } from '#data/filters'
+import { filtersInstructions } from '#data/filters'
 import { appRoutes } from '#data/routes'
 import { PageLayout, useResourceFilters } from '@commercelayer/app-elements'
 import { useLocation } from 'wouter'
@@ -7,7 +7,7 @@ import { useLocation } from 'wouter'
 function Page(props: PageProps<typeof appRoutes.filters>): JSX.Element {
   const [, setLocation] = useLocation()
   const { FiltersForm, adapters } = useResourceFilters({
-    instructions
+    instructions: filtersInstructions
   })
 
   return (
@@ -30,7 +30,7 @@ function Page(props: PageProps<typeof appRoutes.filters>): JSX.Element {
     >
       <FiltersForm
         onSubmit={(filtersQueryString) => {
-          setLocation(appRoutes.promotionList.makePath(filtersQueryString))
+          setLocation(appRoutes.promotionList.makePath({}, filtersQueryString))
         }}
       />
     </PageLayout>

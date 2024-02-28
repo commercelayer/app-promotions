@@ -1,8 +1,7 @@
 import { ListEmptyState } from '#components/ListEmptyState'
 import { ListItemPromotion } from '#components/ListItemPromotion'
 import type { PageProps } from '#components/Routes'
-import { instructions } from '#data/filters'
-import { presets } from '#data/lists'
+import { filtersInstructions } from '#data/filters'
 import { appRoutes } from '#data/routes'
 import {
   PageLayout,
@@ -23,18 +22,14 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
 
   const { SearchWithNav, FilteredList, viewTitle, hasActiveFilter } =
     useResourceFilters({
-      instructions
+      instructions: filtersInstructions
     })
 
-  const isUserCustomFiltered =
-    hasActiveFilter && viewTitle === presets.all.viewTitle
-  const hideFiltersNav = !(
-    viewTitle == null || viewTitle === presets.all.viewTitle
-  )
+  const hideFiltersNav = !(viewTitle == null)
 
   return (
     <PageLayout
-      title='Promotions'
+      title={viewTitle ?? 'Promotions'}
       overlay={props.overlay}
       mode={mode}
       navigationButton={{
@@ -53,7 +48,7 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
           })
         }}
         onFilterClick={(queryString) => {
-          setLocation(appRoutes.filters.makePath(queryString))
+          setLocation(appRoutes.filters.makePath({}, queryString))
         }}
         hideFiltersNav={hideFiltersNav}
       />
@@ -63,17 +58,18 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
           type='promotions'
           ItemTemplate={ListItemPromotion}
           query={{
-            include: ['coupons'],
             fields: {
-              customers: [
+              promotions: [
                 'id',
-                'email',
-                'total_orders_count',
-                'created_at',
-                'updated_at',
-                'customer_group'
+                'starts_at',
+                'expires_at',
+                'name',
+                'coupons',
+                'reference_origin',
+                'disabled_at'
               ]
             },
+            include: ['coupons'],
             pageSize: 25,
             sort: {
               updated_at: 'desc'
@@ -81,13 +77,7 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
           }}
           emptyState={
             <ListEmptyState
-              scope={
-                isUserCustomFiltered
-                  ? 'userFiltered'
-                  : viewTitle !== presets.all.viewTitle
-                    ? 'presetView'
-                    : 'history'
-              }
+              scope={hasActiveFilter ? 'userFiltered' : 'history'}
             />
           }
         />
