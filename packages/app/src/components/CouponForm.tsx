@@ -1,4 +1,4 @@
-import { couponForm, formValuesToCoupon } from '#data/dictionaries/coupon'
+import { couponForm, formValuesToCoupon } from '#data/formConverters/coupon'
 import { appRoutes } from '#data/routes'
 import { useCoupon } from '#hooks/useCoupon'
 import { usePromotion } from '#hooks/usePromotion'

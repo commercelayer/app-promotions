@@ -1,4 +1,4 @@
-import type { Promotion } from '#data/dictionaries/promotion'
+import type { Promotion } from '#types'
 import { type CurrencyCode } from '@commercelayer/app-elements'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { InputCurrencyComponent } from './components/InputCurrencyComponent'
@@ -28,7 +28,12 @@ export const matchers = {
     label: 'is greater than',
     value: 'gt'
   }
-} as const satisfies Record<string, { label: string; value: string }>
+} as const satisfies {
+  [key in 'in' | 'not_in' | 'eq' | 'gteq' | 'gt']: {
+    label: string
+    value: key
+  }
+}
 
 export const ruleBuilderConfig: RuleBuilderConfig = {
   market_id: {

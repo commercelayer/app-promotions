@@ -1,6 +1,6 @@
-import type { Promotion } from '#data/dictionaries/promotion'
 import { isDefined } from '#data/isValid'
 import { isMockedId } from '#mocks'
+import type { Promotion } from '#types'
 import type { CurrencyCode } from '@commercelayer/app-elements'
 import { currencies, useCoreApi } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'

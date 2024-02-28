@@ -1,4 +1,5 @@
 import type { PageProps } from '#components/Routes'
+import { filtersInstructions } from '#data/filters'
 import { appRoutes } from '#data/routes'
 import {
   Icon,
@@ -8,9 +9,10 @@ import {
   Spacer,
   StatusIcon,
   Text,
+  useResourceFilters,
   useTokenProvider
 } from '@commercelayer/app-elements'
-import { Link } from 'wouter'
+import { Link, useLocation, useSearch } from 'wouter'
 
 function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
   const {
@@ -18,6 +20,13 @@ function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
     settings: { mode },
     canUser
   } = useTokenProvider()
+
+  const search = useSearch()
+  const [, setLocation] = useLocation()
+
+  const { SearchWithNav } = useResourceFilters({
+    instructions: filtersInstructions
+  })
 
   return (
     <PageLayout
@@ -33,6 +42,15 @@ function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
         label: 'Hub'
       }}
     >
+      <SearchWithNav
+        hideFiltersNav
+        onFilterClick={() => {}}
+        onUpdate={(qs) => {
+          setLocation(appRoutes.promotionList.makePath({}, qs))
+        }}
+        queryString={search}
+      />
+
       <Spacer top='14'>
         <List
           title='Browse'
@@ -50,6 +68,59 @@ function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
             ) : undefined
           }
         >
+          {/* <Link
+            href={appRoutes.promotionList.makePath(
+              {},
+              adapters.adaptFormValuesToUrlQuery({
+                formValues: presets.active
+              })
+            )}
+            asChild
+          >
+            <ListItem
+              tag='a'
+              icon={<StatusIcon name='pulse' background='green' gap='small' />}
+            >
+              <Text weight='semibold'>{presets.active.viewTitle} </Text>
+              <StatusIcon name='caretRight' />
+            </ListItem>
+          </Link>
+
+          <Link
+            href={appRoutes.promotionList.makePath(
+              {},
+              adapters.adaptFormValuesToUrlQuery({
+                formValues: presets.upcoming
+              })
+            )}
+            asChild
+          >
+            <ListItem tag='a' icon={<RadialProgress size='small' />}>
+              <Text weight='semibold'>{presets.upcoming.viewTitle} </Text>
+              <StatusIcon name='caretRight' />
+            </ListItem>
+          </Link>
+
+          <Link
+            href={appRoutes.promotionList.makePath(
+              {},
+              adapters.adaptFormValuesToUrlQuery({
+                formValues: presets.disabled
+              })
+            )}
+            asChild
+          >
+            <ListItem
+              tag='a'
+              icon={
+                <StatusIcon name='minus' background='lightGray' gap='small' />
+              }
+            >
+              <Text weight='semibold'>{presets.disabled.viewTitle} </Text>
+              <StatusIcon name='caretRight' />
+            </ListItem>
+          </Link> */}
+
           <Link asChild href={appRoutes.promotionList.makePath({})}>
             <ListItem
               tag='a'

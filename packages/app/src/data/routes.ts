@@ -1,4 +1,5 @@
-import { createRoute } from '@commercelayer/app-elements'
+import type { Promotion } from '#types'
+import { createRoute, createTypedRoute } from '@commercelayer/app-elements'
 
 /**
  * Object to be used as source of truth to handel application routes
@@ -14,7 +15,9 @@ export const appRoutes = {
   promotionDetails: createRoute('/list/:promotionId/'),
   editPromotion: createRoute('/list/:promotionId/edit/'),
   newSelectType: createRoute('/new/'),
-  newPromotion: createRoute('/new/:promotionSlug/'),
+  newPromotion: createTypedRoute<{ promotionType: Promotion['type'] }>()(
+    '/new/:promotionType/'
+  ),
   newPromotionCondition: createRoute('/list/:promotionId/conditions/new/'),
   newCoupon: createRoute('/list/:promotionId/coupons/new/'),
   editCoupon: createRoute('/list/:promotionId/coupons/list/:couponId/')

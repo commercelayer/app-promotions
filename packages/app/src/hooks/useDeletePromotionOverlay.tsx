@@ -1,5 +1,5 @@
-import type { Promotion } from '#data/dictionaries/promotion'
 import { appRoutes } from '#data/routes'
+import type { Promotion } from '#types'
 import {
   Button,
   PageHeading,

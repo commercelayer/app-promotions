@@ -1,4 +1,4 @@
-import type { PromotionRule } from '#data/dictionaries/promotion'
+import type { PromotionRule } from '#types'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
 import { makeResource } from '../resource'
 

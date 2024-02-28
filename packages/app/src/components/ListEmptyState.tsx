@@ -1,23 +1,10 @@
 import { A, EmptyState } from '@commercelayer/app-elements'
 
 interface Props {
-  scope?: 'history' | 'userFiltered' | 'presetView' | 'noSKUs' | 'noBundles'
+  scope?: 'history' | 'userFiltered'
 }
 
 export function ListEmptyState({ scope = 'history' }: Props): JSX.Element {
-  if (scope === 'presetView') {
-    return (
-      <EmptyState
-        title='All good here'
-        description={
-          <div>
-            <p>There are no promotions for the current list.</p>
-          </div>
-        }
-      />
-    )
-  }
-
   if (scope === 'userFiltered') {
     return (
       <EmptyState
@@ -27,36 +14,6 @@ export function ListEmptyState({ scope = 'history' }: Props): JSX.Element {
             <p>
               We didn't find any promotions matching the current filters
               selection.
-            </p>
-          </div>
-        }
-      />
-    )
-  }
-
-  if (scope === 'noSKUs') {
-    return (
-      <EmptyState
-        title='No SKUs found!'
-        description={
-          <div>
-            <p>
-              We didn't find any SKU matching the current filters selection.
-            </p>
-          </div>
-        }
-      />
-    )
-  }
-
-  if (scope === 'noBundles') {
-    return (
-      <EmptyState
-        title='No bundles found!'
-        description={
-          <div>
-            <p>
-              We didn't find any bundle matching the current filters selection.
             </p>
           </div>
         }

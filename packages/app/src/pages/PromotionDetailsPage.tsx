@@ -1,10 +1,11 @@
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
-import type { Promotion } from '#data/dictionaries/promotion'
+import { promotionConfig } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
 import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
+import type { Promotion } from '#types'
 import {
   Badge,
   Button,
@@ -229,24 +230,14 @@ const SectionInfo = withSkeletonTemplate<{
   promotion: Promotion
 }>(({ promotion }) => {
   const { user } = useTokenProvider()
-  const specificDetails = useMemo(() => {
-    switch (promotion.type) {
-      case 'percentage_discount_promotions':
-        return (
-          <>
-            <ListDetailsItem label='Discount' gutter='none'>
-              {promotion.percentage}%
-            </ListDetailsItem>
-          </>
-        )
-      default:
-        return null
-    }
-  }, [promotion])
+  const config = promotionConfig[promotion.type]
 
   return (
     <Section title='Info'>
-      {specificDetails}
+      <config.DetailsSectionInfo
+        // @ts-expect-error TS cannot infer the right promotion
+        promotion={promotion}
+      />
       <ListDetailsItem label='Activation period' gutter='none'>
         {formatDateRange({
           rangeFrom: promotion.starts_at,

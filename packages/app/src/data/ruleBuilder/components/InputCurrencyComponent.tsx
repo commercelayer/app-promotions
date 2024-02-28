@@ -1,4 +1,4 @@
-import type { Promotion } from '#data/dictionaries/promotion'
+import type { Promotion } from '#types'
 import { HookedInputCurrency } from '@commercelayer/app-elements'
 import { useCurrencyCodes } from '../currency'
 

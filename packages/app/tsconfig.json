@@ -46,6 +46,9 @@
       "#pages/*": [
         "src/pages/*"
       ],
+      "#types": [
+        "src/types.ts"
+      ],
     }
   },
   "include": [
