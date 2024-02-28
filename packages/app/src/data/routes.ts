@@ -18,7 +18,9 @@ export const appRoutes = {
   newPromotion: createTypedRoute<{ promotionType: Promotion['type'] }>()(
     '/new/:promotionType/'
   ),
-  newPromotionCondition: createRoute('/list/:promotionId/conditions/new/'),
+  newPromotionActivationRule: createRoute(
+    '/list/:promotionId/activation-rules/new/'
+  ),
   newCoupon: createRoute('/list/:promotionId/coupons/new/'),
   editCoupon: createRoute('/list/:promotionId/coupons/list/:couponId/')
 }

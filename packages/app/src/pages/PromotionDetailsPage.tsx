@@ -84,7 +84,7 @@ function Page(
         </Spacer>
 
         <Spacer top='14'>
-          <SectionConditions promotionId={props.params.promotionId} />
+          <SectionActivationRules promotionId={props.params.promotionId} />
         </Spacer>
 
         <Spacer top='14'>
@@ -263,7 +263,7 @@ const SectionInfo = withSkeletonTemplate<{
         </ListDetailsItem>
       )}
       {promotion.priority != null && (
-        <ListDetailsItem label='Custom priority' gutter='none'>
+        <ListDetailsItem label='Priority' gutter='none'>
           {promotion.priority}
         </ListDetailsItem>
       )}
@@ -271,7 +271,7 @@ const SectionInfo = withSkeletonTemplate<{
   )
 })
 
-const SectionConditions = withSkeletonTemplate<{
+const SectionActivationRules = withSkeletonTemplate<{
   promotionId: string
 }>(({ promotionId }) => {
   const { sdkClient } = useCoreSdkProvider()
@@ -283,7 +283,7 @@ const SectionConditions = withSkeletonTemplate<{
   } = usePromotion(promotionId)
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
 
-  const addConditionLink = appRoutes.newPromotionCondition.makePath({
+  const addActivationRuleLink = appRoutes.newPromotionActivationRule.makePath({
     promotionId: promotion.id
   })
 
@@ -292,10 +292,10 @@ const SectionConditions = withSkeletonTemplate<{
   return (
     <SkeletonTemplate isLoading={isLoadingPromotion || isLoadingRules}>
       <Section
-        title='Conditions'
+        title='Activation rules'
         border='none'
         actionButton={
-          hasRules ? <Link href={addConditionLink}>Add</Link> : undefined
+          hasRules ? <Link href={addActivationRuleLink}>Add</Link> : undefined
         }
       >
         {hasRules ? (
@@ -351,13 +351,14 @@ const SectionConditions = withSkeletonTemplate<{
             padding='6'
             fullWidth
             onClick={() => {
-              setLocation(addConditionLink)
+              setLocation(addActivationRuleLink)
             }}
           >
             <Text align='left' variant='info'>
-              <a>Add conditions</a> to limit the promotion to specific orders.
+              <a>Add activation rules</a> to limit the promotion to specific
+              orders.
               <br />
-              Promotion applies only if all conditions are met.
+              Promotion applies only if all activation rules are met.
             </Text>
           </ButtonCard>
         )}

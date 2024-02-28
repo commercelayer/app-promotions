@@ -128,7 +128,7 @@ export function CouponForm({
               </Spacer>
             }
           >
-            <Text weight='semibold'>Assign to a customer</Text>
+            <Text weight='semibold'>Customer Email</Text>
           </HookedInputCheckbox>
         </Spacer>
 

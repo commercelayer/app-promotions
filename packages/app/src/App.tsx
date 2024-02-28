@@ -68,9 +68,9 @@ export function App(): JSX.Element {
                       await import('#pages/NewPromotionPage'),
                     overlay: true
                   },
-                  newPromotionCondition: {
+                  newPromotionActivationRule: {
                     component: async () =>
-                      await import('#pages/NewPromotionConditionPage'),
+                      await import('#pages/NewPromotionActivationRulePage'),
                     overlay: true
                   },
                   newCoupon: {

@@ -174,7 +174,7 @@ export function PromotionForm({
                   </Spacer>
                 }
               >
-                <Text weight='semibold'>Custom priority</Text>
+                <Text weight='semibold'>Priority</Text>
               </HookedInputCheckbox>
             </Spacer>
           </Spacer>
