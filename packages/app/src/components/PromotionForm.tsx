@@ -140,7 +140,13 @@ export function PromotionForm({
                       size={18}
                     />
                   }
-                  content='No concurrent promotions apply.'
+                  content={
+                    <>
+                      No other concurrent promotion
+                      <br />
+                      will be applied to the order.
+                    </>
+                  }
                 />
               </HookedInputCheckbox>
             </Spacer>
