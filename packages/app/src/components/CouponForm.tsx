@@ -33,8 +33,7 @@ export function CouponForm({
   const { mutateCoupon } = useCoupon(couponId)
   const methods = useForm<z.infer<typeof couponForm>>({
     defaultValues,
-    resolver: zodResolver(couponForm),
-    mode: 'onTouched'
+    resolver: zodResolver(couponForm)
   })
 
   const { sdkClient } = useCoreSdkProvider()
@@ -143,9 +142,7 @@ export function CouponForm({
         <Button
           fullWidth
           type='submit'
-          disabled={
-            methods.formState.isSubmitting || !methods.formState.isValid
-          }
+          disabled={methods.formState.isSubmitting}
         >
           {couponId != null ? 'Update' : 'Create coupon'}
         </Button>

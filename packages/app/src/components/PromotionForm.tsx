@@ -41,8 +41,7 @@ export function PromotionForm({
   const { promotion } = usePromotion(promotionId)
   const methods = useForm<z.infer<typeof promotionConfig.formType>>({
     defaultValues,
-    resolver: zodResolver(promotionConfig.formType),
-    mode: 'onTouched'
+    resolver: zodResolver(promotionConfig.formType)
   })
 
   useEffect(
@@ -185,9 +184,7 @@ export function PromotionForm({
           <Button
             type='submit'
             fullWidth
-            disabled={
-              methods.formState.isSubmitting || !methods.formState.isValid
-            }
+            disabled={methods.formState.isSubmitting}
           >
             {promotionId != null ? 'Update' : 'Create promotion'}
           </Button>
