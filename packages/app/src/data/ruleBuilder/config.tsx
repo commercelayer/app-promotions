@@ -76,6 +76,16 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
+  customer_tags_id: {
+    resource: 'custom_promotion_rules',
+    rel: 'tags',
+    label: 'Customer tag',
+    operators: [matchers.in, matchers.not_in],
+    component: () => <SelectTagComponent />,
+    isAvailable() {
+      return true
+    }
+  },
   subtotal_amount_cents: {
     resource: 'custom_promotion_rules',
     rel: undefined,
@@ -107,6 +117,7 @@ export type RuleBuilderConfig = Record<
   | 'currency_code'
   | 'total_amount_cents'
   | 'line_items_sku_tags_id'
+  | 'customer_tags_id'
   | 'subtotal_amount_cents',
   {
     resource: 'custom_promotion_rules' | 'sku_list_promotion_rules'

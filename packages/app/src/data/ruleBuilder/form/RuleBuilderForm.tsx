@@ -93,7 +93,7 @@ export function RuleBuilderForm({
             methods.formState.isSubmitting || !methods.formState.isValid
           }
         >
-          Add condition
+          Add activation rule
         </Button>
       </Spacer>
     </HookedForm>
@@ -151,7 +151,7 @@ function useRuleBuilderFormFields(promotion: Promotion) {
         options: availableOptions
       },
       {
-        label: 'Not applicable with current conditions',
+        label: 'Not applicable with current activation rules',
         options: notAvailableOptions
       }
     ]

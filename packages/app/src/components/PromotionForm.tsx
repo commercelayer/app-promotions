@@ -41,8 +41,7 @@ export function PromotionForm({
   const { promotion } = usePromotion(promotionId)
   const methods = useForm<z.infer<typeof promotionConfig.formType>>({
     defaultValues,
-    resolver: zodResolver(promotionConfig.formType),
-    mode: 'onTouched'
+    resolver: zodResolver(promotionConfig.formType)
   })
 
   useEffect(
@@ -141,7 +140,13 @@ export function PromotionForm({
                       size={18}
                     />
                   }
-                  content='No concurrent promotions apply.'
+                  content={
+                    <>
+                      No other concurrent promotion
+                      <br />
+                      will be applied to the order.
+                    </>
+                  }
                 />
               </HookedInputCheckbox>
             </Spacer>
@@ -174,7 +179,7 @@ export function PromotionForm({
                   </Spacer>
                 }
               >
-                <Text weight='semibold'>Custom priority</Text>
+                <Text weight='semibold'>Priority</Text>
               </HookedInputCheckbox>
             </Spacer>
           </Spacer>
@@ -185,9 +190,7 @@ export function PromotionForm({
           <Button
             type='submit'
             fullWidth
-            disabled={
-              methods.formState.isSubmitting || !methods.formState.isValid
-            }
+            disabled={methods.formState.isSubmitting}
           >
             {promotionId != null ? 'Update' : 'Create promotion'}
           </Button>

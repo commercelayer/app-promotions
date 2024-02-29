@@ -21,7 +21,7 @@ function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
   return (
     <PageLayout
       title={`New ${config.titleNew}`}
-      description='Enter basic details to create the promotion, then set conditions or coupons to limit its reach after creation.'
+      description='Enter basic details to create the promotion, then set activation rules or coupons to limit its reach after creation.'
       overlay={props.overlay}
       mode={mode}
       gap='only-top'

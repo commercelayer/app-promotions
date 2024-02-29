@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'wouter'
 
 function Page(
-  props: PageProps<typeof appRoutes.newPromotionCondition>
+  props: PageProps<typeof appRoutes.newPromotionActivationRule>
 ): JSX.Element {
   const {
     settings: { mode }
@@ -22,7 +22,7 @@ function Page(
 
   return (
     <PageLayout
-      title='New condition'
+      title='New activation rule'
       overlay={props.overlay}
       mode={mode}
       gap='only-top'
