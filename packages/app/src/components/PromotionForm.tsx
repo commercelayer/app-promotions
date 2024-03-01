@@ -42,6 +42,8 @@ export function PromotionForm({
     resolver: zodResolver(promotionConfig.formType)
   })
 
+  const isCreatingNewPromotion = promotionId == null
+
   useEffect(
     function updateFormWithNewDefaultValues() {
       if (defaultValues != null) {
@@ -58,25 +60,29 @@ export function PromotionForm({
         const resource = sdkClient[promotionConfig.type]
         let promotion: Promotion
 
-        if (promotionId != null) {
-          // @ts-expect-error // TODO: I need to fix thi
-          promotion = await resource.update({
-            id: promotionId,
-            ...formValuesToPromotion(formValues)
-          })
-        } else {
+        if (isCreatingNewPromotion) {
           // @ts-expect-error // TODO: I need to fix this
           promotion = await resource.create({
             ...formValuesToPromotion(formValues),
             _disable: true,
             reference_origin: 'app-promotions'
           })
+        } else {
+          // @ts-expect-error // TODO: I need to fix thi
+          promotion = await resource.update({
+            id: promotionId,
+            ...formValuesToPromotion(formValues)
+          })
         }
 
         setLocation(
-          appRoutes.promotionDetails.makePath({
-            promotionId: promotion.id
-          })
+          isCreatingNewPromotion
+            ? appRoutes.promotionActivationRules.makePath({
+                promotionId: promotion.id
+              })
+            : appRoutes.promotionDetails.makePath({
+                promotionId: promotion.id
+              })
         )
       }}
     >
