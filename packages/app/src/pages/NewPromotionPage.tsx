@@ -11,7 +11,6 @@ function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
   } = useTokenProvider()
   const [, setLocation] = useLocation()
 
-  // @ts-expect-error This will be solved in next element release
   const config = promotionConfig[props.params.promotionType]
 
   if (config == null) {

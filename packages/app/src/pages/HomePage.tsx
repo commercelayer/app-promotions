@@ -16,8 +16,7 @@ import { Link, useLocation, useSearch } from 'wouter'
 
 function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
   const {
-    dashboardUrl,
-    settings: { mode },
+    settings: { mode, dashboardUrl },
     canUser
   } = useTokenProvider()
 
