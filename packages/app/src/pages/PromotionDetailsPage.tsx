@@ -308,7 +308,9 @@ const SectionActivationRules = withSkeletonTemplate<{
         title='Activation rules'
         border='none'
         actionButton={
-          hasRules ? <Link href={addActivationRuleLink}>Add</Link> : undefined
+          hasRules ? (
+            <Link href={addActivationRuleLink}>Add rule</Link>
+          ) : undefined
         }
       >
         {hasRules ? (
@@ -411,7 +413,7 @@ const SectionCoupon = withSkeletonTemplate<{
         title='Coupons'
         border='none'
         actionButton={
-          hasCoupons ? <Link href={addCouponLink}>Add</Link> : undefined
+          hasCoupons ? <Link href={addCouponLink}>Add coupon</Link> : undefined
         }
       >
         {hasCoupons ? (
