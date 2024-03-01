@@ -2,6 +2,7 @@ import type { Promotion } from '#types'
 import {
   HookedInputCheckbox,
   HookedInputSelect,
+  Section,
   Spacer,
   Text,
   useCoreApi,
@@ -29,20 +30,28 @@ export const PromotionSkuListSelector: React.FC<{
   }
 
   return (
-    <HookedInputCheckbox
-      name='show_sku_list'
-      checkedElement={
-        <Spacer bottom='6'>
-          <InternalPromotionSkuListSelector
-            promotion={promotion}
-            hint={hint}
-            placeholder={placeholder}
-          />
+    <Spacer top='14'>
+      <Section title='Apply the discount to'>
+        <Spacer top='6'>
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_sku_list'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <InternalPromotionSkuListSelector
+                    promotion={promotion}
+                    hint={hint}
+                    placeholder={placeholder}
+                  />
+                </Spacer>
+              }
+            >
+              <Text weight='semibold'>Restrict to specific SKUs</Text>
+            </HookedInputCheckbox>
+          </Spacer>
         </Spacer>
-      }
-    >
-      <Text weight='semibold'>Restrict to specific SKUs</Text>
-    </HookedInputCheckbox>
+      </Section>
+    </Spacer>
   )
 }
 

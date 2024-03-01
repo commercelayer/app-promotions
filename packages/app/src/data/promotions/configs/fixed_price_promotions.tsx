@@ -20,7 +20,7 @@ export default {
     slug: 'fixed-price',
     icon: 'pushPin',
     titleList: 'Fixed price',
-    titleNew: 'fixed price',
+    titleNew: 'fixed price promotion',
     formType: genericPromotionOptions.merge(
       z.object({
         sku_list: z.string(),

@@ -47,13 +47,11 @@ export default {
     Options: ({ promotion }) => {
       return (
         <>
-          <Spacer top='2'>
-            <PromotionSkuListSelector
-              optional
-              promotion={promotion}
-              hint='Apply the promotion only to the SKUs within the selected SKU list.'
-            />
-          </Spacer>
+          <PromotionSkuListSelector
+            optional
+            promotion={promotion}
+            hint='Apply the promotion only to the SKUs within the selected SKU list.'
+          />
         </>
       )
     },

@@ -15,7 +15,7 @@ export default {
     slug: 'free-gift',
     icon: 'gift',
     titleList: 'Free gift',
-    titleNew: 'free gift',
+    titleNew: 'free gift promotion',
     formType: genericPromotionOptions.merge(
       z.object({
         sku_list: z.string(),

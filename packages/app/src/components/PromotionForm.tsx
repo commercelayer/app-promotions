@@ -10,11 +10,9 @@ import {
   HookedInput,
   HookedInputCheckbox,
   HookedInputDate,
-  Icon,
   Section,
   Spacer,
   Text,
-  Tooltip,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -121,33 +119,17 @@ export function PromotionForm({
           </Spacer>
         </Section>
       </Spacer>
-      <Spacer top='14'>
-        <Section title='Options'>
-          <Spacer top='6'>
-            <promotionConfig.Options promotion={promotion} />
 
+      <promotionConfig.Options promotion={promotion} />
+
+      <Spacer top='14'>
+        <Section title='How this promotion works with concurrent ones'>
+          <Spacer top='6'>
             <Spacer top='2'>
               <HookedInputCheckbox name='exclusive'>
-                <Text weight='semibold'>Make exclusive</Text>{' '}
-                <Tooltip
-                  id='make-exclusive'
-                  direction='top-start'
-                  label={
-                    <Icon
-                      style={{ display: 'inline-block' }}
-                      name='info'
-                      weight='bold'
-                      size={18}
-                    />
-                  }
-                  content={
-                    <>
-                      No other concurrent promotion
-                      <br />
-                      will be applied to the order.
-                    </>
-                  }
-                />
+                <Text weight='semibold'>
+                  Make it exclusive (the other promotions won't apply)
+                </Text>
               </HookedInputCheckbox>
             </Spacer>
 
@@ -179,12 +161,13 @@ export function PromotionForm({
                   </Spacer>
                 }
               >
-                <Text weight='semibold'>Priority</Text>
+                <Text weight='semibold'>Assign a priority</Text>
               </HookedInputCheckbox>
             </Spacer>
           </Spacer>
         </Section>
       </Spacer>
+
       <Spacer top='14'>
         <Spacer top='8'>
           <Button

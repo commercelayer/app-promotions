@@ -5,6 +5,7 @@ import {
   HookedInputCheckbox,
   Icon,
   ListDetailsItem,
+  Section,
   Spacer,
   Text
 } from '@commercelayer/app-elements'
@@ -19,7 +20,7 @@ export default {
     slug: 'buy-x-pay-y',
     icon: 'stack',
     titleList: 'Buy X pay Y',
-    titleNew: 'buy X pay Y',
+    titleNew: 'buy X pay Y promotion',
     formType: genericPromotionOptions.merge(
       z.object({
         sku_list: z.string(),
@@ -77,18 +78,25 @@ export default {
     },
     Options: () => (
       <>
-        <Spacer top='2'>
-          <HookedInputCheckbox name='cheapest_free'>
-            <Text weight='semibold'>Cheapest free</Text>{' '}
-            <A href='https://docs.commercelayer.io/core/v/api-reference/buy_x_pay_y_promotions#cheapest-free'>
-              <Icon
-                style={{ display: 'inline-block' }}
-                name='question'
-                weight='bold'
-                size={18}
-              />
-            </A>
-          </HookedInputCheckbox>
+        <Spacer top='14'>
+          <Section title='Cheapest free'>
+            <Spacer top='4'>
+              <Text variant='info'>
+                By activating this mode, the promotion will be applied to
+                product with different prices and the cheapest ones will be
+                free.{' '}
+                <A href='https://docs.commercelayer.io/core/v/api-reference/buy_x_pay_y_promotions#cheapest-free'>
+                  Learn more
+                </A>
+                .
+              </Text>
+            </Spacer>
+            <Spacer top='6'>
+              <HookedInputCheckbox name='cheapest_free'>
+                <Text weight='semibold'>Cheapest free</Text>
+              </HookedInputCheckbox>
+            </Spacer>
+          </Section>
         </Spacer>
       </>
     ),
