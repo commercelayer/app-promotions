@@ -103,7 +103,7 @@ export default {
         {promotion.cheapest_free === true && (
           <ListDetailsItem label='Cheapest free' gutter='none'>
             <Text variant='success'>
-              <Icon name='check' />
+              <Icon name='check' weight='bold' size={18} />
             </Text>
           </ListDetailsItem>
         )}

@@ -271,7 +271,7 @@ const SectionInfo = withSkeletonTemplate<{
       {promotion.exclusive === true && (
         <ListDetailsItem label='Exclusive' gutter='none'>
           <Text variant='success'>
-            <Icon name='check' />
+            <Icon name='check' weight='bold' size={18} />
           </Text>
         </ListDetailsItem>
       )}
