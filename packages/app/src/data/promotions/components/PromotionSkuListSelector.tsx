@@ -15,13 +15,15 @@ export const PromotionSkuListSelector: React.FC<{
   hint: string
   promotion?: Promotion
   optional?: boolean
-}> = ({ hint, label, promotion, optional = false }) => {
+  placeholder?: string
+}> = ({ hint, label, promotion, placeholder, optional = false }) => {
   if (!optional) {
     return (
       <InternalPromotionSkuListSelector
         label={label}
         hint={hint}
         promotion={promotion}
+        placeholder={placeholder}
       />
     )
   }
@@ -31,7 +33,11 @@ export const PromotionSkuListSelector: React.FC<{
       name='show_sku_list'
       checkedElement={
         <Spacer bottom='6'>
-          <InternalPromotionSkuListSelector promotion={promotion} hint={hint} />
+          <InternalPromotionSkuListSelector
+            promotion={promotion}
+            hint={hint}
+            placeholder={placeholder}
+          />
         </Spacer>
       }
     >
@@ -44,7 +50,8 @@ const InternalPromotionSkuListSelector: React.FC<{
   label?: string
   hint: string
   promotion?: Promotion
-}> = ({ hint, label, promotion }) => {
+  placeholder?: string
+}> = ({ hint, label, promotion, placeholder = 'Search...' }) => {
   const { sdkClient } = useCoreSdkProvider()
 
   const { data: skuLists = [] } = useCoreApi('sku_lists', 'list', [
@@ -59,7 +66,7 @@ const InternalPromotionSkuListSelector: React.FC<{
       hint={{
         text: hint
       }}
-      placeholder='Search...'
+      placeholder={placeholder}
       initialValues={
         promotion?.sku_list != null
           ? [

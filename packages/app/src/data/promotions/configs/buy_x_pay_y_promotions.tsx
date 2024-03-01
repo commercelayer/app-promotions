@@ -46,8 +46,8 @@ export default {
           <Spacer top='6'>
             <PromotionSkuListSelector
               promotion={promotion}
-              label='SKU list'
-              hint='Apply the promotion to the SKUs within this list.'
+              label='Promoted products *'
+              hint='Apply the promotion to any SKUs within this list.'
             />
           </Spacer>
           <Spacer top='6'>
@@ -56,7 +56,7 @@ export default {
                 type='number'
                 min={1}
                 name='x'
-                label='Buy'
+                label='Buy *'
                 hint={{
                   text: 'Minimum quantity to activate the promo.'
                 }}
@@ -65,7 +65,7 @@ export default {
                 type='number'
                 min={1}
                 name='y'
-                label='Pay'
+                label='Pay *'
                 hint={{
                   text: 'Items that will be charged.'
                 }}

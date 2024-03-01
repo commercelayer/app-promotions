@@ -26,7 +26,7 @@ export default {
         <Spacer top='6'>
           <HookedInput
             name='promotion_url'
-            label='External service URL'
+            label='External service URL *'
             hint={{
               text: (
                 <>

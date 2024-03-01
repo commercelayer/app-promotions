@@ -52,7 +52,7 @@ export default {
               <HookedInputCurrency
                 name='fixed_amount_cents'
                 currencyCode={currencyCode}
-                label='Fixed amount discount'
+                label='Fixed amount discount *'
                 hint={{
                   text: 'How much the order is discounted.'
                 }}

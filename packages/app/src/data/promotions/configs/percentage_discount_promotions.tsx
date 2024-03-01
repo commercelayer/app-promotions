@@ -36,7 +36,7 @@ export default {
             min={1}
             max={100}
             name='percentage'
-            label='Percentage discount'
+            label='Percentage discount *'
             hint={{
               text: 'How much the order is discounted in percentage.'
             }}

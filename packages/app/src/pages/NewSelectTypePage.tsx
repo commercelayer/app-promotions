@@ -34,16 +34,16 @@ function Page(props: PageProps<typeof appRoutes.newSelectType>): JSX.Element {
     >
       <Spacer top='10'>
         <Section titleSize='small' title='Preset'>
-          <LinkTo promotionType='buy_x_pay_y_promotions' />
-          <LinkTo promotionType='fixed_amount_promotions' />
-          <LinkTo promotionType='fixed_price_promotions' />
-          <LinkTo promotionType='free_gift_promotions' />
-          <LinkTo promotionType='free_shipping_promotions' />
           <LinkTo promotionType='percentage_discount_promotions' />
+          <LinkTo promotionType='free_shipping_promotions' />
+          <LinkTo promotionType='fixed_amount_promotions' />
+          <LinkTo promotionType='free_gift_promotions' />
+          <LinkTo promotionType='fixed_price_promotions' />
+          <LinkTo promotionType='buy_x_pay_y_promotions' />
         </Section>
       </Spacer>
       <Spacer top='10'>
-        <Section titleSize='small' title='Custom'>
+        <Section titleSize='small' title='More'>
           <LinkTo promotionType='external_promotions' />
         </Section>
       </Spacer>

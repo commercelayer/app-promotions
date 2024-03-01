@@ -87,44 +87,44 @@ export function PromotionForm({
           <Spacer top='6'>
             <HookedInput
               name='name'
-              label='Name'
+              label='Promotion name *'
               hint={{ text: 'Pick a name that helps you identify it.' }}
             />
           </Spacer>
           <Spacer top='6'>
             <Grid columns='2'>
-              <HookedInputDate name='starts_at' label='Starts on' />
-              <HookedInputDate name='expires_at' label='Expires on' />
+              <HookedInputDate
+                name='starts_at'
+                label='Starts on *'
+                hint={{ text: 'The date the promotion will start.' }}
+              />
+              <HookedInputDate
+                name='expires_at'
+                label='Expires on *'
+                hint={{ text: 'The date the promotion will end.' }}
+              />
             </Grid>
           </Spacer>
 
           <promotionConfig.Fields promotion={promotion} />
+
+          <Spacer top='6'>
+            <HookedInput
+              type='number'
+              min={1}
+              name='total_usage_limit'
+              label='Usage limit'
+              hint={{
+                text: 'Optionally limit how many times this promotion can be used.'
+              }}
+            />
+          </Spacer>
         </Section>
       </Spacer>
       <Spacer top='14'>
         <Section title='Options'>
           <Spacer top='6'>
             <promotionConfig.Options promotion={promotion} />
-
-            <Spacer top='2'>
-              <HookedInputCheckbox
-                name='show_total_usage_limit'
-                checkedElement={
-                  <Spacer bottom='6'>
-                    <HookedInput
-                      type='number'
-                      min={1}
-                      name='total_usage_limit'
-                      hint={{
-                        text: 'How many times this promotion can be used.'
-                      }}
-                    />
-                  </Spacer>
-                }
-              >
-                <Text weight='semibold'>Limit usage</Text>
-              </HookedInputCheckbox>
-            </Spacer>
 
             <Spacer top='2'>
               <HookedInputCheckbox name='exclusive'>

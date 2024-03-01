@@ -45,8 +45,8 @@ export default {
           <Spacer top='6'>
             <PromotionSkuListSelector
               promotion={promotion}
-              label='SKU list'
-              hint='Impose a fixed price to the SKUs within this list.'
+              label='Promoted products *'
+              hint='Impose a fixed price to any SKUs within this list.'
             />
           </Spacer>
           <Spacer top='6'>
@@ -59,7 +59,7 @@ export default {
               <HookedInputCurrency
                 name='fixed_amount_cents'
                 currencyCode={currencyCode}
-                label='Fixed price'
+                label='Fixed price *'
                 hint={{
                   text: 'The price of the SKUs in the list.'
                 }}
