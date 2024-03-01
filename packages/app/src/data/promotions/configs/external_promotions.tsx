@@ -26,7 +26,7 @@ export default {
         <Spacer top='6'>
           <HookedInput
             name='promotion_url'
-            label='External service URL'
+            label='External service URL *'
             hint={{
               text: (
                 <>
@@ -45,13 +45,11 @@ export default {
     Options: ({ promotion }) => {
       return (
         <>
-          <Spacer top='2'>
-            <PromotionSkuListSelector
-              optional
-              promotion={promotion}
-              hint='Apply the promotion only to the SKUs within the selected SKU list.'
-            />
-          </Spacer>
+          <PromotionSkuListSelector
+            optional
+            promotion={promotion}
+            hint='Apply the promotion only to the SKUs within the selected SKU list.'
+          />
         </>
       )
     },

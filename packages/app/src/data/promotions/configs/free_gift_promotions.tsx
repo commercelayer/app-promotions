@@ -15,7 +15,7 @@ export default {
     slug: 'free-gift',
     icon: 'gift',
     titleList: 'Free gift',
-    titleNew: 'free gift',
+    titleNew: 'free gift promotion',
     formType: genericPromotionOptions.merge(
       z.object({
         sku_list: z.string(),
@@ -34,8 +34,8 @@ export default {
           <Spacer top='6'>
             <PromotionSkuListSelector
               promotion={promotion}
-              label='Gift'
-              hint='Set to zero the price of the SKUs within this list.'
+              label='Free gift products *'
+              hint='Apply the promotion to any SKUs within this list.'
             />
           </Spacer>
           <Spacer top='6'>

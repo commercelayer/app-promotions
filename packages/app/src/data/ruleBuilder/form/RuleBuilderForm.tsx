@@ -93,7 +93,7 @@ export function RuleBuilderForm({
             methods.formState.isSubmitting || !methods.formState.isValid
           }
         >
-          Add activation rule
+          Create
         </Button>
       </Spacer>
     </HookedForm>

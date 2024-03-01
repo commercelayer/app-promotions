@@ -8,6 +8,7 @@ import {
   HookedInput,
   HookedInputCheckbox,
   HookedInputDate,
+  Section,
   Spacer,
   Text,
   useCoreSdkProvider
@@ -73,69 +74,69 @@ export function CouponForm({
         )
       }}
     >
-      <Spacer top='6'>
-        <HookedInput
-          name='code'
-          maxLength={40}
-          label='Coupon code'
-          hint={{ text: '8 to 40 characters.' }}
-        />
-      </Spacer>
+      <Spacer top='14'>
+        <Section title='Basic info'>
+          <Spacer top='6'>
+            <HookedInput
+              name='code'
+              maxLength={40}
+              label='Coupon code *'
+              hint={{ text: '8 to 40 characters.' }}
+            />
+          </Spacer>
 
-      <Spacer top='6'>
-        <HookedInputDate
-          name='expires_at'
-          isClearable
-          label='Expires on'
-          hint={{
-            text: 'Optionally set an expiration date for the coupon.'
-          }}
-        />
+          <Spacer top='6'>
+            <HookedInputDate
+              name='expires_at'
+              isClearable
+              label='Expires on'
+              hint={{
+                text: 'Optionally set an expiration date for the coupon.'
+              }}
+            />
+          </Spacer>
+
+          <Spacer top='6'>
+            <HookedInput
+              type='number'
+              label='Usage limit'
+              min={1}
+              name='usage_limit'
+              hint={{
+                text: 'Optionally limit how many times this coupon can be used.'
+              }}
+            />
+          </Spacer>
+        </Section>
       </Spacer>
 
       <Spacer top='14'>
-        <Spacer bottom='2'>
-          <HookedInputCheckbox
-            name='show_usage_limit'
-            checkedElement={
-              <Spacer bottom='6'>
-                <HookedInput
-                  type='number'
-                  min={1}
-                  name='usage_limit'
-                  hint={{
-                    text: 'How many times this coupon can be used.'
-                  }}
-                />
-              </Spacer>
-            }
-          >
-            <Text weight='semibold'>Limit usage</Text>
-          </HookedInputCheckbox>
-        </Spacer>
+        <Section title='Customer options'>
+          <Spacer top='6'>
+            <Spacer bottom='2'>
+              <HookedInputCheckbox
+                name='show_recipient_email'
+                checkedElement={
+                  <Spacer bottom='6'>
+                    <HookedInput
+                      type='text'
+                      name='recipient_email'
+                      placeholder='Recipient email'
+                    />
+                  </Spacer>
+                }
+              >
+                <Text weight='semibold'>Customer email</Text>
+              </HookedInputCheckbox>
+            </Spacer>
 
-        <Spacer bottom='2'>
-          <HookedInputCheckbox
-            name='show_recipient_email'
-            checkedElement={
-              <Spacer bottom='6'>
-                <HookedInput
-                  type='text'
-                  name='recipient_email'
-                  placeholder='Recipient email'
-                />
-              </Spacer>
-            }
-          >
-            <Text weight='semibold'>Customer Email</Text>
-          </HookedInputCheckbox>
-        </Spacer>
-
-        <Spacer bottom='2'>
-          <HookedInputCheckbox name='customer_single_use'>
-            <Text weight='semibold'>Single use per customer</Text>
-          </HookedInputCheckbox>
-        </Spacer>
+            <Spacer bottom='2'>
+              <HookedInputCheckbox name='customer_single_use'>
+                <Text weight='semibold'>Single use per customer</Text>
+              </HookedInputCheckbox>
+            </Spacer>
+          </Spacer>
+        </Section>
       </Spacer>
 
       <Spacer top='14'>

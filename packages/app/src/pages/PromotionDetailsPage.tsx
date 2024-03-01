@@ -7,6 +7,7 @@ import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import type { Promotion } from '#types'
 import {
+  Alert,
   Badge,
   Button,
   ButtonCard,
@@ -49,6 +50,9 @@ function Page(
 
   const { isLoading, promotion, error } = usePromotion(props.params.promotionId)
 
+  const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
+  const hasRules = rules.length > 0
+
   if (error != null) {
     return <GenericPageNotFound />
   }
@@ -76,7 +80,16 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='14'>
-          <CardStatus promotionId={props.params.promotionId} />
+          {!isLoadingRules && !hasRules && (
+            <Alert status='warning'>
+              Define activation rules below to prevent application to all
+              orders.
+            </Alert>
+          )}
+
+          <Spacer top='6'>
+            <CardStatus promotionId={props.params.promotionId} />
+          </Spacer>
         </Spacer>
 
         <Spacer top='14'>
@@ -258,7 +271,7 @@ const SectionInfo = withSkeletonTemplate<{
       {promotion.exclusive === true && (
         <ListDetailsItem label='Exclusive' gutter='none'>
           <Text variant='success'>
-            <Icon name='check' />
+            <Icon name='check' weight='bold' size={18} />
           </Text>
         </ListDetailsItem>
       )}
@@ -295,7 +308,9 @@ const SectionActivationRules = withSkeletonTemplate<{
         title='Activation rules'
         border='none'
         actionButton={
-          hasRules ? <Link href={addActivationRuleLink}>Add</Link> : undefined
+          hasRules ? (
+            <Link href={addActivationRuleLink}>Add rule</Link>
+          ) : undefined
         }
       >
         {hasRules ? (
@@ -398,7 +413,7 @@ const SectionCoupon = withSkeletonTemplate<{
         title='Coupons'
         border='none'
         actionButton={
-          hasCoupons ? <Link href={addCouponLink}>Add</Link> : undefined
+          hasCoupons ? <Link href={addCouponLink}>Add coupon</Link> : undefined
         }
       >
         {hasCoupons ? (

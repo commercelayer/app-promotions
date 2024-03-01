@@ -12,13 +12,13 @@ import free_shipping_promotions from './configs/free_shipping_promotions'
 import percentage_discount_promotions from './configs/percentage_discount_promotions'
 
 export const promotionConfig: PromotionConfig = {
-  ...buy_x_pay_y_promotions,
-  ...external_promotions,
-  ...fixed_amount_promotions,
-  ...fixed_price_promotions,
-  ...free_gift_promotions,
+  ...percentage_discount_promotions,
   ...free_shipping_promotions,
-  ...percentage_discount_promotions
+  ...fixed_amount_promotions,
+  ...free_gift_promotions,
+  ...fixed_price_promotions,
+  ...buy_x_pay_y_promotions,
+  ...external_promotions
 }
 
 type Sanitize<PT extends PromotionType> = Replace<

@@ -2,6 +2,7 @@ import type { Promotion } from '#types'
 import {
   HookedInputCheckbox,
   HookedInputSelect,
+  Section,
   Spacer,
   Text,
   useCoreApi,
@@ -15,28 +16,42 @@ export const PromotionSkuListSelector: React.FC<{
   hint: string
   promotion?: Promotion
   optional?: boolean
-}> = ({ hint, label, promotion, optional = false }) => {
+  placeholder?: string
+}> = ({ hint, label, promotion, placeholder, optional = false }) => {
   if (!optional) {
     return (
       <InternalPromotionSkuListSelector
         label={label}
         hint={hint}
         promotion={promotion}
+        placeholder={placeholder}
       />
     )
   }
 
   return (
-    <HookedInputCheckbox
-      name='show_sku_list'
-      checkedElement={
-        <Spacer bottom='6'>
-          <InternalPromotionSkuListSelector promotion={promotion} hint={hint} />
+    <Spacer top='14'>
+      <Section title='Apply the discount to'>
+        <Spacer top='6'>
+          <Spacer top='2'>
+            <HookedInputCheckbox
+              name='show_sku_list'
+              checkedElement={
+                <Spacer bottom='6'>
+                  <InternalPromotionSkuListSelector
+                    promotion={promotion}
+                    hint={hint}
+                    placeholder={placeholder}
+                  />
+                </Spacer>
+              }
+            >
+              <Text weight='semibold'>Restrict to specific SKUs</Text>
+            </HookedInputCheckbox>
+          </Spacer>
         </Spacer>
-      }
-    >
-      <Text weight='semibold'>Restrict to specific SKUs</Text>
-    </HookedInputCheckbox>
+      </Section>
+    </Spacer>
   )
 }
 
@@ -44,7 +59,8 @@ const InternalPromotionSkuListSelector: React.FC<{
   label?: string
   hint: string
   promotion?: Promotion
-}> = ({ hint, label, promotion }) => {
+  placeholder?: string
+}> = ({ hint, label, promotion, placeholder = 'Search...' }) => {
   const { sdkClient } = useCoreSdkProvider()
 
   const { data: skuLists = [] } = useCoreApi('sku_lists', 'list', [
@@ -59,7 +75,7 @@ const InternalPromotionSkuListSelector: React.FC<{
       hint={{
         text: hint
       }}
-      placeholder='Search...'
+      placeholder={placeholder}
       initialValues={
         promotion?.sku_list != null
           ? [

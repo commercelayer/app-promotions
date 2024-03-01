@@ -52,7 +52,7 @@ export default {
               <HookedInputCurrency
                 name='fixed_amount_cents'
                 currencyCode={currencyCode}
-                label='Fixed amount discount'
+                label='Fixed amount discount *'
                 hint={{
                   text: 'How much the order is discounted.'
                 }}
@@ -74,13 +74,11 @@ export default {
     Options: ({ promotion }) => {
       return (
         <>
-          <Spacer top='2'>
-            <PromotionSkuListSelector
-              optional
-              promotion={promotion}
-              hint='Apply the promotion only to the SKUs within the selected SKU list.'
-            />
-          </Spacer>
+          <PromotionSkuListSelector
+            optional
+            promotion={promotion}
+            hint='Apply the promotion only to the SKUs within the selected SKU list.'
+          />
         </>
       )
     },

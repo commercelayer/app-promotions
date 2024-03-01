@@ -36,7 +36,7 @@ export default {
             min={1}
             max={100}
             name='percentage'
-            label='Percentage discount'
+            label='Percentage discount *'
             hint={{
               text: 'How much the order is discounted in percentage.'
             }}
@@ -47,13 +47,11 @@ export default {
     Options: ({ promotion }) => {
       return (
         <>
-          <Spacer top='2'>
-            <PromotionSkuListSelector
-              optional
-              promotion={promotion}
-              hint='Apply the promotion only to the SKUs within the selected SKU list.'
-            />
-          </Spacer>
+          <PromotionSkuListSelector
+            optional
+            promotion={promotion}
+            hint='Apply the promotion only to the SKUs within the selected SKU list.'
+          />
         </>
       )
     },

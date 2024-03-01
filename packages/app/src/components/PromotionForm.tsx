@@ -10,11 +10,9 @@ import {
   HookedInput,
   HookedInputCheckbox,
   HookedInputDate,
-  Icon,
   Section,
   Spacer,
   Text,
-  Tooltip,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -44,6 +42,8 @@ export function PromotionForm({
     resolver: zodResolver(promotionConfig.formType)
   })
 
+  const isCreatingNewPromotion = promotionId == null
+
   useEffect(
     function updateFormWithNewDefaultValues() {
       if (defaultValues != null) {
@@ -60,25 +60,29 @@ export function PromotionForm({
         const resource = sdkClient[promotionConfig.type]
         let promotion: Promotion
 
-        if (promotionId != null) {
-          // @ts-expect-error // TODO: I need to fix thi
-          promotion = await resource.update({
-            id: promotionId,
-            ...formValuesToPromotion(formValues)
-          })
-        } else {
+        if (isCreatingNewPromotion) {
           // @ts-expect-error // TODO: I need to fix this
           promotion = await resource.create({
             ...formValuesToPromotion(formValues),
             _disable: true,
             reference_origin: 'app-promotions'
           })
+        } else {
+          // @ts-expect-error // TODO: I need to fix thi
+          promotion = await resource.update({
+            id: promotionId,
+            ...formValuesToPromotion(formValues)
+          })
         }
 
         setLocation(
-          appRoutes.promotionDetails.makePath({
-            promotionId: promotion.id
-          })
+          isCreatingNewPromotion
+            ? appRoutes.promotionActivationRules.makePath({
+                promotionId: promotion.id
+              })
+            : appRoutes.promotionDetails.makePath({
+                promotionId: promotion.id
+              })
         )
       }}
     >
@@ -87,67 +91,51 @@ export function PromotionForm({
           <Spacer top='6'>
             <HookedInput
               name='name'
-              label='Name'
+              label='Promotion name *'
               hint={{ text: 'Pick a name that helps you identify it.' }}
             />
           </Spacer>
           <Spacer top='6'>
             <Grid columns='2'>
-              <HookedInputDate name='starts_at' label='Starts on' />
-              <HookedInputDate name='expires_at' label='Expires on' />
+              <HookedInputDate
+                name='starts_at'
+                label='Starts on *'
+                hint={{ text: 'The date the promotion will start.' }}
+              />
+              <HookedInputDate
+                name='expires_at'
+                label='Expires on *'
+                hint={{ text: 'The date the promotion will end.' }}
+              />
             </Grid>
           </Spacer>
 
           <promotionConfig.Fields promotion={promotion} />
+
+          <Spacer top='6'>
+            <HookedInput
+              type='number'
+              min={1}
+              name='total_usage_limit'
+              label='Usage limit'
+              hint={{
+                text: 'Optionally limit how many times this promotion can be used.'
+              }}
+            />
+          </Spacer>
         </Section>
       </Spacer>
+
+      <promotionConfig.Options promotion={promotion} />
+
       <Spacer top='14'>
-        <Section title='Options'>
+        <Section title='How this promotion works with concurrent ones'>
           <Spacer top='6'>
-            <promotionConfig.Options promotion={promotion} />
-
-            <Spacer top='2'>
-              <HookedInputCheckbox
-                name='show_total_usage_limit'
-                checkedElement={
-                  <Spacer bottom='6'>
-                    <HookedInput
-                      type='number'
-                      min={1}
-                      name='total_usage_limit'
-                      hint={{
-                        text: 'How many times this promotion can be used.'
-                      }}
-                    />
-                  </Spacer>
-                }
-              >
-                <Text weight='semibold'>Limit usage</Text>
-              </HookedInputCheckbox>
-            </Spacer>
-
             <Spacer top='2'>
               <HookedInputCheckbox name='exclusive'>
-                <Text weight='semibold'>Make exclusive</Text>{' '}
-                <Tooltip
-                  id='make-exclusive'
-                  direction='top-start'
-                  label={
-                    <Icon
-                      style={{ display: 'inline-block' }}
-                      name='info'
-                      weight='bold'
-                      size={18}
-                    />
-                  }
-                  content={
-                    <>
-                      No other concurrent promotion
-                      <br />
-                      will be applied to the order.
-                    </>
-                  }
-                />
+                <Text weight='semibold'>
+                  Make it exclusive (the other promotions won't apply)
+                </Text>
               </HookedInputCheckbox>
             </Spacer>
 
@@ -179,12 +167,13 @@ export function PromotionForm({
                   </Spacer>
                 }
               >
-                <Text weight='semibold'>Priority</Text>
+                <Text weight='semibold'>Assign a priority</Text>
               </HookedInputCheckbox>
             </Spacer>
           </Spacer>
         </Section>
       </Spacer>
+
       <Spacer top='14'>
         <Spacer top='8'>
           <Button
