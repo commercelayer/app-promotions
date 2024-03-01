@@ -1,10 +1,9 @@
 import type { Promotion } from '#types'
 import {
-  HookedInputCheckbox,
+  HookedInputRadioGroup,
   HookedInputSelect,
   Section,
   Spacer,
-  Text,
   useCoreApi,
   useCoreSdkProvider,
   type InputSelectValue
@@ -18,9 +17,12 @@ export const PromotionSkuListSelector: React.FC<{
   optional?: boolean
   placeholder?: string
 }> = ({ hint, label, promotion, placeholder, optional = false }) => {
+  const fieldName = 'sku_list'
+
   if (!optional) {
     return (
-      <InternalPromotionSkuListSelector
+      <HookedInternalPromotionSkuListSelector
+        name={fieldName}
         label={label}
         hint={hint}
         promotion={promotion}
@@ -34,20 +36,30 @@ export const PromotionSkuListSelector: React.FC<{
       <Section title='Apply the discount to'>
         <Spacer top='6'>
           <Spacer top='2'>
-            <HookedInputCheckbox
-              name='show_sku_list'
-              checkedElement={
-                <Spacer bottom='6'>
-                  <InternalPromotionSkuListSelector
-                    promotion={promotion}
-                    hint={hint}
-                    placeholder={placeholder}
-                  />
-                </Spacer>
-              }
-            >
-              <Text weight='semibold'>Restrict to specific SKUs</Text>
-            </HookedInputCheckbox>
+            <HookedInputRadioGroup
+              name='apply_the_discount_to'
+              viewMode='simple'
+              options={[
+                {
+                  value: 'all',
+                  content: 'All products in the order'
+                },
+                {
+                  value: 'sku_list',
+                  content: 'Selected products',
+                  checkedElement: (
+                    <Spacer bottom='6'>
+                      <HookedInternalPromotionSkuListSelector
+                        name={fieldName}
+                        promotion={promotion}
+                        hint={hint}
+                        placeholder={placeholder}
+                      />
+                    </Spacer>
+                  )
+                }
+              ]}
+            />
           </Spacer>
         </Spacer>
       </Section>
@@ -55,12 +67,13 @@ export const PromotionSkuListSelector: React.FC<{
   )
 }
 
-const InternalPromotionSkuListSelector: React.FC<{
+const HookedInternalPromotionSkuListSelector: React.FC<{
   label?: string
   hint: string
   promotion?: Promotion
   placeholder?: string
-}> = ({ hint, label, promotion, placeholder = 'Search...' }) => {
+  name: string
+}> = ({ hint, label, promotion, name, placeholder = 'Search...' }) => {
   const { sdkClient } = useCoreSdkProvider()
 
   const { data: skuLists = [] } = useCoreApi('sku_lists', 'list', [
@@ -69,7 +82,7 @@ const InternalPromotionSkuListSelector: React.FC<{
 
   return (
     <HookedInputSelect
-      name='sku_list'
+      name={name}
       label={label}
       isClearable
       hint={{
@@ -102,6 +115,9 @@ const InternalPromotionSkuListSelector: React.FC<{
     />
   )
 }
+
+HookedInternalPromotionSkuListSelector.displayName =
+  'HookedInternalPromotionSkuListSelector'
 
 function getParams({ name }: { name: string }): QueryParamsList {
   return {
