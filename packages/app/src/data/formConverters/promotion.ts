@@ -12,8 +12,7 @@ export function promotionToFormValues(promotion?: Promotion) {
     ...promotion,
     starts_at: new Date(promotion.starts_at),
     expires_at: new Date(promotion.expires_at),
-    show_sku_list: promotion.sku_list != null,
-    show_total_usage_limit: promotion.total_usage_limit != null,
+    apply_the_discount_to: promotion.sku_list != null ? 'sku_list' : 'all',
     show_priority: promotion.priority != null,
     sku_list: promotion.sku_list?.id
   }

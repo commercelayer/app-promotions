@@ -11,7 +11,6 @@ function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
   } = useTokenProvider()
   const [, setLocation] = useLocation()
 
-  // @ts-expect-error This will be solved in next element release
   const config = promotionConfig[props.params.promotionType]
 
   if (config == null) {
@@ -34,7 +33,11 @@ function Page(props: PageProps<typeof appRoutes.newPromotion>): JSX.Element {
     >
       <PromotionForm
         promotionConfig={config}
-        defaultValues={{ currency_code: 'USD', max_quantity: 1 }}
+        defaultValues={{
+          currency_code: 'USD',
+          max_quantity: 1,
+          apply_the_discount_to: 'all'
+        }}
       />
     </PageLayout>
   )

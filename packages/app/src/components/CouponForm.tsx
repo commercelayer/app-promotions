@@ -87,6 +87,7 @@ export function CouponForm({
 
           <Spacer top='6'>
             <HookedInputDate
+              showTimeSelect
               name='expires_at'
               isClearable
               label='Expires on'

@@ -98,11 +98,13 @@ export function PromotionForm({
           <Spacer top='6'>
             <Grid columns='2'>
               <HookedInputDate
+                showTimeSelect
                 name='starts_at'
                 label='Starts on *'
                 hint={{ text: 'The date the promotion will start.' }}
               />
               <HookedInputDate
+                showTimeSelect
                 name='expires_at'
                 label='Expires on *'
                 hint={{ text: 'The date the promotion will end.' }}
