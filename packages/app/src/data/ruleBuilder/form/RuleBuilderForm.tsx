@@ -90,7 +90,8 @@ export function RuleBuilderForm({
           fullWidth
           type='submit'
           disabled={
-            methods.formState.isSubmitting || !methods.formState.isValid
+            // methods.formState.isSubmitting || !methods.formState.isValid
+            methods.formState.isSubmitting
           }
         >
           Create
@@ -157,17 +158,17 @@ function useRuleBuilderFormFields(promotion: Promotion) {
     ]
   }, [ruleBuilderConfig, currencyCodes, rules])
 
-  const operatorInitialValues: InputSelectValue[] = useMemo(() => {
+  const operatorInitialValues: InputSelectValue[] | null = useMemo(() => {
     if (watchParameter == null) {
       return []
     }
 
-    return (ruleBuilderConfig[watchParameter]?.operators.map(
+    return (ruleBuilderConfig[watchParameter]?.operators?.map(
       ({ label, value }) => ({
         label,
         value
       })
-    ) ?? []) satisfies InputSelectValue[]
+    ) ?? null) satisfies InputSelectValue[] | null
   }, [watchParameter])
 
   const inputComponent: React.ReactNode | null = useMemo(() => {
@@ -182,13 +183,14 @@ function useRuleBuilderFormFields(promotion: Promotion) {
     )
   }, [watchParameter, promotion])
 
-  const inputOperator = (
-    <HookedInputSelect
-      isSearchable={false}
-      initialValues={operatorInitialValues}
-      name='operator'
-    />
-  )
+  const inputOperator =
+    operatorInitialValues != null ? (
+      <HookedInputSelect
+        isSearchable={false}
+        initialValues={operatorInitialValues}
+        name='operator'
+      />
+    ) : null
 
   useEffect(() => {
     methods.resetField('operator')

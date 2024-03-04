@@ -5,7 +5,6 @@ import {
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
-import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { useEffect, useState } from 'react'
 import { matchers, ruleBuilderConfig, type RuleBuilderConfig } from './config'
 import { useCurrencyCodes } from './currency'
@@ -46,7 +45,11 @@ export function usePromotionRules(promotion: Promotion): {
 
           return (
             rules?.flatMap(async (rule) => {
-              if (rule.valid && rule.rel != null) {
+              if (
+                rule.valid &&
+                rule.rel != null &&
+                !rule.rawValues.includes('null')
+              ) {
                 const promise: Promise<Rule> = sdkClient[rule.rel]
                   .list({
                     filters: { id_in: rule.rawValues.join(',') }
@@ -115,7 +118,7 @@ type RawRule = {
       /** Rule builder configuration */
       config: RuleBuilderConfig[keyof RuleBuilderConfig]
       /** Related resource. (e.g. when `markets`, the `rawValue` contains market IDs) */
-      rel?: Extract<ListableResourceType, 'markets' | 'tags'>
+      rel: RuleBuilderConfig[keyof RuleBuilderConfig]['rel']
       /** Filter matcher. It represents the condition to be met by the query. */
       matcherLabel: (typeof matchers)[keyof typeof matchers]['label']
       /** Type from the associated promotion rule */
@@ -164,7 +167,7 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
               valid: false,
               key: predicate,
               label: predicate,
-              rawValues: value.toString().split(',')
+              rawValues: String(value).toString().split(',')
             } satisfies RawRule
           }
 
@@ -179,7 +182,7 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
             config,
             rel: config.rel,
             matcherLabel,
-            rawValues: value.toString().split(',')
+            rawValues: String(value).toString().split(',')
           } satisfies RawRule
         }
       )

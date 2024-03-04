@@ -50,7 +50,7 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
   },
   currency_code: {
     resource: 'custom_promotion_rules',
-    rel: undefined,
+    rel: null,
     label: 'Currency',
     operators: [matchers.in, matchers.not_in],
     component: ({ promotion }) => (
@@ -60,11 +60,17 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
-  // itemsInCart: {
+  // skuListPromotionRule: {
   //   resource: 'sku_list_promotion_rules',
-  //   label: 'Items in cart',
-  //   operators: [matchers.eq, matchers.gteq, matchers.gt],
-  //   component: () => <HookedInput name='value' />
+  //   rel: null,
+  //   label: 'SKU list',
+  //   operators: null,
+  //   component: ({ promotion }) => (
+  //     <SelectCurrencyComponent promotion={promotion} />
+  //   ),
+  //   isAvailable() {
+  //     return true
+  //   }
   // },
   line_items_sku_tags_id: {
     resource: 'custom_promotion_rules',
@@ -88,7 +94,7 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
   },
   subtotal_amount_cents: {
     resource: 'custom_promotion_rules',
-    rel: undefined,
+    rel: null,
     label: 'Cart subtotal',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
     component: ({ promotion }) => (
@@ -100,7 +106,7 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
   },
   total_amount_cents: {
     resource: 'custom_promotion_rules',
-    rel: undefined,
+    rel: null,
     label: 'Cart total',
     operators: [matchers.eq, matchers.gteq, matchers.gt],
     component: ({ promotion }) => (
@@ -119,11 +125,12 @@ export type RuleBuilderConfig = Record<
   | 'line_items_sku_tags_id'
   | 'customer_tags_id'
   | 'subtotal_amount_cents',
+  // | 'skuListPromotionRule',
   {
     resource: 'custom_promotion_rules' | 'sku_list_promotion_rules'
-    rel: Extract<ListableResourceType, 'markets' | 'tags'> | undefined
+    rel: Extract<ListableResourceType, 'markets' | 'tags'> | null
     label: string
-    operators: Array<(typeof matchers)[keyof typeof matchers]>
+    operators: Array<(typeof matchers)[keyof typeof matchers]> | null
     component: (props: { promotion: Promotion }) => React.ReactNode
     isAvailable: (config: {
       rules: Rule[]

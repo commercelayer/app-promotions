@@ -20,14 +20,58 @@ type TuplifyUnion<
   N = [T] extends [never] ? true : false
 > = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>
 
-export const ruleBuilderFormValidator = z.object({
-  parameter: z.enum(
-    Object.keys(ruleBuilderConfig) as TuplifyUnion<
-      keyof typeof ruleBuilderConfig
-    >
-  ),
-  operator: z.enum(
-    Object.keys(matchers) as TuplifyUnion<keyof typeof matchers>
-  ),
-  value: z.string().min(1).or(z.string().array().min(1)).or(z.number())
-})
+export const ruleBuilderFormValidator = z
+  .object({
+    parameter: z
+      .enum(
+        Object.keys(ruleBuilderConfig) as TuplifyUnion<
+          keyof typeof ruleBuilderConfig
+        >
+      )
+      .nullable(),
+    operator: z
+      .enum(Object.keys(matchers) as TuplifyUnion<keyof typeof matchers>)
+      .nullable(),
+    value: z
+      .string()
+      .min(1)
+      .or(z.string().array().min(1))
+      .or(z.number())
+      .nullable()
+  })
+  .superRefine((data, ctx) => {
+    console.log(data)
+
+    // Validate "parameter"
+    if (data.parameter == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['parameter'],
+        message: `One of ${Object.values(ruleBuilderConfig)
+          .map(({ label }) => `"${label}"`)
+          .join(' or ')} is required`
+      })
+    }
+
+    // Validate "operator"
+    if (
+      data.parameter != null &&
+      ruleBuilderConfig[data.parameter].operators != null &&
+      data.operator == null
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['operator'],
+        message: `One of ${ruleBuilderConfig[data.parameter].operators?.map(({ label }) => `"${label}"`).join(' or ')} is required`
+      })
+    }
+
+    // Validate "value"
+    if (data.parameter != null && data.value == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['value'],
+        message: `Input is required`
+      })
+    }
+  })
