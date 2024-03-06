@@ -72,8 +72,8 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
-.env.test
+# .env  --> we want to keep it versionated by default. Use `.env.(local|production)` for custom env to be ignored
+.env.*
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

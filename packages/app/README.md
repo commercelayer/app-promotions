@@ -26,7 +26,7 @@ You need a local Node.JS (version 18+) environment and some React.JS knowledge t
 git clone https://github.com/<your username>/app-promotions.git && cd app-promotions
 ```
 
-3. Set your environment by creating a new `/src/app/.env.local` file starting from `/src/app/.env.local.sample` (not required for local development).
+3. Set your environment by creating a new `/src/app/.env.local` file starting from `/src/app/.env` (not required for local development).
 
 4. Install dependencies and run the development server:
 
