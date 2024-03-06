@@ -1,11 +1,10 @@
-import type { PageProps } from '#components/Routes'
 import { filtersInstructions } from '#data/filters'
 import { appRoutes } from '#data/routes'
 import {
+  HomePageLayout,
   Icon,
   List,
   ListItem,
-  PageLayout,
   Spacer,
   StatusIcon,
   Text,
@@ -14,11 +13,8 @@ import {
 } from '@commercelayer/app-elements'
 import { Link, useLocation, useSearch } from 'wouter'
 
-function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
-  const {
-    settings: { mode, dashboardUrl },
-    canUser
-  } = useTokenProvider()
+function HomePage(): JSX.Element {
+  const { canUser } = useTokenProvider()
 
   const search = useSearch()
   const [, setLocation] = useLocation()
@@ -28,19 +24,7 @@ function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
   })
 
   return (
-    <PageLayout
-      overlay={props.overlay}
-      title='Promotions'
-      mode={mode}
-      gap='only-top'
-      navigationButton={{
-        onClick: () => {
-          window.location.href =
-            dashboardUrl != null ? `${dashboardUrl}/hub` : '/'
-        },
-        label: 'Hub'
-      }}
-    >
+    <HomePageLayout title='Promotions'>
       <SearchWithNav
         hideFiltersNav
         onFilterClick={() => {}}
@@ -137,7 +121,7 @@ function HomePage(props: PageProps<typeof appRoutes.home>): JSX.Element {
           </Link>
         </List>
       </Spacer>
-    </PageLayout>
+    </HomePageLayout>
   )
 }
 
