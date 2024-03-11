@@ -136,3 +136,10 @@ export const filtersInstructions: FiltersInstructions = [
     }
   }
 ]
+
+export const predicateWhitelist = [
+  'starts_at_lteq',
+  'expires_at_gteq',
+  'disabled_at_null',
+  'starts_at_gt'
+]

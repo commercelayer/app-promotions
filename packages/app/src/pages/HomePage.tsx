@@ -1,10 +1,12 @@
-import { filtersInstructions } from '#data/filters'
+import { filtersInstructions, predicateWhitelist } from '#data/filters'
+import { presets } from '#data/lists'
 import { appRoutes } from '#data/routes'
 import {
   HomePageLayout,
   Icon,
   List,
   ListItem,
+  RadialProgress,
   Spacer,
   StatusIcon,
   Text,
@@ -19,8 +21,9 @@ function HomePage(): JSX.Element {
   const search = useSearch()
   const [, setLocation] = useLocation()
 
-  const { SearchWithNav } = useResourceFilters({
-    instructions: filtersInstructions
+  const { SearchWithNav, adapters } = useResourceFilters({
+    instructions: filtersInstructions,
+    predicateWhitelist
   })
 
   return (
@@ -51,7 +54,7 @@ function HomePage(): JSX.Element {
             ) : undefined
           }
         >
-          {/* <Link
+          <Link
             href={appRoutes.promotionList.makePath(
               {},
               adapters.adaptFormValuesToUrlQuery({
@@ -102,7 +105,7 @@ function HomePage(): JSX.Element {
               <Text weight='semibold'>{presets.disabled.viewTitle} </Text>
               <StatusIcon name='caretRight' />
             </ListItem>
-          </Link> */}
+          </Link>
 
           <Link asChild href={appRoutes.promotionList.makePath({})}>
             <ListItem

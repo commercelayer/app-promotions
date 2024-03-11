@@ -1,7 +1,7 @@
 import { ListEmptyState } from '#components/ListEmptyState'
 import { ListItemPromotion } from '#components/ListItemPromotion'
 import type { PageProps } from '#components/Routes'
-import { filtersInstructions } from '#data/filters'
+import { filtersInstructions, predicateWhitelist } from '#data/filters'
 import { appRoutes } from '#data/routes'
 import {
   PageLayout,
@@ -22,7 +22,8 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
 
   const { SearchWithNav, FilteredList, viewTitle, hasActiveFilter } =
     useResourceFilters({
-      instructions: filtersInstructions
+      instructions: filtersInstructions,
+      predicateWhitelist
     })
 
   const hideFiltersNav = !(viewTitle == null)
