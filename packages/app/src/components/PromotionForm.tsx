@@ -150,6 +150,7 @@ export function PromotionForm({
                       type='number'
                       min={1}
                       name='priority'
+                      suffix='index'
                       hint={{
                         text: (
                           <div>
