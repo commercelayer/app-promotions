@@ -52,6 +52,7 @@ function Page(
 
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
   const hasRules = rules.length > 0
+  const createdFromApi = promotion.reference_origin !== 'app-promotions'
 
   if (error != null) {
     return <GenericPageNotFound />
@@ -65,7 +66,9 @@ function Page(
         </SkeletonTemplate>
       }
       overlay={props.overlay}
-      actionButton={<ActionButton promotion={promotion} />}
+      actionButton={
+        createdFromApi ? null : <ActionButton promotion={promotion} />
+      }
       mode={mode}
       gap='only-top'
       navigationButton={{
@@ -80,10 +83,17 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='14'>
-          {!isLoadingRules && !hasRules && (
+          {!isLoadingRules && !hasRules && !createdFromApi && (
             <Alert status='warning'>
               Define activation rules below to prevent application to all
               orders.
+            </Alert>
+          )}
+
+          {createdFromApi && (
+            <Alert status='info'>
+              This API-generated promotion can only be enabled or disabled. The
+              customization options are not available.
             </Alert>
           )}
 
@@ -92,17 +102,21 @@ function Page(
           </Spacer>
         </Spacer>
 
-        <Spacer top='14'>
-          <SectionInfo promotion={promotion} />
-        </Spacer>
+        {!createdFromApi && (
+          <>
+            <Spacer top='14'>
+              <SectionInfo promotion={promotion} />
+            </Spacer>
 
-        <Spacer top='14'>
-          <SectionActivationRules promotionId={props.params.promotionId} />
-        </Spacer>
+            <Spacer top='14'>
+              <SectionActivationRules promotionId={props.params.promotionId} />
+            </Spacer>
 
-        <Spacer top='14'>
-          <SectionCoupon promotionId={props.params.promotionId} />
-        </Spacer>
+            <Spacer top='14'>
+              <SectionCoupon promotionId={props.params.promotionId} />
+            </Spacer>
+          </>
+        )}
       </SkeletonTemplate>
     </PageLayout>
   )
