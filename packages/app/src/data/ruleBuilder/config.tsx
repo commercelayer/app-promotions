@@ -1,9 +1,15 @@
 import type { Promotion } from '#types'
-import { type CurrencyCode } from '@commercelayer/app-elements'
+import {
+  HookedInput,
+  HookedInputRadioGroup,
+  Spacer,
+  type CurrencyCode
+} from '@commercelayer/app-elements'
 import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
 import { InputCurrencyComponent } from './components/InputCurrencyComponent'
 import { SelectCurrencyComponent } from './components/SelectCurrencyComponent'
 import { SelectMarketComponent } from './components/SelectMarketComponent'
+import { SelectSkuListComponent } from './components/SelectSkuListComponent'
 import { SelectTagComponent } from './components/SelectTagComponent'
 import type { Rule } from './usePromotionRules'
 
@@ -60,18 +66,56 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
-  // skuListPromotionRule: {
-  //   resource: 'sku_list_promotion_rules',
-  //   rel: null,
-  //   label: 'SKU list',
-  //   operators: null,
-  //   component: ({ promotion }) => (
-  //     <SelectCurrencyComponent promotion={promotion} />
-  //   ),
-  //   isAvailable() {
-  //     return true
-  //   }
-  // },
+  skuListPromotionRule: {
+    resource: 'sku_list_promotion_rules',
+    rel: null,
+    label: 'SKU list',
+    operators: null,
+    component: () => (
+      <>
+        <SelectSkuListComponent />
+        <Spacer top='4'>
+          <HookedInputRadioGroup
+            viewMode='simple'
+            options={[
+              {
+                content: (
+                  <>
+                    Activate the promotion if the order contains{' '}
+                    <strong>any</strong> of the skus within the selected list.
+                  </>
+                ),
+                value: 'any'
+              },
+              {
+                content: (
+                  <>
+                    Activate the promotion if the order contains{' '}
+                    <strong>all</strong> of the skus within the selected list.
+                  </>
+                ),
+                value: 'all'
+              },
+              {
+                content: (
+                  <>
+                    Activate the promotion if the order contains at least the
+                    following number of skus within the selected list:
+                    <HookedInput name='asd' />
+                  </>
+                ),
+                value: 'number'
+              }
+            ]}
+            name='asd'
+          />
+        </Spacer>
+      </>
+    ),
+    isAvailable() {
+      return true
+    }
+  },
   line_items_sku_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
@@ -124,8 +168,8 @@ export type RuleBuilderConfig = Record<
   | 'total_amount_cents'
   | 'line_items_sku_tags_id'
   | 'customer_tags_id'
-  | 'subtotal_amount_cents',
-  // | 'skuListPromotionRule',
+  | 'subtotal_amount_cents'
+  | 'skuListPromotionRule',
   {
     resource: 'custom_promotion_rules' | 'sku_list_promotion_rules'
     rel: Extract<ListableResourceType, 'markets' | 'tags'> | null
