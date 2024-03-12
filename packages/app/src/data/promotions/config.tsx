@@ -11,6 +11,9 @@ import free_gift_promotions from './configs/free_gift_promotions'
 import free_shipping_promotions from './configs/free_shipping_promotions'
 import percentage_discount_promotions from './configs/percentage_discount_promotions'
 
+/** The attribute `reference_origin: "app-promotions"` identifies a promotion directly created from the App. */
+export const referenceOrigin = 'app-promotions' as const
+
 export const promotionConfig: PromotionConfig = {
   ...percentage_discount_promotions,
   ...free_shipping_promotions,

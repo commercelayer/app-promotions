@@ -1,5 +1,5 @@
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
-import { promotionConfig } from '#data/promotions/config'
+import { promotionConfig, referenceOrigin } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
@@ -52,7 +52,7 @@ function Page(
 
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
   const hasRules = rules.length > 0
-  const createdFromApi = promotion.reference_origin !== 'app-promotions'
+  const createdFromApi = promotion.reference_origin !== referenceOrigin
 
   if (error != null) {
     return <GenericPageNotFound />

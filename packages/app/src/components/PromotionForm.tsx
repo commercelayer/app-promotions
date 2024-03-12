@@ -1,5 +1,9 @@
 import { formValuesToPromotion } from '#data/formConverters/promotion'
-import type { PromotionType, promotionConfig } from '#data/promotions/config'
+import {
+  referenceOrigin,
+  type PromotionType,
+  type promotionConfig
+} from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotion } from '#hooks/usePromotion'
 import { type Promotion } from '#types'
@@ -65,7 +69,7 @@ export function PromotionForm({
           promotion = await resource.create({
             ...formValuesToPromotion(formValues),
             _disable: true,
-            reference_origin: 'app-promotions'
+            reference_origin: referenceOrigin
           })
         } else {
           // @ts-expect-error // TODO: I need to fix thi
