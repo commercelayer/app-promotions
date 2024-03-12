@@ -67,7 +67,9 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
                 'name',
                 'coupons',
                 'reference_origin',
-                'disabled_at'
+                'disabled_at',
+                'total_usage_limit',
+                'total_usage_count'
               ]
             },
             include: ['coupons'],
