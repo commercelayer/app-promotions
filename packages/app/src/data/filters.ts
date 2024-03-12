@@ -1,4 +1,5 @@
 import type { FiltersInstructions } from '@commercelayer/app-elements'
+import type { PromotionType } from './promotions/config'
 
 export const filtersInstructions: FiltersInstructions = [
   // {
@@ -40,28 +41,28 @@ export const filtersInstructions: FiltersInstructions = [
   //   }
   // },
 
-  // {
-  //   label: 'Type',
-  //   type: 'options',
-  //   sdk: {
-  //     predicate: 'type_in'
-  //   },
-  //   render: {
-  //     component: 'inputToggleButton',
-  //     props: {
-  //       mode: 'multi',
-  //       options: [
-  //         { value: 'buy_x_pay_y_promotions', label: 'Buy X pay Y' },
-  //         { value: 'fixed_amount_promotions', label: 'Fixed amount' },
-  //         { value: 'fixed_price_promotions', label: 'Fixed price' },
-  //         { value: 'free_gift_promotions', label: 'Free gift' },
-  //         { value: 'free_shipping_promotions', label: 'Free shipping' },
-  //         { value: 'percentage_discount_promotions', label: 'Perc. discount' },
-  //         { value: 'external_promotions', label: 'External' }
-  //       ] as Array<{ value: PromotionType; label: string }>
-  //     }
-  //   }
-  // },
+  {
+    label: 'Type',
+    type: 'options',
+    sdk: {
+      predicate: 'type_in'
+    },
+    render: {
+      component: 'inputToggleButton',
+      props: {
+        mode: 'multi',
+        options: [
+          { value: 'buy_x_pay_y_promotions', label: 'Buy X pay Y' },
+          { value: 'fixed_amount_promotions', label: 'Fixed amount' },
+          { value: 'fixed_price_promotions', label: 'Fixed price' },
+          { value: 'free_gift_promotions', label: 'Free gift' },
+          { value: 'free_shipping_promotions', label: 'Free shipping' },
+          { value: 'percentage_discount_promotions', label: 'Perc. discount' },
+          { value: 'external_promotions', label: 'External' }
+        ] as Array<{ value: PromotionType; label: string }>
+      }
+    }
+  },
 
   {
     label: 'Coupons',
