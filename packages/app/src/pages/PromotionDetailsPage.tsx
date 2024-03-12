@@ -92,8 +92,7 @@ function Page(
 
           {createdFromApi && (
             <Alert status='info'>
-              This API-generated promotion can only be enabled or disabled. The
-              customization options are not available.
+              This API-generated promotion can only be enabled or disabled.
             </Alert>
           )}
 
@@ -172,6 +171,9 @@ const CardStatus = withSkeletonTemplate<{
 
     let statusDescription = ''
     switch (displayStatus.status) {
+      case 'used':
+        statusDescription = 'Usage limit exceeded'
+        break
       case 'disabled':
         if (promotion.disabled_at != null) {
           statusDescription = formatDateWithPredicate({
