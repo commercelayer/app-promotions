@@ -16,7 +16,10 @@ import {
   type InputSelectValue
 } from '@commercelayer/app-elements'
 import type { GroupedSelectValues } from '@commercelayer/app-elements/dist/ui/forms/InputSelect/InputSelect'
-import type { CustomPromotionRule } from '@commercelayer/sdk'
+import type {
+  CustomPromotionRule,
+  SkuListPromotionRuleUpdate
+} from '@commercelayer/sdk'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
@@ -38,39 +41,79 @@ export function RuleBuilderForm({
     <HookedForm
       {...methods}
       onSubmit={async (values): Promise<void> => {
-        if (values.operator != null && values.parameter != null) {
+        console.log('values', values)
+
+        if (values.parameter != null) {
           const config = ruleBuilderConfig[values.parameter]
-          const promotionRules = promotion.promotion_rules ?? []
 
-          if (config?.resource === 'custom_promotion_rules') {
-            const customPromotionRule = promotionRules.find(
+          if (values.parameter === 'skuListPromotionRule') {
+            const promotionRules = promotion.promotion_rules ?? []
+            const skuListPromotionRule = promotionRules.find(
               (pr): pr is CustomPromotionRule =>
-                pr.type === 'custom_promotion_rules'
+                pr.type === 'sku_list_promotion_rules'
             )
-
-            const predicate = `${values.parameter}_${values.operator}`
-            const newFilter = {
-              [predicate]: Array.isArray(values.value)
-                ? values.value?.join(',')
-                : values.value
+            const resourceAttributes: Pick<
+              SkuListPromotionRuleUpdate,
+              'all_skus' | 'min_quantity' | 'sku_list'
+            > = {
+              all_skus: values.all_skus === 'all',
+              min_quantity: values.min_quantity,
+              sku_list:
+                typeof values.value === 'string'
+                  ? {
+                      type: 'sku_lists',
+                      id: values.value
+                    }
+                  : null
             }
-
-            if (customPromotionRule != null) {
-              await sdkClient.custom_promotion_rules.update({
-                id: customPromotionRule.id,
-                filters: {
-                  ...customPromotionRule.filters,
-                  ...newFilter
-                }
+            if (skuListPromotionRule != null) {
+              await sdkClient.sku_list_promotion_rules.update({
+                id: skuListPromotionRule.id,
+                ...resourceAttributes
               })
             } else {
-              await sdkClient.custom_promotion_rules.create({
+              await sdkClient.sku_list_promotion_rules.create({
                 promotion: { type: promotion.type, id: promotion.id },
-                filters: newFilter
+                ...resourceAttributes
               })
             }
-
             onSuccess()
+          } else {
+            // CustomPromotionRule
+            if (values.operator != null) {
+              const promotionRules = promotion.promotion_rules ?? []
+
+              if (config?.resource === 'custom_promotion_rules') {
+                const customPromotionRule = promotionRules.find(
+                  (pr): pr is CustomPromotionRule =>
+                    pr.type === 'custom_promotion_rules'
+                )
+
+                const predicate = `${values.parameter}_${values.operator}`
+                const newFilter = {
+                  [predicate]: Array.isArray(values.value)
+                    ? values.value?.join(',')
+                    : values.value
+                }
+
+                if (customPromotionRule != null) {
+                  await sdkClient.custom_promotion_rules.update({
+                    id: customPromotionRule.id,
+                    filters: {
+                      ...customPromotionRule.filters,
+                      ...newFilter
+                    }
+                  })
+                } else {
+                  await sdkClient.custom_promotion_rules.create({
+                    promotion: { type: promotion.type, id: promotion.id },
+                    filters: newFilter
+                  })
+                }
+
+                onSuccess()
+              }
+            }
           }
         }
       }}
@@ -110,11 +153,14 @@ function useRuleBuilderFormFields(promotion: Promotion) {
     parameter: keyof RuleBuilderConfig | null
     operator: keyof typeof matchers | null
     value: string | number | string[] | null
+    all_skus: 'any' | 'all' | 'number' | null
+    min_quantity: number | null
   }>({
     defaultValues: {
       parameter: null,
       operator: null,
-      value: null
+      value: null,
+      all_skus: 'any'
     },
     resolver: zodResolver(ruleBuilderFormValidator)
   })
@@ -172,15 +218,13 @@ function useRuleBuilderFormFields(promotion: Promotion) {
   }, [watchParameter])
 
   const inputComponent: React.ReactNode | null = useMemo(() => {
-    if (watchParameter == null) {
+    if (watchParameter == null || ruleBuilderConfig[watchParameter] == null) {
       return null
     }
 
-    return (
-      ruleBuilderConfig[watchParameter]?.component({
-        promotion
-      }) ?? null
-    )
+    const { Component } = ruleBuilderConfig[watchParameter]
+
+    return <Component promotion={promotion} />
   }, [watchParameter, promotion])
 
   const inputOperator =

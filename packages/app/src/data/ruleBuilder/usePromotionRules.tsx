@@ -4,7 +4,10 @@ import {
   formatCentsToCurrency,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
-import type { CustomPromotionRule } from '@commercelayer/sdk'
+import type {
+  CustomPromotionRule,
+  SkuListPromotionRule
+} from '@commercelayer/sdk'
 import { useEffect, useState } from 'react'
 import { matchers, ruleBuilderConfig, type RuleBuilderConfig } from './config'
 import { useCurrencyCodes } from './currency'
@@ -122,9 +125,9 @@ type RawRule = {
       /** Filter matcher. It represents the condition to be met by the query. */
       matcherLabel: (typeof matchers)[keyof typeof matchers]['label']
       /** Type from the associated promotion rule */
-      type: CustomPromotionRule['type']
+      type: CustomPromotionRule['type'] | SkuListPromotionRule['type']
       /** The associated `PromotionRule`. */
-      promotionRule: CustomPromotionRule
+      promotionRule: CustomPromotionRule | SkuListPromotionRule
 
       /**
        * In a `CustomPromotionRule` filter the `predicate` indicates the filter key.
@@ -140,6 +143,28 @@ export type Rule = { values: string[] } & RawRule
 
 function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
   switch (promotionRule.type) {
+    case 'sku_list_promotion_rules': {
+      const configKey = 'skuListPromotionRule'
+      const config = ruleBuilderConfig[configKey]
+      const predicate = 'SKU list'
+
+      return [
+        {
+          valid: true,
+          type: promotionRule.type,
+          promotionRule,
+          key: predicate,
+          label: config.label,
+          predicate,
+          configKey,
+          config,
+          rel: config.rel,
+          matcherLabel: 'is',
+          rawValues: String(promotionRule.sku_list?.id).toString().split(',')
+        }
+      ]
+    }
+
     case 'custom_promotion_rules':
       return Object.entries(promotionRule.filters ?? {}).map(
         ([predicate, value]) => {

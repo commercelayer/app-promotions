@@ -344,7 +344,7 @@ const SectionActivationRules = withSkeletonTemplate<{
                         </span>
                       ))}
                     </div>
-                    {rule.valid && rule.type === 'custom_promotion_rules' && (
+                    {rule.valid && (
                       <div>
                         <Dropdown
                           dropdownItems={
@@ -352,17 +352,31 @@ const SectionActivationRules = withSkeletonTemplate<{
                               <DropdownItem
                                 label='Delete'
                                 onClick={function () {
-                                  void sdkClient.custom_promotion_rules
-                                    .update({
-                                      id: rule.promotionRule.id,
-                                      filters: {
-                                        ...rule.promotionRule.filters,
-                                        [rule.predicate]: undefined
-                                      }
-                                    })
-                                    .then(async () => {
-                                      return await mutatePromotion()
-                                    })
+                                  switch (rule.promotionRule.type) {
+                                    case 'custom_promotion_rules': {
+                                      void sdkClient.custom_promotion_rules
+                                        .update({
+                                          id: rule.promotionRule.id,
+                                          filters: {
+                                            ...rule.promotionRule.filters,
+                                            [rule.predicate]: undefined
+                                          }
+                                        })
+                                        .then(async () => {
+                                          return await mutatePromotion()
+                                        })
+                                      break
+                                    }
+
+                                    case 'sku_list_promotion_rules': {
+                                      void sdkClient.sku_list_promotion_rules
+                                        .delete(rule.promotionRule.id)
+                                        .then(async () => {
+                                          return await mutatePromotion()
+                                        })
+                                      break
+                                    }
+                                  }
                                 }}
                               />
                             </>

@@ -40,7 +40,7 @@ export const ruleBuilderFormValidator = z
       .nullable()
   })
   .superRefine((data, ctx) => {
-    console.log(data)
+    console.log('superRefine 1', data)
 
     // Validate "parameter"
     if (data.parameter == null) {
@@ -75,3 +75,19 @@ export const ruleBuilderFormValidator = z
       })
     }
   })
+  .and(
+    z
+      .object({
+        value: z
+          .string()
+          .min(1)
+          .or(z.string().array().min(1))
+          .or(z.number())
+          .nullable(),
+        all_skus: z.enum(['all', 'any', 'number']),
+        min_quantity: z.string().min(1).or(z.number()).nullable().default(null)
+      })
+      .superRefine((data, ctx) => {
+        console.log('superRefine 2', data, ctx)
+      })
+  )
