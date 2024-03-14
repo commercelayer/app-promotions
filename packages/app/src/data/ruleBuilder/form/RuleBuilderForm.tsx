@@ -41,8 +41,6 @@ export function RuleBuilderForm({
     <HookedForm
       {...methods}
       onSubmit={async (values): Promise<void> => {
-        console.log('values', values)
-
         if (values.parameter != null) {
           const config = ruleBuilderConfig[values.parameter]
 
@@ -147,7 +145,7 @@ export function RuleBuilderForm({
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useRuleBuilderFormFields(promotion: Promotion) {
   const { rules } = usePromotionRules(promotion)
-  const { currencyCodes } = useCurrencyCodes(promotion)
+  const currencyCodes = useCurrencyCodes(promotion)
 
   const methods = useForm<{
     parameter: keyof RuleBuilderConfig | null

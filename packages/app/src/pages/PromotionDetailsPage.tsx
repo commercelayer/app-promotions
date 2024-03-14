@@ -343,6 +343,7 @@ const SectionActivationRules = withSkeletonTemplate<{
                           {i < list.length - 1 ? <>,&nbsp;</> : null}
                         </span>
                       ))}
+                      {rule.suffixLabel != null && ` ${rule.suffixLabel}`}
                     </div>
                     {rule.valid && (
                       <div>

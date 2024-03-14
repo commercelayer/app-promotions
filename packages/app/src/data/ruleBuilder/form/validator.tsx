@@ -40,8 +40,6 @@ export const ruleBuilderFormValidator = z
       .nullable()
   })
   .superRefine((data, ctx) => {
-    console.log('superRefine 1', data)
-
     // Validate "parameter"
     if (data.parameter == null) {
       ctx.addIssue({
@@ -85,9 +83,28 @@ export const ruleBuilderFormValidator = z
           .or(z.number())
           .nullable(),
         all_skus: z.enum(['all', 'any', 'number']),
-        min_quantity: z.string().min(1).or(z.number()).nullable().default(null)
+        min_quantity: z
+          .string()
+          .nullable()
+          .default(null)
+          .transform((minQuantity) => {
+            if (isNaN(parseInt(minQuantity ?? ''))) {
+              return null
+            }
+
+            return minQuantity
+          })
       })
       .superRefine((data, ctx) => {
-        console.log('superRefine 2', data, ctx)
+        if (
+          data.all_skus === 'number' &&
+          isNaN(parseInt(data.min_quantity ?? ''))
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['min_quantity'],
+            message: `Input is required`
+          })
+        }
       })
   )
