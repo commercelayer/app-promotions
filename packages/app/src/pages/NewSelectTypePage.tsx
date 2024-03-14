@@ -55,8 +55,13 @@ function LinkTo({
   promotionType
 }: {
   promotionType: PromotionType
-}): JSX.Element {
+}): React.ReactNode {
+  const { canUser } = useTokenProvider()
   const config = promotionConfig[promotionType]
+
+  if (!canUser('create', promotionType)) {
+    return null
+  }
 
   return (
     <Link

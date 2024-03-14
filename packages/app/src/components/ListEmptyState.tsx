@@ -1,10 +1,15 @@
-import { A, EmptyState } from '@commercelayer/app-elements'
+import { appRoutes } from '#data/routes'
+import { usePromotionPermission } from '#hooks/usePromotionPermission'
+import { Button, EmptyState } from '@commercelayer/app-elements'
+import { Link } from 'wouter'
 
 interface Props {
   scope?: 'history' | 'userFiltered'
 }
 
 export function ListEmptyState({ scope = 'history' }: Props): JSX.Element {
+  const { canUserManagePromotions } = usePromotionPermission()
+
   if (scope === 'userFiltered') {
     return (
       <EmptyState
@@ -24,17 +29,12 @@ export function ListEmptyState({ scope = 'history' }: Props): JSX.Element {
   return (
     <EmptyState
       title='No promotions yet!'
-      description={
-        <div>
-          <p>Add a promotion with the API, or use the CLI.</p>
-          <A
-            target='_blank'
-            href='https://docs.commercelayer.io/core/v/api-reference/promotions'
-            rel='noreferrer'
-          >
-            View API reference.
-          </A>
-        </div>
+      action={
+        canUserManagePromotions('create', 'atLeastOne') && (
+          <Link href={appRoutes.newSelectType.makePath({})}>
+            <Button variant='primary'>Add promo</Button>
+          </Link>
+        )
       }
     />
   )
