@@ -181,8 +181,11 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
           config,
           rel: config.rel,
           matcherLabel: 'is',
-          rawValues: String(promotionRule.sku_list?.id).toString().split(',')
-          // suffixLabel: `(${promotionRule.min_quantity})`
+          rawValues: String(promotionRule.sku_list?.id).toString().split(','),
+          suffixLabel:
+            promotionRule.min_quantity != null
+              ? `(${promotionRule.min_quantity})`
+              : undefined
         }
       ]
     }
