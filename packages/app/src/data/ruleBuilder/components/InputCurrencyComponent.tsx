@@ -7,7 +7,7 @@ export function InputCurrencyComponent({
 }: {
   promotion: Promotion
 }): React.ReactNode {
-  const { currencyCodes } = useCurrencyCodes(promotion)
+  const currencyCodes = useCurrencyCodes(promotion)
   const [currencyCode] = currencyCodes
 
   if (currencyCodes.length !== 1 || currencyCode == null) {

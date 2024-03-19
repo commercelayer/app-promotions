@@ -12,7 +12,7 @@ export function SelectCurrencyComponent({
 }: {
   promotion: Promotion
 }): JSX.Element {
-  const { currencyCodes } = useCurrencyCodes(promotion)
+  const currencyCodes = useCurrencyCodes(promotion)
   const currencyValues: InputSelectValue[] =
     currencyCodes.length > 0
       ? currencyCodes.map((currencyCode) => {

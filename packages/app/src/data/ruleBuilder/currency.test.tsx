@@ -18,16 +18,32 @@ vi.mock('@commercelayer/app-elements', async (importOriginal) => {
 
 describe('useCurrencyCodes', () => {
   it('should return empty array when there are no currency codes associated to the promotion', async () => {
+    vi.spyOn(appElements, 'useCoreApi').mockReturnValue({
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      // @ts-expect-error Type is wrong
+      data: []
+    })
+
     const { result } = await act(() =>
       renderHook(useCurrencyCodes, {
         initialProps: makePercentageDiscountPromotion({ id: 'ABCD' })
       })
     )
 
-    expect(result.current).toStrictEqual({ currencyCodes: [] })
+    expect(result.current).toStrictEqual([])
   })
 
   it('should return the currency code from a promotion', async () => {
+    vi.spyOn(appElements, 'useCoreApi').mockReturnValue({
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      // @ts-expect-error Type is wrong
+      data: []
+    })
+
     const { result } = await act(() =>
       renderHook(useCurrencyCodes, {
         initialProps: makePercentageDiscountPromotion({
@@ -37,10 +53,18 @@ describe('useCurrencyCodes', () => {
       })
     )
 
-    expect(result.current).toStrictEqual({ currencyCodes: ['USD'] })
+    expect(result.current).toStrictEqual(['USD'])
   })
 
   it('should return the currency code from the market linked to the promotion', async () => {
+    vi.spyOn(appElements, 'useCoreApi').mockReturnValue({
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      // @ts-expect-error Type is wrong
+      data: []
+    })
+
     const { result } = await act(() =>
       renderHook(useCurrencyCodes, {
         initialProps: makePercentageDiscountPromotion({
@@ -52,10 +76,18 @@ describe('useCurrencyCodes', () => {
       })
     )
 
-    expect(result.current).toStrictEqual({ currencyCodes: ['EUR'] })
+    expect(result.current).toStrictEqual(['EUR'])
   })
 
   it('should return the currency code from the custom rules (currency_code_in)', async () => {
+    vi.spyOn(appElements, 'useCoreApi').mockReturnValue({
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      // @ts-expect-error Type is wrong
+      data: []
+    })
+
     const { result } = await act(() =>
       renderHook(useCurrencyCodes, {
         initialProps: makePercentageDiscountPromotion({
@@ -69,10 +101,18 @@ describe('useCurrencyCodes', () => {
       })
     )
 
-    expect(result.current).toStrictEqual({ currencyCodes: ['AED', 'EUR'] })
+    expect(result.current).toStrictEqual(['AED', 'EUR'])
   })
 
   it('should return the currency code from the custom rules (currency_code_not_in)', async () => {
+    vi.spyOn(appElements, 'useCoreApi').mockReturnValue({
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      // @ts-expect-error Type is wrong
+      data: []
+    })
+
     const { result } = await act(() =>
       renderHook(useCurrencyCodes, {
         initialProps: makePercentageDiscountPromotion({
@@ -86,11 +126,11 @@ describe('useCurrencyCodes', () => {
       })
     )
 
-    expect(result.current).toStrictEqual({
-      currencyCodes: Object.values(currencies)
+    expect(result.current).toStrictEqual(
+      Object.values(currencies)
         .map((obj) => obj.iso_code)
         .filter((code) => !['AED', 'EUR'].includes(code))
-    })
+    )
   })
 
   it('should return the currency code from the custom rules (market_id_in)', async () => {
@@ -122,9 +162,7 @@ describe('useCurrencyCodes', () => {
       })
     )
 
-    expect(result.current).toStrictEqual({
-      currencyCodes: ['USD', 'EUR']
-    })
+    expect(result.current).toStrictEqual(['USD', 'EUR'])
 
     expect(useCoreApi).toHaveBeenCalledWith('markets', 'list', [
       {
@@ -169,9 +207,7 @@ describe('useCurrencyCodes', () => {
       })
     )
 
-    expect(result.current).toStrictEqual({
-      currencyCodes: ['USD', 'EUR']
-    })
+    expect(result.current).toStrictEqual(['USD', 'EUR'])
 
     expect(useCoreApi).toHaveBeenCalledWith('markets', 'list', [
       {

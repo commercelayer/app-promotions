@@ -1,6 +1,7 @@
 import { filtersInstructions, predicateWhitelist } from '#data/filters'
 import { presets } from '#data/lists'
 import { appRoutes } from '#data/routes'
+import { usePromotionPermission } from '#hooks/usePromotionPermission'
 import {
   HomePageLayout,
   Icon,
@@ -10,13 +11,12 @@ import {
   Spacer,
   StatusIcon,
   Text,
-  useResourceFilters,
-  useTokenProvider
+  useResourceFilters
 } from '@commercelayer/app-elements'
 import { Link, useLocation, useSearch } from 'wouter'
 
 function HomePage(): JSX.Element {
-  const { canUser } = useTokenProvider()
+  const { canUserManagePromotions } = usePromotionPermission()
 
   const search = useSearch()
   const [, setLocation] = useLocation()
@@ -41,13 +41,7 @@ function HomePage(): JSX.Element {
         <List
           title='Browse'
           actionButton={
-            canUser('create', 'buy_x_pay_y_promotions') ||
-            canUser('create', 'external_promotions') ||
-            canUser('create', 'fixed_amount_promotions') ||
-            canUser('create', 'fixed_price_promotions') ||
-            canUser('create', 'free_gift_promotions') ||
-            canUser('create', 'free_shipping_promotions') ||
-            canUser('create', 'percentage_discount_promotions') ? (
+            canUserManagePromotions('create', 'atLeastOne') ? (
               <Link asChild href={appRoutes.newSelectType.makePath({})}>
                 <a>Add promo</a>
               </Link>

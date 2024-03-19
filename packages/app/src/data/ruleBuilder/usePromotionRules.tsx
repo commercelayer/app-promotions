@@ -4,11 +4,38 @@ import {
   formatCentsToCurrency,
   useCoreSdkProvider
 } from '@commercelayer/app-elements'
-import type { CustomPromotionRule } from '@commercelayer/sdk'
-import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
+import type {
+  CommerceLayerClient,
+  CustomPromotionRule,
+  SkuListPromotionRule
+} from '@commercelayer/sdk'
+import pMemoize from 'p-memoize'
 import { useEffect, useState } from 'react'
+import type { SetNonNullable } from 'type-fest'
 import { matchers, ruleBuilderConfig, type RuleBuilderConfig } from './config'
 import { useCurrencyCodes } from './currency'
+
+const fetchRelationship = pMemoize(
+  async (
+    rule: SetNonNullable<RawRuleValid, 'rel'>,
+    sdkClient: CommerceLayerClient
+  ): Promise<Rule> => {
+    const promise: Promise<Rule> = sdkClient[rule.rel]
+      .list({
+        filters: { id_in: rule.rawValues.join(',') }
+      })
+      .then((data) => data.map((d) => d.name))
+      .then((values) => ({
+        ...rule,
+        values
+      }))
+
+    return await promise
+  },
+  {
+    cacheKey: JSON.stringify
+  }
+)
 
 /**
  * Returns a standard format to identify all promotion rules so that it's easier to read and display them.
@@ -18,7 +45,7 @@ export function usePromotionRules(promotion: Promotion): {
   rules: Rule[]
 } {
   const { sdkClient } = useCoreSdkProvider()
-  const { currencyCodes } = useCurrencyCodes(promotion)
+  const currencyCodes = useCurrencyCodes(promotion)
 
   const [output, setOutput] = useState<{
     isLoading: boolean
@@ -46,18 +73,15 @@ export function usePromotionRules(promotion: Promotion): {
 
           return (
             rules?.flatMap(async (rule) => {
-              if (rule.valid && rule.rel != null) {
-                const promise: Promise<Rule> = sdkClient[rule.rel]
-                  .list({
-                    filters: { id_in: rule.rawValues.join(',') }
-                  })
-                  .then((data) => data.map((d) => d.name))
-                  .then((values) => ({
-                    ...rule,
-                    values
-                  }))
-
-                return await promise
+              if (
+                rule.valid &&
+                rule.rel != null &&
+                !rule.rawValues.includes('null')
+              ) {
+                return await fetchRelationship(
+                  rule as SetNonNullable<RawRuleValid, 'rel'>,
+                  sdkClient
+                )
               }
 
               if (
@@ -97,46 +121,75 @@ export function usePromotionRules(promotion: Promotion): {
 
   return output
 }
-
-type RawRule = {
+interface RawRuleBasic {
   key: string
   label: string
   rawValues: string[]
-} & (
-  | {
-      /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
-      valid: false
-    }
-  | {
-      /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
-      valid: true
-      /** Rule builder configuration */
-      configKey: keyof RuleBuilderConfig
-      /** Rule builder configuration */
-      config: RuleBuilderConfig[keyof RuleBuilderConfig]
-      /** Related resource. (e.g. when `markets`, the `rawValue` contains market IDs) */
-      rel?: Extract<ListableResourceType, 'markets' | 'tags'>
-      /** Filter matcher. It represents the condition to be met by the query. */
-      matcherLabel: (typeof matchers)[keyof typeof matchers]['label']
-      /** Type from the associated promotion rule */
-      type: CustomPromotionRule['type']
-      /** The associated `PromotionRule`. */
-      promotionRule: CustomPromotionRule
+  suffixLabel?: string
+}
 
-      /**
-       * In a `CustomPromotionRule` filter the `predicate` indicates the filter key.
-       * It's format is `{{attributes}}_{{matcher}}`,
-       * where attributes is a set of one or more attributes and matcher represents the condition to be met by the query.
-       * (e.g. `market_id_in`)
-       */
-      predicate: string
-    }
-)
+type RawRuleInvalid = RawRuleBasic & {
+  /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
+  valid: false
+}
+
+type RawRuleValid = RawRuleBasic & {
+  /** Is valid when the promotion rule is managed by the configuration. False when unknown (not managed). */
+  valid: true
+  /** Rule builder configuration */
+  configKey: keyof RuleBuilderConfig
+  /** Rule builder configuration */
+  config: RuleBuilderConfig[keyof RuleBuilderConfig]
+  /** Related resource. (e.g. when `markets`, the `rawValue` contains market IDs) */
+  rel: RuleBuilderConfig[keyof RuleBuilderConfig]['rel']
+  /** Filter matcher. It represents the condition to be met by the query. */
+  matcherLabel: (typeof matchers)[keyof typeof matchers]['label']
+  /** Type from the associated promotion rule */
+  type: CustomPromotionRule['type'] | SkuListPromotionRule['type']
+  /** The associated `PromotionRule`. */
+  promotionRule: CustomPromotionRule | SkuListPromotionRule
+
+  /**
+   * In a `CustomPromotionRule` filter the `predicate` indicates the filter key.
+   * It's format is `{{attributes}}_{{matcher}}`,
+   * where attributes is a set of one or more attributes and matcher represents the condition to be met by the query.
+   * (e.g. `market_id_in`)
+   */
+  predicate: string
+}
+
+type RawRule = RawRuleValid | RawRuleInvalid
 
 export type Rule = { values: string[] } & RawRule
 
 function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
   switch (promotionRule.type) {
+    case 'sku_list_promotion_rules': {
+      const configKey = 'skuListPromotionRule'
+      const config = ruleBuilderConfig[configKey]
+      const predicate = 'SKU list'
+
+      return [
+        {
+          valid: true,
+          type: promotionRule.type,
+          promotionRule,
+          key: predicate,
+          label: config.label,
+          predicate,
+          configKey,
+          config,
+          rel: config.rel,
+          matcherLabel: 'is',
+          rawValues: String(promotionRule.sku_list?.id).toString().split(','),
+          suffixLabel:
+            promotionRule.min_quantity != null
+              ? `(${promotionRule.min_quantity})`
+              : undefined
+        }
+      ]
+    }
+
     case 'custom_promotion_rules':
       return Object.entries(promotionRule.filters ?? {}).map(
         ([predicate, value]) => {
@@ -164,7 +217,7 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
               valid: false,
               key: predicate,
               label: predicate,
-              rawValues: value.toString().split(',')
+              rawValues: String(value).toString().split(',')
             } satisfies RawRule
           }
 
@@ -179,7 +232,7 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
             config,
             rel: config.rel,
             matcherLabel,
-            rawValues: value.toString().split(',')
+            rawValues: String(value).toString().split(',')
           } satisfies RawRule
         }
       )

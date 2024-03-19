@@ -4,18 +4,21 @@ import type { Promotion } from '#types'
 import type { CurrencyCode } from '@commercelayer/app-elements'
 import { currencies, useCoreApi } from '@commercelayer/app-elements'
 import type { CustomPromotionRule } from '@commercelayer/sdk'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-export function useCurrencyCodes(promotion: Promotion): {
-  currencyCodes: CurrencyCode[]
-} {
+export function useCurrencyCodes(promotion: Promotion): CurrencyCode[] {
   const [currencyCodes, setCurrencyCodes] = useState<CurrencyCode[]>([])
 
-  const ruleFilters = getCustomPromotionRuleFilters(promotion)
-  const filterKey = findOneOf(Object.keys(ruleFilters ?? {}), [
-    'market_id_in',
-    'market_id_not_in'
-  ])
+  const { ruleFilters, filterKey } = useMemo(() => {
+    const ruleFilters = getCustomPromotionRuleFilters(promotion)
+    return {
+      ruleFilters,
+      filterKey: findOneOf(Object.keys(ruleFilters ?? {}), [
+        'market_id_in',
+        'market_id_not_in'
+      ])
+    }
+  }, [promotion])
 
   const { data: markets, isLoading } = useCoreApi(
     'markets',
@@ -37,7 +40,7 @@ export function useCurrencyCodes(promotion: Promotion): {
   )
 
   useEffect(() => {
-    if (isMockedId(promotion.id)) {
+    if (isMockedId(promotion.id) || isLoading || markets == null) {
       return
     }
 
@@ -50,15 +53,15 @@ export function useCurrencyCodes(promotion: Promotion): {
     if (tmpList != null) {
       setCurrencyCodes(tmpList)
     } else {
-      const currencyCodes = [...(markets ?? [])]
+      const currencyCodes = markets
         .map((market) => market.price_list?.currency_code)
-        .filter(isDefined) as Nullable<CurrencyCode[]>
+        .filter(isDefined) as NonNullable<CurrencyCode[]>
 
-      setCurrencyCodes(currencyCodes ?? [])
+      setCurrencyCodes(currencyCodes)
     }
-  }, [promotion, isLoading])
+  }, [promotion, isLoading, markets])
 
-  return { currencyCodes }
+  return currencyCodes
 }
 
 function extractFromPromotion(promotion: Promotion): CurrencyCode[] | null {

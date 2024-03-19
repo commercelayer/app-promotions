@@ -15,7 +15,7 @@ export function SelectMarketComponent({
   promotion: Promotion
 }): JSX.Element {
   const { sdkClient } = useCoreSdkProvider()
-  const { currencyCodes } = useCurrencyCodes(promotion)
+  const currencyCodes = useCurrencyCodes(promotion)
 
   const { data: markets = [] } = useCoreApi('markets', 'list', [
     getParams({ currencyCodes, name: '' })
