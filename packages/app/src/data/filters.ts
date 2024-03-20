@@ -130,7 +130,7 @@ export const filtersInstructions: FiltersInstructions = [
     label: 'Search',
     type: 'textSearch',
     sdk: {
-      predicate: ['name'].join('_or_') + '_cont'
+      predicate: ['name', 'coupons_code'].join('_or_') + '_cont'
     },
     render: {
       component: 'searchBar'
