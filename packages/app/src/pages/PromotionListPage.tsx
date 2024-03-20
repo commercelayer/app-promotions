@@ -72,7 +72,6 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
                 'total_usage_count'
               ]
             },
-            include: ['coupons'],
             pageSize: 25,
             sort: {
               updated_at: 'desc'
