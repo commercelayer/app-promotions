@@ -10,7 +10,6 @@ import {
   Alert,
   Badge,
   Button,
-  ButtonCard,
   Card,
   Dropdown,
   DropdownDivider,
@@ -321,7 +320,7 @@ const SectionActivationRules = withSkeletonTemplate<{
   return (
     <SkeletonTemplate isLoading={isLoadingPromotion || isLoadingRules}>
       <Section
-        title='Activation rules'
+        title='Apply when'
         border='none'
         actionButton={
           hasRules ? (
@@ -392,21 +391,29 @@ const SectionActivationRules = withSkeletonTemplate<{
             ))}
           </Card>
         ) : (
-          <ButtonCard
-            icon='sliders'
-            padding='6'
-            fullWidth
-            onClick={() => {
-              setLocation(addActivationRuleLink)
-            }}
+          <ListItem
+            alignIcon='center'
+            icon={<Icon name='sliders' size={32} />}
+            paddingSize='6'
+            tag='div'
+            variant='boxed'
           >
-            <Text align='left' variant='info'>
-              <a>Add activation rules</a> to limit the promotion to specific
-              orders.
-              <br />
-              Promotion applies only if all activation rules are met.
+            <Text>
+              Define the application rules to target specific orders for the
+              promotion.
             </Text>
-          </ButtonCard>
+            <Button
+              alignItems='center'
+              size='small'
+              variant='secondary'
+              onClick={() => {
+                setLocation(addActivationRuleLink)
+              }}
+            >
+              <Icon name='plus' size={16} />
+              New rule
+            </Button>
+          </ListItem>
         )}
       </Section>
     </SkeletonTemplate>
@@ -510,19 +517,29 @@ const SectionCoupon = withSkeletonTemplate<{
             }
           />
         ) : (
-          <ButtonCard
-            icon='ticket'
-            padding='6'
-            fullWidth
-            onClick={() => {
-              setLocation(addCouponLink)
-            }}
+          <ListItem
+            alignIcon='center'
+            icon={<Icon name='ticket' size={32} />}
+            paddingSize='6'
+            tag='div'
+            variant='boxed'
           >
-            <Text align='left' variant='info'>
-              <a>Add coupons</a> to activate the promotion only if customer
-              enter a specific coupon code at checkout.
+            <Text>
+              Activate the promotion only if customer enter a specific coupon
+              code at checkout.
             </Text>
-          </ButtonCard>
+            <Button
+              alignItems='center'
+              size='small'
+              variant='secondary'
+              onClick={() => {
+                setLocation(addCouponLink)
+              }}
+            >
+              <Icon name='plus' size={16} />
+              New coupon
+            </Button>
+          </ListItem>
         )}
       </Section>
     </SkeletonTemplate>
