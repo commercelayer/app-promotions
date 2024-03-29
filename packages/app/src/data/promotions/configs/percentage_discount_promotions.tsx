@@ -14,6 +14,8 @@ export default {
     slug: 'percentage-discount',
     icon: 'percent',
     titleList: 'Percentage discount',
+    description:
+      'Apply a specific percentage discount to the subtotal amount of orders.',
     titleNew: 'percentage discount',
     formType: genericPromotionOptions.merge(
       z.object({

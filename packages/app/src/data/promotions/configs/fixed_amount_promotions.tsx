@@ -20,6 +20,7 @@ export default {
     slug: 'fixed-amount',
     icon: 'currencyEur',
     titleList: 'Fixed amount discount',
+    description: 'Apply a fixed amount discount to the orders.',
     titleNew: 'fixed amount discount',
     formType: genericPromotionOptions.merge(
       z.object({

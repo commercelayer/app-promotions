@@ -20,6 +20,8 @@ export default {
     slug: 'fixed-price',
     icon: 'pushPin',
     titleList: 'Fixed price',
+    description:
+      'Impose a fixed price for products belonging to a specific list.',
     titleNew: 'fixed price promotion',
     formType: genericPromotionOptions.merge(
       z.object({

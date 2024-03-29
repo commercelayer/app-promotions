@@ -7,6 +7,7 @@ export default {
     slug: 'free-shipping',
     icon: 'truck',
     titleList: 'Free shipping',
+    description: 'Set the shipping cost amount to zero for orders.',
     titleNew: 'free shipping promotion',
     formType: genericPromotionOptions,
     Fields: () => <></>,

@@ -2,11 +2,12 @@ import type { PageProps } from '#components/Routes'
 import { promotionConfig, type PromotionType } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import {
-  Icon,
-  ListItem,
+  Card,
+  Grid,
   PageLayout,
   Section,
   Spacer,
+  StatusIcon,
   Text,
   useTokenProvider
 } from '@commercelayer/app-elements'
@@ -33,18 +34,22 @@ function Page(props: PageProps<typeof appRoutes.newSelectType>): JSX.Element {
       }}
     >
       <Spacer top='10'>
-        <Section titleSize='small' title='Preset'>
-          <LinkTo promotionType='percentage_discount_promotions' />
-          <LinkTo promotionType='free_shipping_promotions' />
-          <LinkTo promotionType='fixed_amount_promotions' />
-          <LinkTo promotionType='free_gift_promotions' />
-          <LinkTo promotionType='fixed_price_promotions' />
-          <LinkTo promotionType='buy_x_pay_y_promotions' />
+        <Section titleSize='small' title='Preset' border='none'>
+          <Grid columns='2'>
+            <LinkTo promotionType='percentage_discount_promotions' />
+            <LinkTo promotionType='free_shipping_promotions' />
+            <LinkTo promotionType='fixed_amount_promotions' />
+            <LinkTo promotionType='free_gift_promotions' />
+            <LinkTo promotionType='fixed_price_promotions' />
+            <LinkTo promotionType='buy_x_pay_y_promotions' />
+          </Grid>
         </Section>
       </Spacer>
       <Spacer top='10'>
-        <Section titleSize='small' title='More'>
-          <LinkTo promotionType='external_promotions' />
+        <Section titleSize='small' title='More' border='none'>
+          <Grid columns='1'>
+            <LinkTo promotionType='external_promotions' />
+          </Grid>
         </Section>
       </Spacer>
     </PageLayout>
@@ -70,10 +75,15 @@ function LinkTo({
       })}
       asChild
     >
-      <ListItem tag='a' icon={<Icon name={config.icon} size={24} />}>
-        <Text weight='semibold'>{config.titleList}</Text>
-        <Icon name='caretRight' />
-      </ListItem>
+      <Card overflow='visible'>
+        <StatusIcon background='black' gap='medium' name={config.icon} />
+        <Spacer top='4'>
+          <Text weight='semibold'>{config.titleList}</Text>
+          <Text size='small' tag='div' variant='info'>
+            {config.description}
+          </Text>
+        </Spacer>
+      </Card>
     </Link>
   )
 }

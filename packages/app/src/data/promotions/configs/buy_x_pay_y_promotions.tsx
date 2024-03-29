@@ -20,6 +20,7 @@ export default {
     slug: 'buy-x-pay-y',
     icon: 'stack',
     titleList: 'Buy X pay Y',
+    description: 'Offer free products for any X units of the same products.',
     titleNew: 'buy X pay Y promotion',
     formType: genericPromotionOptions.merge(
       z.object({
