@@ -468,7 +468,19 @@ const SectionCoupon = withSkeletonTemplate<{
               <>
                 {promotion.coupons?.map((coupon) => (
                   <Tr key={coupon.id}>
-                    <Td>{coupon.code}</Td>
+                    <Td>
+                      <Text weight='semibold'>{coupon.code}</Text>
+                      {coupon.recipient_email != null && (
+                        <Text
+                          tag='div'
+                          weight='semibold'
+                          variant='info'
+                          style={{ fontSize: '10px' }}
+                        >
+                          To: {coupon.recipient_email}
+                        </Text>
+                      )}
+                    </Td>
                     <Td>
                       {coupon.usage_count}
                       {coupon.usage_limit != null
