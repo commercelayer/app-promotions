@@ -431,7 +431,7 @@ const SectionCoupon = withSkeletonTemplate<{
     promotionId: promotion.id
   })
 
-  const hasCoupons = promotion.coupons != null && promotion.coupons.length > 0
+  const hasCoupons = promotion.coupon_codes_promotion_rule != null
 
   return (
     <SkeletonTemplate isLoading={isLoadingPromotion}>
