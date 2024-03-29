@@ -80,13 +80,9 @@ export function PromotionForm({
         }
 
         setLocation(
-          isCreatingNewPromotion
-            ? appRoutes.promotionActivationRules.makePath({
-                promotionId: promotion.id
-              })
-            : appRoutes.promotionDetails.makePath({
-                promotionId: promotion.id
-              })
+          appRoutes.promotionDetails.makePath({
+            promotionId: promotion.id
+          })
         )
       }}
     >
