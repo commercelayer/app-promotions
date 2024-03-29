@@ -503,7 +503,10 @@ const SectionCoupon = withSkeletonTemplate<{
                             <DropdownItem
                               label='Delete'
                               onClick={() => {
-                                showDeleteCouponOverlay(coupon)
+                                showDeleteCouponOverlay({
+                                  coupon,
+                                  deleteRule: promotion.coupons?.length === 1
+                                })
                               }}
                             />
                           </>
