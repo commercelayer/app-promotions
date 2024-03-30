@@ -101,14 +101,19 @@ export default {
         </Spacer>
       </>
     ),
+    StatusDescription: ({ promotion }) => (
+      <>
+        {promotion.x}x{promotion.y}
+      </>
+    ),
     DetailsSectionInfo: ({ promotion }) => (
       <>
-        <ListDetailsItem label='Buy' gutter='none'>
+        {/* <ListDetailsItem label='Buy' gutter='none'>
           {promotion.x}
         </ListDetailsItem>
         <ListDetailsItem label='Pay' gutter='none'>
           {promotion.y}
-        </ListDetailsItem>
+        </ListDetailsItem> */}
         {promotion.cheapest_free === true && (
           <ListDetailsItem label='Cheapest free' gutter='none'>
             <Text variant='success'>

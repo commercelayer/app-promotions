@@ -1,7 +1,6 @@
 import {
   HookedInputCurrency,
   HookedInputSelect,
-  ListDetailsItem,
   ListItem,
   Spacer,
   currencies,
@@ -83,15 +82,14 @@ export default {
         </>
       )
     },
-    DetailsSectionInfo: ({ promotion }) => (
+    StatusDescription: ({ promotion }) => (
       <>
-        <ListDetailsItem label='Fixed amount' gutter='none'>
-          {formatCentsToCurrency(
-            promotion.fixed_amount_cents,
-            promotion.currency_code as CurrencyCode
-          )}
-        </ListDetailsItem>
+        {formatCentsToCurrency(
+          promotion.fixed_amount_cents,
+          promotion.currency_code as CurrencyCode
+        )}
       </>
-    )
+    ),
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'fixed_amount_promotions'>

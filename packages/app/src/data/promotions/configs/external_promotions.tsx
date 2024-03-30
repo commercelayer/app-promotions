@@ -55,6 +55,7 @@ export default {
         </>
       )
     },
+    StatusDescription: () => <>External</>,
     DetailsSectionInfo: ({ promotion }) => (
       <>
         <ListDetailsItem label='External service URL' gutter='none'>

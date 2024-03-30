@@ -62,6 +62,7 @@ export default {
       )
     },
     Options: () => <></>,
+    StatusDescription: () => <>Free gift</>,
     DetailsSectionInfo: ({ promotion }) => (
       <>
         <ListDetailsItem label='Max free quantity' gutter='none'>

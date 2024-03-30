@@ -1,8 +1,4 @@
-import {
-  HookedInput,
-  ListDetailsItem,
-  Spacer
-} from '@commercelayer/app-elements'
+import { HookedInput, Spacer } from '@commercelayer/app-elements'
 import { z } from 'zod'
 import { PromotionSkuListSelector } from '../components/PromotionSkuListSelector'
 import type { PromotionConfig } from '../config'
@@ -58,12 +54,7 @@ export default {
         </>
       )
     },
-    DetailsSectionInfo: ({ promotion }) => (
-      <>
-        <ListDetailsItem label='Discount' gutter='none'>
-          {promotion.percentage}%
-        </ListDetailsItem>
-      </>
-    )
+    StatusDescription: ({ promotion }) => <>{promotion.percentage}%</>,
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'percentage_discount_promotions'>

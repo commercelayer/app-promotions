@@ -41,6 +41,10 @@ export type PromotionConfig = {
     description: string
     titleNew: string
     icon: IconProps['name']
+    /** This is the text shown in the CardStatus (promotion detail page) */
+    StatusDescription: React.FC<{
+      promotion: Extract<Promotion, { type: type }>
+    }>
     formType: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
     Fields: React.FC<{ promotion?: Promotion }>
     Options: React.FC<{ promotion?: Promotion }>

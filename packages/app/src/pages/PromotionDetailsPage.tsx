@@ -21,13 +21,13 @@ import {
   Section,
   SkeletonTemplate,
   Spacer,
+  Stack,
   Table,
   Td,
   Text,
   Th,
   Tr,
   formatDate,
-  formatDateRange,
   formatDateWithPredicate,
   getPromotionDisplayStatus,
   goBack,
@@ -36,6 +36,7 @@ import {
   withSkeletonTemplate
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
+import type { KeyedMutator } from 'swr'
 import { Link, useLocation } from 'wouter'
 
 function Page(
@@ -47,7 +48,9 @@ function Page(
 
   const [, setLocation] = useLocation()
 
-  const { isLoading, promotion, error } = usePromotion(props.params.promotionId)
+  const { isLoading, promotion, mutatePromotion, error } = usePromotion(
+    props.params.promotionId
+  )
 
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
   const hasRules = rules.length > 0
@@ -66,7 +69,12 @@ function Page(
       }
       overlay={props.overlay}
       actionButton={
-        createdFromApi ? null : <ActionButton promotion={promotion} />
+        createdFromApi ? null : (
+          <ActionButton
+            promotion={promotion}
+            mutatePromotion={mutatePromotion}
+          />
+        )
       }
       mode={mode}
       gap='only-top'
@@ -95,7 +103,7 @@ function Page(
             </Alert>
           )}
 
-          <Spacer top='6'>
+          <Spacer top='14'>
             <CardStatus promotionId={props.params.promotionId} />
           </Spacer>
         </Spacer>
@@ -122,8 +130,11 @@ function Page(
 
 const ActionButton = withSkeletonTemplate<{
   promotion: Promotion
-}>(({ promotion }) => {
+  mutatePromotion: KeyedMutator<Promotion>
+}>(({ promotion, mutatePromotion }) => {
   const [, setLocation] = useLocation()
+  const displayStatus = useDisplayStatus(promotion.id)
+  const { sdkClient } = useCoreSdkProvider()
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
     useDeletePromotionOverlay()
 
@@ -133,6 +144,21 @@ const ActionButton = withSkeletonTemplate<{
       <Dropdown
         dropdownItems={
           <>
+            <DropdownItem
+              label={displayStatus.isEnabled ? 'Disable' : 'Enable'}
+              onClick={() => {
+                void sdkClient[promotion.type]
+                  .update({
+                    id: promotion.id,
+                    _disable: displayStatus.isEnabled,
+                    _enable: !displayStatus.isEnabled
+                  })
+                  .then(() => {
+                    void mutatePromotion()
+                  })
+              }}
+            />
+            <DropdownDivider />
             <DropdownItem
               label='Edit'
               onClick={() => {
@@ -160,9 +186,60 @@ const ActionButton = withSkeletonTemplate<{
 const CardStatus = withSkeletonTemplate<{
   promotionId: string
 }>(({ promotionId }) => {
+  const { promotion } = usePromotion(promotionId)
+  const displayStatus = useDisplayStatus(promotionId)
+  const config = promotionConfig[promotion.type]
+
+  return (
+    <Stack>
+      <div>
+        <Spacer bottom='2'>
+          <Text size='small' tag='div' variant='info' weight='semibold'>
+            Status
+          </Text>
+        </Spacer>
+        <Badge
+          style={{ verticalAlign: 'middle' }}
+          variant={displayStatus.status === 'active' ? 'success' : 'secondary'}
+        >
+          {displayStatus.label}
+        </Badge>
+      </div>
+      <div>
+        <Spacer bottom='2'>
+          <Text size='small' tag='div' variant='info' weight='semibold'>
+            {promotion.type === 'fixed_price_promotions'
+              ? 'Fixed price'
+              : 'Discount'}
+          </Text>
+        </Spacer>
+        <Text weight='semibold' style={{ fontSize: '18px' }}>
+          <config.StatusDescription
+            // @ts-expect-error TS cannot infer the right promotion
+            promotion={promotion}
+          />
+        </Text>
+      </div>
+      <div>
+        <Spacer bottom='2'>
+          <Text size='small' tag='div' variant='info' weight='semibold'>
+            Usage
+          </Text>
+        </Spacer>
+        <Text weight='semibold' style={{ fontSize: '18px' }}>
+          {promotion.total_usage_count}
+          {promotion.total_usage_limit != null &&
+            ` / ${promotion.total_usage_limit}`}
+        </Text>
+      </div>
+    </Stack>
+  )
+})
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const useDisplayStatus = (promotionId: string) => {
   const { user } = useTokenProvider()
-  const { sdkClient } = useCoreSdkProvider()
-  const { promotion, mutatePromotion } = usePromotion(promotionId)
+  const { promotion } = usePromotion(promotionId)
 
   const displayStatus = useMemo(() => {
     // @ts-expect-error // TODO: we should fix this error type
@@ -216,43 +293,8 @@ const CardStatus = withSkeletonTemplate<{
     }
   }, [promotion])
 
-  return (
-    <Card overflow='hidden'>
-      <ListItem tag='div' borderStyle='none' padding='none' alignItems='top'>
-        <div>
-          <Text weight='semibold'>Promotion is</Text>{' '}
-          <Badge
-            style={{ verticalAlign: 'middle' }}
-            variant={
-              displayStatus.status === 'active' ? 'success' : 'secondary'
-            }
-            icon={displayStatus.isEnabled ? displayStatus.icon : undefined}
-          >
-            {displayStatus.label.toLowerCase()}
-          </Badge>
-          <br />
-          <Text size='small'>{displayStatus.statusDescription}</Text>
-        </div>
-        <Button
-          variant={displayStatus.isEnabled ? 'secondary' : 'primary'}
-          onClick={() => {
-            void sdkClient[promotion.type]
-              .update({
-                id: promotion.id,
-                _disable: displayStatus.isEnabled,
-                _enable: !displayStatus.isEnabled
-              })
-              .then(() => {
-                void mutatePromotion()
-              })
-          }}
-        >
-          {displayStatus.isEnabled ? 'Disable' : 'Enable'}
-        </Button>
-      </ListItem>
-    </Card>
-  )
-})
+  return displayStatus
+}
 
 const SectionInfo = withSkeletonTemplate<{
   promotion: Promotion
@@ -266,21 +308,23 @@ const SectionInfo = withSkeletonTemplate<{
         // @ts-expect-error TS cannot infer the right promotion
         promotion={promotion}
       />
-      <ListDetailsItem label='Activation period' gutter='none'>
-        {formatDateRange({
-          rangeFrom: promotion.starts_at,
-          rangeTo: promotion.expires_at,
+      <ListDetailsItem label='Start date' gutter='none'>
+        {formatDate({
+          isoDate: promotion.starts_at,
+          format: 'full',
+          timezone: user?.timezone
+        })}
+      </ListDetailsItem>
+      <ListDetailsItem label='Expiration date' gutter='none'>
+        {formatDate({
+          isoDate: promotion.expires_at,
+          format: 'full',
           timezone: user?.timezone
         })}
       </ListDetailsItem>
       {promotion.sku_list != null && (
         <ListDetailsItem label='SKU list' gutter='none'>
           {promotion.sku_list.name}
-        </ListDetailsItem>
-      )}
-      {promotion.total_usage_limit != null && (
-        <ListDetailsItem label='Used' gutter='none'>
-          {promotion.total_usage_count} / {promotion.total_usage_limit}
         </ListDetailsItem>
       )}
       {promotion.exclusive === true && (
@@ -411,7 +455,7 @@ const SectionActivationRules = withSkeletonTemplate<{
               }}
             >
               <Icon name='plus' size={16} />
-              New rule
+              Rule
             </Button>
           </ListItem>
         )}
@@ -552,7 +596,7 @@ const SectionCoupon = withSkeletonTemplate<{
               }}
             >
               <Icon name='plus' size={16} />
-              New coupon
+              Coupon
             </Button>
           </ListItem>
         )}
