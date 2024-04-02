@@ -1,5 +1,8 @@
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
-import { promotionConfig, referenceOrigin } from '#data/promotions/config'
+import {
+  appPromotionsReferenceOrigin,
+  promotionConfig
+} from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
@@ -56,7 +59,8 @@ function Page(
 
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
   const hasRules = rules.length > 0
-  const createdFromApi = promotion.reference_origin !== referenceOrigin
+  const createdFromApi =
+    promotion.reference_origin !== appPromotionsReferenceOrigin
 
   if (error != null) {
     return <GenericPageNotFound />
@@ -71,7 +75,12 @@ function Page(
       }
       overlay={props.overlay}
       actionButton={
-        createdFromApi ? null : (
+        createdFromApi ? (
+          <EnableDisableButton
+            mutatePromotion={mutatePromotion}
+            promotion={promotion}
+          />
+        ) : (
           <ActionButton
             promotion={promotion}
             mutatePromotion={mutatePromotion}
@@ -101,7 +110,8 @@ function Page(
 
           {createdFromApi && (
             <Alert status='info'>
-              This API-generated promotion can only be enabled or disabled.
+              This promotion is generated via API. Ask developers for details.
+              If issues arise, just disable it.
             </Alert>
           )}
 
@@ -110,33 +120,56 @@ function Page(
           </Spacer>
         </Spacer>
 
+        <Spacer top='14'>
+          <SectionInfo promotion={promotion} />
+        </Spacer>
+
         {!createdFromApi && (
-          <>
-            <Spacer top='14'>
-              <SectionInfo promotion={promotion} />
-            </Spacer>
-
-            <Spacer top='14'>
-              <SectionActivationRules promotionId={props.params.promotionId} />
-            </Spacer>
-
-            <Spacer top='14'>
-              <SectionCoupon promotionId={props.params.promotionId} />
-            </Spacer>
-          </>
+          <Spacer top='14'>
+            <SectionActivationRules promotionId={props.params.promotionId} />
+          </Spacer>
         )}
+
+        <Spacer top='14'>
+          <SectionCoupon promotionId={props.params.promotionId} />
+        </Spacer>
       </SkeletonTemplate>
     </PageLayout>
   )
 }
+
+const EnableDisableButton = withSkeletonTemplate<{
+  promotion: Promotion
+  mutatePromotion: KeyedMutator<Promotion>
+}>(({ promotion, mutatePromotion }) => {
+  const displayStatus = useDisplayStatus(promotion.id)
+  const { sdkClient } = useCoreSdkProvider()
+
+  return (
+    <Button
+      size='small'
+      onClick={() => {
+        void sdkClient[promotion.type]
+          .update({
+            id: promotion.id,
+            _disable: displayStatus.isEnabled,
+            _enable: !displayStatus.isEnabled
+          })
+          .then(() => {
+            void mutatePromotion()
+          })
+      }}
+    >
+      {displayStatus.isEnabled ? 'Disable' : 'Enable'}
+    </Button>
+  )
+})
 
 const ActionButton = withSkeletonTemplate<{
   promotion: Promotion
   mutatePromotion: KeyedMutator<Promotion>
 }>(({ promotion, mutatePromotion }) => {
   const [, setLocation] = useLocation()
-  const displayStatus = useDisplayStatus(promotion.id)
-  const { sdkClient } = useCoreSdkProvider()
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
     useDeletePromotionOverlay()
 
@@ -150,22 +183,10 @@ const ActionButton = withSkeletonTemplate<{
           alignItems: 'center'
         }}
       >
-        <Button
-          size='small'
-          onClick={() => {
-            void sdkClient[promotion.type]
-              .update({
-                id: promotion.id,
-                _disable: displayStatus.isEnabled,
-                _enable: !displayStatus.isEnabled
-              })
-              .then(() => {
-                void mutatePromotion()
-              })
-          }}
-        >
-          {displayStatus.isEnabled ? 'Disable' : 'Enable'}
-        </Button>
+        <EnableDisableButton
+          mutatePromotion={mutatePromotion}
+          promotion={promotion}
+        />
         <Dropdown
           dropdownLabel={
             <Button variant='secondary' size='small'>
