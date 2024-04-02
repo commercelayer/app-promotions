@@ -7,6 +7,7 @@ import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import type { Promotion } from '#types'
 import {
+  A,
   Alert,
   Badge,
   Button,
@@ -368,7 +369,12 @@ const SectionActivationRules = withSkeletonTemplate<{
         border='none'
         actionButton={
           hasRules ? (
-            <Link href={addActivationRuleLink}>Add rule</Link>
+            <Link href={addActivationRuleLink} asChild>
+              <A href='' variant='secondary' size='mini' alignItems='center'>
+                <Icon name='plus' />
+                Add rule
+              </A>
+            </Link>
           ) : undefined
         }
       >
@@ -495,7 +501,14 @@ const SectionCoupon = withSkeletonTemplate<{
         title='Coupons'
         border='none'
         actionButton={
-          hasCoupons ? <Link href={addCouponLink}>Add coupon</Link> : undefined
+          hasCoupons ? (
+            <Link href={addCouponLink}>
+              <A href='' variant='secondary' size='mini' alignItems='center'>
+                <Icon name='plus' />
+                Add coupon
+              </A>
+            </Link>
+          ) : undefined
         }
       >
         {hasCoupons ? (

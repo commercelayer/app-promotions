@@ -3,6 +3,7 @@ import { presets } from '#data/lists'
 import { appRoutes } from '#data/routes'
 import { usePromotionPermission } from '#hooks/usePromotionPermission'
 import {
+  A,
   HomePageLayout,
   Icon,
   List,
@@ -43,7 +44,7 @@ function HomePage(): JSX.Element {
           actionButton={
             canUserManagePromotions('create', 'atLeastOne') ? (
               <Link asChild href={appRoutes.newSelectType.makePath({})}>
-                <a>Add promo</a>
+                <A href=''>Add promotion</A>
               </Link>
             ) : undefined
           }
