@@ -27,6 +27,7 @@ import {
   Td,
   Text,
   Th,
+  Tooltip,
   Tr,
   formatDate,
   formatDateWithPredicate,
@@ -526,7 +527,22 @@ const SectionCoupon = withSkeletonTemplate<{
                 {promotion.coupons?.map((coupon) => (
                   <Tr key={coupon.id}>
                     <Td>
-                      <Text weight='semibold'>{coupon.code}</Text>
+                      <Text
+                        weight='semibold'
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                          alignItems: 'center'
+                        }}
+                      >
+                        {coupon.code}
+                        {coupon.customer_single_use === true && (
+                          <Tooltip
+                            content={<>Single use per customer</>}
+                            label={<Icon name='userRectangle' size={16} />}
+                          />
+                        )}
+                      </Text>
                       {coupon.recipient_email != null && (
                         <Text
                           tag='div'
