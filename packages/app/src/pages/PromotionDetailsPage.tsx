@@ -143,44 +143,58 @@ const ActionButton = withSkeletonTemplate<{
   return (
     <>
       <DeleteOverlay promotion={promotion} />
-      <Dropdown
-        dropdownItems={
-          <>
-            <DropdownItem
-              label={displayStatus.isEnabled ? 'Disable' : 'Enable'}
-              onClick={() => {
-                void sdkClient[promotion.type]
-                  .update({
-                    id: promotion.id,
-                    _disable: displayStatus.isEnabled,
-                    _enable: !displayStatus.isEnabled
-                  })
-                  .then(() => {
-                    void mutatePromotion()
-                  })
-              }}
-            />
-            <DropdownDivider />
-            <DropdownItem
-              label='Edit'
-              onClick={() => {
-                setLocation(
-                  appRoutes.editPromotion.makePath({
-                    promotionId: promotion.id
-                  })
-                )
-              }}
-            />
-            <DropdownDivider />
-            <DropdownItem
-              label='Delete'
-              onClick={() => {
-                showDeleteOverlay()
-              }}
-            />
-          </>
-        }
-      />
+      <div
+        style={{
+          display: 'flex',
+          gap: '8px',
+          alignItems: 'center'
+        }}
+      >
+        <Button
+          size='small'
+          onClick={() => {
+            void sdkClient[promotion.type]
+              .update({
+                id: promotion.id,
+                _disable: displayStatus.isEnabled,
+                _enable: !displayStatus.isEnabled
+              })
+              .then(() => {
+                void mutatePromotion()
+              })
+          }}
+        >
+          {displayStatus.isEnabled ? 'Disable' : 'Enable'}
+        </Button>
+        <Dropdown
+          dropdownLabel={
+            <Button variant='secondary' size='small'>
+              <Icon name='dotsThree' size={16} />
+            </Button>
+          }
+          dropdownItems={
+            <>
+              <DropdownItem
+                label='Edit'
+                onClick={() => {
+                  setLocation(
+                    appRoutes.editPromotion.makePath({
+                      promotionId: promotion.id
+                    })
+                  )
+                }}
+              />
+              <DropdownDivider />
+              <DropdownItem
+                label='Delete'
+                onClick={() => {
+                  showDeleteOverlay()
+                }}
+              />
+            </>
+          }
+        />
+      </div>
     </>
   )
 })
@@ -201,7 +215,6 @@ const CardStatus = withSkeletonTemplate<{
           </Text>
         </Spacer>
         <Badge
-          style={{ verticalAlign: 'middle' }}
           variant={displayStatus.status === 'active' ? 'success' : 'secondary'}
         >
           {displayStatus.label}
