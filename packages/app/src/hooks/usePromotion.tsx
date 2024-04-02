@@ -9,7 +9,8 @@ export const promotionIncludeAttribute = [
   'sku_list_promotion_rule.sku_list',
   'coupons',
   'coupons.promotion_rule',
-  'sku_list'
+  'sku_list',
+  'market'
 ]
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

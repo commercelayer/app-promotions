@@ -59,8 +59,7 @@ function Page(
 
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
   const hasRules = rules.length > 0
-  const createdFromApi =
-    promotion.reference_origin !== appPromotionsReferenceOrigin
+  const viaApi = isGeneratedViaApi(promotion)
 
   if (error != null) {
     return <GenericPageNotFound />
@@ -75,7 +74,7 @@ function Page(
       }
       overlay={props.overlay}
       actionButton={
-        createdFromApi ? (
+        viaApi ? (
           <EnableDisableButton
             mutatePromotion={mutatePromotion}
             promotion={promotion}
@@ -101,14 +100,14 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='14'>
-          {!isLoadingRules && !hasRules && !createdFromApi && (
+          {!isLoadingRules && !hasRules && !viaApi && (
             <Alert status='warning'>
               Define activation rules below to prevent application to all
               orders.
             </Alert>
           )}
 
-          {createdFromApi && (
+          {viaApi && (
             <Alert status='info'>
               This promotion is generated via API. Ask developers for details.
               If issues arise, just disable it.
@@ -124,7 +123,7 @@ function Page(
           <SectionInfo promotion={promotion} />
         </Spacer>
 
-        {!createdFromApi && (
+        {!viaApi && (
           <Spacer top='14'>
             <SectionActivationRules promotionId={props.params.promotionId} />
           </Spacer>
@@ -137,6 +136,9 @@ function Page(
     </PageLayout>
   )
 }
+
+const isGeneratedViaApi = (promotion: Promotion): boolean =>
+  promotion.reference_origin !== appPromotionsReferenceOrigin
 
 const EnableDisableButton = withSkeletonTemplate<{
   promotion: Promotion
@@ -337,6 +339,7 @@ const SectionInfo = withSkeletonTemplate<{
 }>(({ promotion }) => {
   const { user } = useTokenProvider()
   const config = promotionConfig[promotion.type]
+  const viaApi = isGeneratedViaApi(promotion)
 
   return (
     <Section title='Info'>
@@ -358,6 +361,20 @@ const SectionInfo = withSkeletonTemplate<{
           timezone: user?.timezone
         })}
       </ListDetailsItem>
+      {viaApi && (
+        <>
+          {promotion.market != null && (
+            <ListDetailsItem label='Market' gutter='none'>
+              {promotion.market.name}
+            </ListDetailsItem>
+          )}
+          {promotion.currency_code != null && (
+            <ListDetailsItem label='Currency code' gutter='none'>
+              {promotion.currency_code}
+            </ListDetailsItem>
+          )}
+        </>
+      )}
       {promotion.sku_list != null && (
         <ListDetailsItem label='SKU list' gutter='none'>
           {promotion.sku_list.name}
