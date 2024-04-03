@@ -59,7 +59,6 @@ function HomePage(): JSX.Element {
             asChild
           >
             <ListItem
-              tag='a'
               icon={<StatusIcon name='pulse' background='green' gap='small' />}
             >
               <Text weight='semibold'>{presets.active.viewTitle} </Text>
@@ -76,7 +75,7 @@ function HomePage(): JSX.Element {
             )}
             asChild
           >
-            <ListItem tag='a' icon={<RadialProgress size='small' />}>
+            <ListItem icon={<RadialProgress size='small' />}>
               <Text weight='semibold'>{presets.upcoming.viewTitle} </Text>
               <StatusIcon name='caretRight' />
             </ListItem>
@@ -92,7 +91,6 @@ function HomePage(): JSX.Element {
             asChild
           >
             <ListItem
-              tag='a'
               icon={
                 <StatusIcon name='minus' background='lightGray' gap='small' />
               }
@@ -104,7 +102,6 @@ function HomePage(): JSX.Element {
 
           <Link asChild href={appRoutes.promotionList.makePath({})}>
             <ListItem
-              tag='a'
               icon={
                 <StatusIcon
                   name='asteriskSimple'

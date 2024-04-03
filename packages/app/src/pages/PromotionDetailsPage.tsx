@@ -233,7 +233,7 @@ const CardStatus = withSkeletonTemplate<{
     <Stack>
       <div>
         <Spacer bottom='2'>
-          <Text size='small' tag='div' variant='info' weight='semibold'>
+          <Text size='small' variant='info' weight='semibold'>
             Status
           </Text>
         </Spacer>
@@ -245,7 +245,7 @@ const CardStatus = withSkeletonTemplate<{
       </div>
       <div>
         <Spacer bottom='2'>
-          <Text size='small' tag='div' variant='info' weight='semibold'>
+          <Text size='small' variant='info' weight='semibold'>
             {promotion.type === 'fixed_price_promotions'
               ? 'Fixed price'
               : 'Discount'}
@@ -260,7 +260,7 @@ const CardStatus = withSkeletonTemplate<{
       </div>
       <div>
         <Spacer bottom='2'>
-          <Text size='small' tag='div' variant='info' weight='semibold'>
+          <Text size='small' variant='info' weight='semibold'>
             Usage
           </Text>
         </Spacer>
@@ -435,7 +435,7 @@ const SectionActivationRules = withSkeletonTemplate<{
             {rules.map((rule, index) => (
               <Spacer key={rule.key} top={index > 0 ? '2' : undefined}>
                 <Card overflow='visible' gap='4'>
-                  <ListItem tag='div' padding='none' borderStyle='none'>
+                  <ListItem padding='none' borderStyle='none'>
                     <div>
                       {rule.label} {rule.valid && `${rule.matcherLabel} `}
                       {rule.values.map((value, i, list) => (
@@ -497,7 +497,6 @@ const SectionActivationRules = withSkeletonTemplate<{
             alignIcon='center'
             icon={<Icon name='sliders' size={32} />}
             paddingSize='6'
-            tag='div'
             variant='boxed'
           >
             <Text>
@@ -554,7 +553,7 @@ const SectionCoupon = withSkeletonTemplate<{
         border='none'
         actionButton={
           hasCoupons ? (
-            <Link href={addCouponLink}>
+            <Link href={addCouponLink} asChild>
               <A href='' variant='secondary' size='mini' alignItems='center'>
                 <Icon name='plus' />
                 Add coupon
@@ -596,7 +595,6 @@ const SectionCoupon = withSkeletonTemplate<{
                       </Text>
                       {coupon.recipient_email != null && (
                         <Text
-                          tag='div'
                           weight='semibold'
                           variant='info'
                           style={{ fontSize: '10px' }}
@@ -660,7 +658,6 @@ const SectionCoupon = withSkeletonTemplate<{
             alignIcon='center'
             icon={<Icon name='ticket' size={32} />}
             paddingSize='6'
-            tag='div'
             variant='boxed'
           >
             <Text>

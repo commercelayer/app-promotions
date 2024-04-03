@@ -43,12 +43,7 @@ export default {
       return (
         <>
           <Spacer top='6'>
-            <ListItem
-              tag='div'
-              padding='none'
-              borderStyle='none'
-              alignItems='top'
-            >
+            <ListItem padding='none' borderStyle='none' alignItems='top'>
               <HookedInputCurrency
                 name='fixed_amount_cents'
                 currencyCode={currencyCode}

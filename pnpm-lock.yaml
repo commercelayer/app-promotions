@@ -24,8 +24,8 @@ importers:
   packages/app:
     dependencies:
       '@commercelayer/app-elements':
-        specifier: ^1.19.0
-        version: 1.19.0(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1)
+        specifier: ^1.20.0
+        version: 1.20.0(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1)
       '@commercelayer/sdk':
         specifier: 5.33.1
         version: 5.33.1
@@ -358,8 +358,8 @@ packages:
     dev: true
     optional: true
 
-  /@commercelayer/app-elements@1.19.0(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1):
-    resolution: {integrity: sha512-U6iwPyo0r6r7rj06Cb7A4V7GCE+vU5UkAS/pwsSlHkEPw+U90aV1NlegNovQh43OZtXyY8oto5XnIQr8HFcLzA==}
+  /@commercelayer/app-elements@1.20.0(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1):
+    resolution: {integrity: sha512-JfOZhSNtHYjAwW3DR3NLyldzBR+b4I7OCATPmmAPnvgHfDdJRvZ+D1K+MRLmJZrB6v/eFs1wpj22F98/atjHkA==}
     engines: {node: '>=18', pnpm: '>=7'}
     peerDependencies:
       '@commercelayer/sdk': ^5.x
