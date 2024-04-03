@@ -164,6 +164,18 @@ export type Rule = { values: string[] } & RawRule
 
 function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
   switch (promotionRule.type) {
+    case 'order_amount_promotion_rules': {
+      return [
+        {
+          valid: false,
+          key: 'order_amount_promotion_rules',
+          label: 'Order amount is',
+          rawValues: [promotionRule.formatted_order_amount?.toString() ?? ''],
+          suffixLabel: `${promotionRule.use_subtotal === true ? "(order's subtotal)" : ''}`
+        }
+      ]
+    }
+
     case 'sku_list_promotion_rules': {
       const configKey = 'skuListPromotionRule'
       const config = ruleBuilderConfig[configKey]

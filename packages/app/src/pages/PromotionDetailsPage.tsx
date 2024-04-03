@@ -70,17 +70,7 @@ function Page(
       }
       overlay={props.overlay}
       actionButton={
-        viaApi ? (
-          <EnableDisableButton
-            mutatePromotion={mutatePromotion}
-            promotion={promotion}
-          />
-        ) : (
-          <ActionButton
-            promotion={promotion}
-            mutatePromotion={mutatePromotion}
-          />
-        )
+        <ActionButton promotion={promotion} mutatePromotion={mutatePromotion} />
       }
       mode={mode}
       gap='only-top'
@@ -119,11 +109,9 @@ function Page(
           <SectionInfo promotion={promotion} />
         </Spacer>
 
-        {!viaApi && (
-          <Spacer top='14'>
-            <SectionActivationRules promotionId={props.params.promotionId} />
-          </Spacer>
-        )}
+        <Spacer top='14'>
+          <SectionActivationRules promotionId={props.params.promotionId} />
+        </Spacer>
 
         <Spacer top='14'>
           <SectionCoupon promotionId={props.params.promotionId} />

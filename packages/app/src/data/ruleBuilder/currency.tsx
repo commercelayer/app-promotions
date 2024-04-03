@@ -40,7 +40,7 @@ export function useCurrencyCodes(promotion: Promotion): CurrencyCode[] {
   )
 
   useEffect(() => {
-    if (isMockedId(promotion.id) || isLoading || markets == null) {
+    if (isMockedId(promotion.id) || isLoading) {
       return
     }
 
@@ -53,6 +53,10 @@ export function useCurrencyCodes(promotion: Promotion): CurrencyCode[] {
     if (tmpList != null) {
       setCurrencyCodes(tmpList)
     } else {
+      if (markets == null) {
+        return
+      }
+
       const currencyCodes = markets
         .map((market) => market.price_list?.currency_code)
         .filter(isDefined) as NonNullable<CurrencyCode[]>
