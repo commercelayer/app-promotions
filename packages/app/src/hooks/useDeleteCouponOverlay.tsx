@@ -10,27 +10,34 @@ import type { Coupon } from '@commercelayer/sdk'
 import { useState } from 'react'
 import { makeCoupon } from 'src/mocks/resources/coupons'
 
+interface Options {
+  coupon: Coupon
+  deleteRule: boolean
+}
 interface OverlayHook {
-  show: (coupon: Coupon) => void
+  show: (options: Options) => void
   Overlay: React.FC<{ onClose: () => void }>
 }
 
 export function useDeleteCouponOverlay(): OverlayHook {
   const { Overlay: OverlayElement, open, close } = useOverlay()
   const { sdkClient } = useCoreSdkProvider()
-  const [coupon, setCoupon] = useState<Coupon>(makeCoupon())
+  const [options, setOptions] = useState<Options>({
+    coupon: makeCoupon(),
+    deleteRule: false
+  })
 
   return {
-    show: (coupon) => {
-      setCoupon(coupon)
+    show: (options) => {
+      setOptions(options)
       open()
     },
     Overlay: ({ onClose }) => {
       return (
         <OverlayElement backgroundColor='light'>
-          <SkeletonTemplate isLoading={isMockedId(coupon.id)}>
+          <SkeletonTemplate isLoading={isMockedId(options.coupon.id)}>
             <PageHeading
-              title={`Confirm that you want to cancel the coupon with code ${coupon.code}`}
+              title={`Confirm that you want to cancel the coupon with code ${options.coupon.code}`}
               navigationButton={{
                 onClick: () => {
                   close()
@@ -45,10 +52,23 @@ export function useDeleteCouponOverlay(): OverlayHook {
               variant='danger'
               fullWidth
               onClick={() => {
-                void sdkClient.coupons.delete(coupon.id).then(() => {
-                  onClose()
-                  close()
-                })
+                console.log('coupon', options)
+                void sdkClient.coupons
+                  .delete(options.coupon.id)
+                  .then(async () => {
+                    if (
+                      options.deleteRule &&
+                      options.coupon.promotion_rule?.id != null
+                    ) {
+                      await sdkClient.coupon_codes_promotion_rules.delete(
+                        options.coupon.promotion_rule.id
+                      )
+                    }
+                  })
+                  .then(() => {
+                    onClose()
+                    close()
+                  })
               }}
             >
               Delete

@@ -69,9 +69,11 @@ function Page(props: PageProps<typeof appRoutes.promotionList>): JSX.Element {
                 'reference_origin',
                 'disabled_at',
                 'total_usage_limit',
-                'total_usage_count'
+                'total_usage_count',
+                'coupon_codes_promotion_rule'
               ]
             },
+            include: ['coupon_codes_promotion_rule'],
             pageSize: 25,
             sort: {
               updated_at: 'desc'

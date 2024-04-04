@@ -12,7 +12,7 @@ import free_shipping_promotions from './configs/free_shipping_promotions'
 import percentage_discount_promotions from './configs/percentage_discount_promotions'
 
 /** The attribute `reference_origin: "app-promotions"` identifies a promotion directly created from the App. */
-export const referenceOrigin = 'app-promotions' as const
+export const appPromotionsReferenceOrigin = 'app-promotions'
 
 export const promotionConfig: PromotionConfig = {
   ...percentage_discount_promotions,
@@ -38,8 +38,13 @@ export type PromotionConfig = {
     type: type
     slug: Sanitize<type>
     titleList: string
+    description: string
     titleNew: string
     icon: IconProps['name']
+    /** This is the text shown in the CardStatus (promotion detail page) */
+    StatusDescription: React.FC<{
+      promotion: Extract<Promotion, { type: type }>
+    }>
     formType: z.ZodObject<z.ZodRawShape, 'strip', z.ZodTypeAny>
     Fields: React.FC<{ promotion?: Promotion }>
     Options: React.FC<{ promotion?: Promotion }>

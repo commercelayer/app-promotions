@@ -1,7 +1,6 @@
 import {
   HookedInputCurrency,
   HookedInputSelect,
-  ListDetailsItem,
   ListItem,
   Spacer,
   currencies,
@@ -20,6 +19,8 @@ export default {
     slug: 'fixed-price',
     icon: 'pushPin',
     titleList: 'Fixed price',
+    description:
+      'Impose a fixed price for products belonging to a specific list.',
     titleNew: 'fixed price promotion',
     formType: genericPromotionOptions.merge(
       z.object({
@@ -50,12 +51,7 @@ export default {
             />
           </Spacer>
           <Spacer top='6'>
-            <ListItem
-              tag='div'
-              padding='none'
-              borderStyle='none'
-              alignItems='top'
-            >
+            <ListItem padding='none' borderStyle='none' alignItems='top'>
               <HookedInputCurrency
                 name='fixed_amount_cents'
                 currencyCode={currencyCode}
@@ -79,15 +75,14 @@ export default {
       )
     },
     Options: () => <></>,
-    DetailsSectionInfo: ({ promotion }) => (
+    StatusDescription: ({ promotion }) => (
       <>
-        <ListDetailsItem label='Fixed price' gutter='none'>
-          {formatCentsToCurrency(
-            promotion.fixed_amount_cents,
-            promotion.currency_code as CurrencyCode
-          )}
-        </ListDetailsItem>
+        {formatCentsToCurrency(
+          promotion.fixed_amount_cents,
+          promotion.currency_code as CurrencyCode
+        )}
       </>
-    )
+    ),
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'fixed_price_promotions'>

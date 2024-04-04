@@ -14,6 +14,8 @@ export default {
     slug: 'external',
     icon: 'linkSimple',
     titleList: 'External promotion',
+    description:
+      'Integrate any kind of promotional engine as an external promotion.',
     titleNew: 'external promotion',
     formType: genericPromotionOptions.merge(
       z.object({
@@ -53,6 +55,7 @@ export default {
         </>
       )
     },
+    StatusDescription: () => <>External</>,
     DetailsSectionInfo: ({ promotion }) => (
       <>
         <ListDetailsItem label='External service URL' gutter='none'>

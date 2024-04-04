@@ -1,5 +1,8 @@
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
-import { promotionConfig, referenceOrigin } from '#data/promotions/config'
+import {
+  appPromotionsReferenceOrigin,
+  promotionConfig
+} from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
@@ -7,10 +10,10 @@ import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import type { Promotion } from '#types'
 import {
+  A,
   Alert,
   Badge,
   Button,
-  ButtonCard,
   Card,
   Dropdown,
   DropdownDivider,
@@ -22,13 +25,14 @@ import {
   Section,
   SkeletonTemplate,
   Spacer,
+  Stack,
   Table,
   Td,
   Text,
   Th,
+  Tooltip,
   Tr,
   formatDate,
-  formatDateRange,
   formatDateWithPredicate,
   getPromotionDisplayStatus,
   goBack,
@@ -37,6 +41,7 @@ import {
   withSkeletonTemplate
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
+import type { KeyedMutator } from 'swr'
 import { Link, useLocation } from 'wouter'
 
 function Page(
@@ -48,11 +53,13 @@ function Page(
 
   const [, setLocation] = useLocation()
 
-  const { isLoading, promotion, error } = usePromotion(props.params.promotionId)
+  const { isLoading, promotion, mutatePromotion, error } = usePromotion(
+    props.params.promotionId
+  )
 
   const { isLoading: isLoadingRules, rules } = usePromotionRules(promotion)
   const hasRules = rules.length > 0
-  const createdFromApi = promotion.reference_origin !== referenceOrigin
+  const viaApi = isGeneratedViaApi(promotion)
 
   if (error != null) {
     return <GenericPageNotFound />
@@ -67,7 +74,17 @@ function Page(
       }
       overlay={props.overlay}
       actionButton={
-        createdFromApi ? null : <ActionButton promotion={promotion} />
+        viaApi ? (
+          <EnableDisableButton
+            mutatePromotion={mutatePromotion}
+            promotion={promotion}
+          />
+        ) : (
+          <ActionButton
+            promotion={promotion}
+            mutatePromotion={mutatePromotion}
+          />
+        )
       }
       mode={mode}
       gap='only-top'
@@ -83,47 +100,77 @@ function Page(
     >
       <SkeletonTemplate isLoading={isLoading}>
         <Spacer top='14'>
-          {!isLoadingRules && !hasRules && !createdFromApi && (
+          {!isLoadingRules && !hasRules && !viaApi && (
             <Alert status='warning'>
               Define activation rules below to prevent application to all
               orders.
             </Alert>
           )}
 
-          {createdFromApi && (
+          {viaApi && (
             <Alert status='info'>
-              This API-generated promotion can only be enabled or disabled.
+              This promotion is generated via API. Ask developers for details.
+              If issues arise, just disable it.
             </Alert>
           )}
 
-          <Spacer top='6'>
+          <Spacer top='14'>
             <CardStatus promotionId={props.params.promotionId} />
           </Spacer>
         </Spacer>
 
-        {!createdFromApi && (
-          <>
-            <Spacer top='14'>
-              <SectionInfo promotion={promotion} />
-            </Spacer>
+        <Spacer top='14'>
+          <SectionInfo promotion={promotion} />
+        </Spacer>
 
-            <Spacer top='14'>
-              <SectionActivationRules promotionId={props.params.promotionId} />
-            </Spacer>
-
-            <Spacer top='14'>
-              <SectionCoupon promotionId={props.params.promotionId} />
-            </Spacer>
-          </>
+        {!viaApi && (
+          <Spacer top='14'>
+            <SectionActivationRules promotionId={props.params.promotionId} />
+          </Spacer>
         )}
+
+        <Spacer top='14'>
+          <SectionCoupon promotionId={props.params.promotionId} />
+        </Spacer>
       </SkeletonTemplate>
     </PageLayout>
   )
 }
 
+const isGeneratedViaApi = (promotion: Promotion): boolean =>
+  promotion.reference_origin !== appPromotionsReferenceOrigin
+
+const EnableDisableButton = withSkeletonTemplate<{
+  promotion: Promotion
+  mutatePromotion: KeyedMutator<Promotion>
+}>(({ promotion, mutatePromotion }) => {
+  const displayStatus = useDisplayStatus(promotion.id)
+  const { sdkClient } = useCoreSdkProvider()
+
+  return (
+    <Button
+      size='small'
+      onClick={() => {
+        void sdkClient[promotion.type]
+          .update({
+            id: promotion.id,
+            _disable: displayStatus.isEnabled,
+            _enable: !displayStatus.isEnabled
+          })
+          .then(() => {
+            void mutatePromotion()
+          })
+      }}
+    >
+      {displayStatus.isEnabled ? 'Disable' : 'Enable'}
+    </Button>
+  )
+})
+
 const ActionButton = withSkeletonTemplate<{
   promotion: Promotion
-}>(({ promotion }) => {
+  mutatePromotion: KeyedMutator<Promotion>
+}>(({ promotion, mutatePromotion }) => {
   const [, setLocation] = useLocation()
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
     useDeletePromotionOverlay()
@@ -131,29 +178,46 @@ const ActionButton = withSkeletonTemplate<{
   return (
     <>
       <DeleteOverlay promotion={promotion} />
-      <Dropdown
-        dropdownItems={
-          <>
-            <DropdownItem
-              label='Edit'
-              onClick={() => {
-                setLocation(
-                  appRoutes.editPromotion.makePath({
-                    promotionId: promotion.id
-                  })
-                )
-              }}
-            />
-            <DropdownDivider />
-            <DropdownItem
-              label='Delete'
-              onClick={() => {
-                showDeleteOverlay()
-              }}
-            />
-          </>
-        }
-      />
+      <div
+        style={{
+          display: 'flex',
+          gap: '8px',
+          alignItems: 'center'
+        }}
+      >
+        <EnableDisableButton
+          mutatePromotion={mutatePromotion}
+          promotion={promotion}
+        />
+        <Dropdown
+          dropdownLabel={
+            <Button variant='secondary' size='small'>
+              <Icon name='dotsThree' size={16} />
+            </Button>
+          }
+          dropdownItems={
+            <>
+              <DropdownItem
+                label='Edit'
+                onClick={() => {
+                  setLocation(
+                    appRoutes.editPromotion.makePath({
+                      promotionId: promotion.id
+                    })
+                  )
+                }}
+              />
+              <DropdownDivider />
+              <DropdownItem
+                label='Delete'
+                onClick={() => {
+                  showDeleteOverlay()
+                }}
+              />
+            </>
+          }
+        />
+      </div>
     </>
   )
 })
@@ -161,9 +225,59 @@ const ActionButton = withSkeletonTemplate<{
 const CardStatus = withSkeletonTemplate<{
   promotionId: string
 }>(({ promotionId }) => {
+  const { promotion } = usePromotion(promotionId)
+  const displayStatus = useDisplayStatus(promotionId)
+  const config = promotionConfig[promotion.type]
+
+  return (
+    <Stack>
+      <div>
+        <Spacer bottom='2'>
+          <Text size='small' variant='info' weight='semibold'>
+            Status
+          </Text>
+        </Spacer>
+        <Badge
+          variant={displayStatus.status === 'active' ? 'success' : 'secondary'}
+        >
+          {displayStatus.label}
+        </Badge>
+      </div>
+      <div>
+        <Spacer bottom='2'>
+          <Text size='small' variant='info' weight='semibold'>
+            {promotion.type === 'fixed_price_promotions'
+              ? 'Fixed price'
+              : 'Discount'}
+          </Text>
+        </Spacer>
+        <Text weight='semibold' style={{ fontSize: '18px' }}>
+          <config.StatusDescription
+            // @ts-expect-error TS cannot infer the right promotion
+            promotion={promotion}
+          />
+        </Text>
+      </div>
+      <div>
+        <Spacer bottom='2'>
+          <Text size='small' variant='info' weight='semibold'>
+            Usage
+          </Text>
+        </Spacer>
+        <Text weight='semibold' style={{ fontSize: '18px' }}>
+          {promotion.total_usage_count}
+          {promotion.total_usage_limit != null &&
+            ` / ${promotion.total_usage_limit}`}
+        </Text>
+      </div>
+    </Stack>
+  )
+})
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const useDisplayStatus = (promotionId: string) => {
   const { user } = useTokenProvider()
-  const { sdkClient } = useCoreSdkProvider()
-  const { promotion, mutatePromotion } = usePromotion(promotionId)
+  const { promotion } = usePromotion(promotionId)
 
   const displayStatus = useMemo(() => {
     // @ts-expect-error // TODO: we should fix this error type
@@ -217,49 +331,15 @@ const CardStatus = withSkeletonTemplate<{
     }
   }, [promotion])
 
-  return (
-    <Card overflow='hidden'>
-      <ListItem tag='div' borderStyle='none' padding='none' alignItems='top'>
-        <div>
-          <Text weight='semibold'>Promotion is</Text>{' '}
-          <Badge
-            style={{ verticalAlign: 'middle' }}
-            variant={
-              displayStatus.status === 'active' ? 'success' : 'secondary'
-            }
-            icon={displayStatus.isEnabled ? displayStatus.icon : undefined}
-          >
-            {displayStatus.label.toLowerCase()}
-          </Badge>
-          <br />
-          <Text size='small'>{displayStatus.statusDescription}</Text>
-        </div>
-        <Button
-          variant={displayStatus.isEnabled ? 'secondary' : 'primary'}
-          onClick={() => {
-            void sdkClient[promotion.type]
-              .update({
-                id: promotion.id,
-                _disable: displayStatus.isEnabled,
-                _enable: !displayStatus.isEnabled
-              })
-              .then(() => {
-                void mutatePromotion()
-              })
-          }}
-        >
-          {displayStatus.isEnabled ? 'Disable' : 'Enable'}
-        </Button>
-      </ListItem>
-    </Card>
-  )
-})
+  return displayStatus
+}
 
 const SectionInfo = withSkeletonTemplate<{
   promotion: Promotion
 }>(({ promotion }) => {
   const { user } = useTokenProvider()
   const config = promotionConfig[promotion.type]
+  const viaApi = isGeneratedViaApi(promotion)
 
   return (
     <Section title='Info'>
@@ -267,21 +347,37 @@ const SectionInfo = withSkeletonTemplate<{
         // @ts-expect-error TS cannot infer the right promotion
         promotion={promotion}
       />
-      <ListDetailsItem label='Activation period' gutter='none'>
-        {formatDateRange({
-          rangeFrom: promotion.starts_at,
-          rangeTo: promotion.expires_at,
+      <ListDetailsItem label='Start date' gutter='none'>
+        {formatDate({
+          isoDate: promotion.starts_at,
+          format: 'full',
           timezone: user?.timezone
         })}
       </ListDetailsItem>
+      <ListDetailsItem label='Expiration date' gutter='none'>
+        {formatDate({
+          isoDate: promotion.expires_at,
+          format: 'full',
+          timezone: user?.timezone
+        })}
+      </ListDetailsItem>
+      {viaApi && (
+        <>
+          {promotion.market != null && (
+            <ListDetailsItem label='Market' gutter='none'>
+              {promotion.market.name}
+            </ListDetailsItem>
+          )}
+          {promotion.currency_code != null && (
+            <ListDetailsItem label='Currency code' gutter='none'>
+              {promotion.currency_code}
+            </ListDetailsItem>
+          )}
+        </>
+      )}
       {promotion.sku_list != null && (
         <ListDetailsItem label='SKU list' gutter='none'>
           {promotion.sku_list.name}
-        </ListDetailsItem>
-      )}
-      {promotion.total_usage_limit != null && (
-        <ListDetailsItem label='Used' gutter='none'>
-          {promotion.total_usage_count} / {promotion.total_usage_limit}
         </ListDetailsItem>
       )}
       {promotion.exclusive === true && (
@@ -321,11 +417,16 @@ const SectionActivationRules = withSkeletonTemplate<{
   return (
     <SkeletonTemplate isLoading={isLoadingPromotion || isLoadingRules}>
       <Section
-        title='Activation rules'
+        title='Apply when'
         border='none'
         actionButton={
           hasRules ? (
-            <Link href={addActivationRuleLink}>Add rule</Link>
+            <Link href={addActivationRuleLink} asChild>
+              <A href='' variant='secondary' size='mini' alignItems='center'>
+                <Icon name='plus' />
+                Add rule
+              </A>
+            </Link>
           ) : undefined
         }
       >
@@ -334,7 +435,7 @@ const SectionActivationRules = withSkeletonTemplate<{
             {rules.map((rule, index) => (
               <Spacer key={rule.key} top={index > 0 ? '2' : undefined}>
                 <Card overflow='visible' gap='4'>
-                  <ListItem tag='div' padding='none' borderStyle='none'>
+                  <ListItem padding='none' borderStyle='none'>
                     <div>
                       {rule.label} {rule.valid && `${rule.matcherLabel} `}
                       {rule.values.map((value, i, list) => (
@@ -392,21 +493,28 @@ const SectionActivationRules = withSkeletonTemplate<{
             ))}
           </Card>
         ) : (
-          <ButtonCard
-            icon='sliders'
-            padding='6'
-            fullWidth
-            onClick={() => {
-              setLocation(addActivationRuleLink)
-            }}
+          <ListItem
+            alignIcon='center'
+            icon={<Icon name='sliders' size={32} />}
+            paddingSize='6'
+            variant='boxed'
           >
-            <Text align='left' variant='info'>
-              <a>Add activation rules</a> to limit the promotion to specific
-              orders.
-              <br />
-              Promotion applies only if all activation rules are met.
+            <Text>
+              Define the application rules to target specific orders for the
+              promotion.
             </Text>
-          </ButtonCard>
+            <Button
+              alignItems='center'
+              size='small'
+              variant='secondary'
+              onClick={() => {
+                setLocation(addActivationRuleLink)
+              }}
+            >
+              <Icon name='plus' size={16} />
+              Rule
+            </Button>
+          </ListItem>
         )}
       </Section>
     </SkeletonTemplate>
@@ -431,7 +539,7 @@ const SectionCoupon = withSkeletonTemplate<{
     promotionId: promotion.id
   })
 
-  const hasCoupons = promotion.coupons != null && promotion.coupons.length > 0
+  const hasCoupons = promotion.coupon_codes_promotion_rule != null
 
   return (
     <SkeletonTemplate isLoading={isLoadingPromotion}>
@@ -444,7 +552,14 @@ const SectionCoupon = withSkeletonTemplate<{
         title='Coupons'
         border='none'
         actionButton={
-          hasCoupons ? <Link href={addCouponLink}>Add coupon</Link> : undefined
+          hasCoupons ? (
+            <Link href={addCouponLink} asChild>
+              <A href='' variant='secondary' size='mini' alignItems='center'>
+                <Icon name='plus' />
+                Add coupon
+              </A>
+            </Link>
+          ) : undefined
         }
       >
         {hasCoupons ? (
@@ -461,7 +576,33 @@ const SectionCoupon = withSkeletonTemplate<{
               <>
                 {promotion.coupons?.map((coupon) => (
                   <Tr key={coupon.id}>
-                    <Td>{coupon.code}</Td>
+                    <Td>
+                      <Text
+                        weight='semibold'
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                          alignItems: 'center'
+                        }}
+                      >
+                        {coupon.code}
+                        {coupon.customer_single_use === true && (
+                          <Tooltip
+                            content={<>Single use per customer</>}
+                            label={<Icon name='userRectangle' size={16} />}
+                          />
+                        )}
+                      </Text>
+                      {coupon.recipient_email != null && (
+                        <Text
+                          weight='semibold'
+                          variant='info'
+                          style={{ fontSize: '10px' }}
+                        >
+                          To: {coupon.recipient_email}
+                        </Text>
+                      )}
+                    </Td>
                     <Td>
                       {coupon.usage_count}
                       {coupon.usage_limit != null
@@ -496,7 +637,10 @@ const SectionCoupon = withSkeletonTemplate<{
                             <DropdownItem
                               label='Delete'
                               onClick={() => {
-                                showDeleteCouponOverlay(coupon)
+                                showDeleteCouponOverlay({
+                                  coupon,
+                                  deleteRule: promotion.coupons?.length === 1
+                                })
                               }}
                             />
                           </>
@@ -510,19 +654,28 @@ const SectionCoupon = withSkeletonTemplate<{
             }
           />
         ) : (
-          <ButtonCard
-            icon='ticket'
-            padding='6'
-            fullWidth
-            onClick={() => {
-              setLocation(addCouponLink)
-            }}
+          <ListItem
+            alignIcon='center'
+            icon={<Icon name='ticket' size={32} />}
+            paddingSize='6'
+            variant='boxed'
           >
-            <Text align='left' variant='info'>
-              <a>Add coupons</a> to activate the promotion only if customer
-              enter a specific coupon code at checkout.
+            <Text>
+              Activate the promotion only if customer enter a specific coupon
+              code at checkout.
             </Text>
-          </ButtonCard>
+            <Button
+              alignItems='center'
+              size='small'
+              variant='secondary'
+              onClick={() => {
+                setLocation(addCouponLink)
+              }}
+            >
+              <Icon name='plus' size={16} />
+              Coupon
+            </Button>
+          </ListItem>
         )}
       </Section>
     </SkeletonTemplate>

@@ -1,7 +1,6 @@
 import {
   HookedInputCurrency,
   HookedInputSelect,
-  ListDetailsItem,
   ListItem,
   Spacer,
   currencies,
@@ -20,6 +19,7 @@ export default {
     slug: 'fixed-amount',
     icon: 'currencyEur',
     titleList: 'Fixed amount discount',
+    description: 'Apply a fixed amount discount to the orders.',
     titleNew: 'fixed amount discount',
     formType: genericPromotionOptions.merge(
       z.object({
@@ -43,12 +43,7 @@ export default {
       return (
         <>
           <Spacer top='6'>
-            <ListItem
-              tag='div'
-              padding='none'
-              borderStyle='none'
-              alignItems='top'
-            >
+            <ListItem padding='none' borderStyle='none' alignItems='top'>
               <HookedInputCurrency
                 name='fixed_amount_cents'
                 currencyCode={currencyCode}
@@ -82,15 +77,14 @@ export default {
         </>
       )
     },
-    DetailsSectionInfo: ({ promotion }) => (
+    StatusDescription: ({ promotion }) => (
       <>
-        <ListDetailsItem label='Fixed amount' gutter='none'>
-          {formatCentsToCurrency(
-            promotion.fixed_amount_cents,
-            promotion.currency_code as CurrencyCode
-          )}
-        </ListDetailsItem>
+        {formatCentsToCurrency(
+          promotion.fixed_amount_cents,
+          promotion.currency_code as CurrencyCode
+        )}
       </>
-    )
+    ),
+    DetailsSectionInfo: () => <></>
   }
 } satisfies Pick<PromotionConfig, 'fixed_amount_promotions'>

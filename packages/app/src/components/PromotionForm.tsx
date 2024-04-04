@@ -1,6 +1,6 @@
 import { formValuesToPromotion } from '#data/formConverters/promotion'
 import {
-  referenceOrigin,
+  appPromotionsReferenceOrigin,
   type PromotionType,
   type promotionConfig
 } from '#data/promotions/config'
@@ -69,7 +69,7 @@ export function PromotionForm({
           promotion = await resource.create({
             ...formValuesToPromotion(formValues),
             _disable: true,
-            reference_origin: referenceOrigin
+            reference_origin: appPromotionsReferenceOrigin
           })
         } else {
           // @ts-expect-error // TODO: I need to fix thi
@@ -80,13 +80,9 @@ export function PromotionForm({
         }
 
         setLocation(
-          isCreatingNewPromotion
-            ? appRoutes.promotionActivationRules.makePath({
-                promotionId: promotion.id
-              })
-            : appRoutes.promotionDetails.makePath({
-                promotionId: promotion.id
-              })
+          appRoutes.promotionDetails.makePath({
+            promotionId: promotion.id
+          })
         )
       }}
     >

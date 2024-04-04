@@ -24,8 +24,8 @@ importers:
   packages/app:
     dependencies:
       '@commercelayer/app-elements':
-        specifier: ^1.17.1
-        version: 1.17.1(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1)
+        specifier: ^1.20.0
+        version: 1.20.0(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1)
       '@commercelayer/sdk':
         specifier: 5.33.1
         version: 5.33.1
@@ -358,8 +358,8 @@ packages:
     dev: true
     optional: true
 
-  /@commercelayer/app-elements@1.17.1(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1):
-    resolution: {integrity: sha512-x69KQWSzskCe9jANQF4SQlsL+RuzA/s17G84Tvaw9Dk3CWzg5lHMbawYWIi2z1bvzSI1Lvi6nQg4T9wrWBHiWg==}
+  /@commercelayer/app-elements@1.20.0(@commercelayer/sdk@5.33.1)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.0)(react@18.2.0)(wouter@3.0.1):
+    resolution: {integrity: sha512-JfOZhSNtHYjAwW3DR3NLyldzBR+b4I7OCATPmmAPnvgHfDdJRvZ+D1K+MRLmJZrB6v/eFs1wpj22F98/atjHkA==}
     engines: {node: '>=18', pnpm: '>=7'}
     peerDependencies:
       '@commercelayer/sdk': ^5.x
@@ -378,6 +378,7 @@ packages:
       classnames: 2.5.1
       jwt-decode: 4.0.0
       lodash: 4.17.21
+      pluralize: 8.0.0
       query-string: 8.2.0
       react: 18.2.0
       react-currency-input-field: 3.8.0(react@18.2.0)
@@ -6781,6 +6782,11 @@ packages:
       mlly: 1.4.2
       pathe: 1.1.1
     dev: true
+
+  /pluralize@8.0.0:
+    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
+    engines: {node: '>=4'}
+    dev: false
 
   /postcss@8.4.35:
     resolution: {integrity: sha512-u5U8qYpBCpN13BsiEB0CbR1Hhh4Gc0zLFuedrHJKMctHCHAGrMdG0PRM/KErzAL3CU6/eckEtmHNB3x6e3c0vA==}
