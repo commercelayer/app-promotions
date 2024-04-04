@@ -1,3 +1,4 @@
+import { CouponTable } from '#components/CouponTable'
 import { GenericPageNotFound, type PageProps } from '#components/Routes'
 import {
   appPromotionsReferenceOrigin,
@@ -5,9 +6,9 @@ import {
 } from '#data/promotions/config'
 import { appRoutes } from '#data/routes'
 import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
-import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
 import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
+import { usePromotionCoupons } from '#hooks/usePromotionCoupons'
 import type { Promotion } from '#types'
 import {
   A,
@@ -26,12 +27,7 @@ import {
   SkeletonTemplate,
   Spacer,
   Stack,
-  Table,
-  Td,
   Text,
-  Th,
-  Tooltip,
-  Tr,
   formatDate,
   formatDateWithPredicate,
   getPromotionDisplayStatus,
@@ -424,7 +420,7 @@ const SectionActivationRules = withSkeletonTemplate<{
             <Link href={addActivationRuleLink} asChild>
               <A href='' variant='secondary' size='mini' alignItems='center'>
                 <Icon name='plus' />
-                Add rule
+                Rule
               </A>
             </Link>
           ) : undefined
@@ -525,29 +521,21 @@ const SectionCoupon = withSkeletonTemplate<{
   promotionId: string
 }>(({ promotionId }) => {
   const [, setLocation] = useLocation()
-  const { user } = useTokenProvider()
   const {
-    isLoading: isLoadingPromotion,
-    promotion,
-    mutatePromotion
-  } = usePromotion(promotionId)
-
-  const { show: showDeleteCouponOverlay, Overlay: CouponOverlay } =
-    useDeleteCouponOverlay()
+    isLoading: isLoadingCoupons,
+    coupons,
+    mutatePromotionCoupons
+  } = usePromotionCoupons(promotionId)
 
   const addCouponLink = appRoutes.newCoupon.makePath({
-    promotionId: promotion.id
+    promotionId
   })
 
-  const hasCoupons = promotion.coupon_codes_promotion_rule != null
+  const hasCoupons = coupons != null && coupons.length > 0
+  const showAll = (coupons?.meta.pageCount ?? 0) > 1
 
   return (
-    <SkeletonTemplate isLoading={isLoadingPromotion}>
-      <CouponOverlay
-        onClose={() => {
-          void mutatePromotion()
-        }}
-      />
+    <SkeletonTemplate isLoading={isLoadingCoupons}>
       <Section
         title='Coupons'
         border='none'
@@ -556,102 +544,19 @@ const SectionCoupon = withSkeletonTemplate<{
             <Link href={addCouponLink} asChild>
               <A href='' variant='secondary' size='mini' alignItems='center'>
                 <Icon name='plus' />
-                Add coupon
+                Coupon
               </A>
             </Link>
           ) : undefined
         }
       >
         {hasCoupons ? (
-          <Table
-            thead={
-              <Tr>
-                <Th>Code</Th>
-                <Th>Used</Th>
-                <Th>Expiry</Th>
-                <Th />
-              </Tr>
-            }
-            tbody={
-              <>
-                {promotion.coupons?.map((coupon) => (
-                  <Tr key={coupon.id}>
-                    <Td>
-                      <Text
-                        weight='semibold'
-                        style={{
-                          display: 'flex',
-                          gap: '8px',
-                          alignItems: 'center'
-                        }}
-                      >
-                        {coupon.code}
-                        {coupon.customer_single_use === true && (
-                          <Tooltip
-                            content={<>Single use per customer</>}
-                            label={<Icon name='userRectangle' size={16} />}
-                          />
-                        )}
-                      </Text>
-                      {coupon.recipient_email != null && (
-                        <Text
-                          weight='semibold'
-                          variant='info'
-                          style={{ fontSize: '10px' }}
-                        >
-                          To: {coupon.recipient_email}
-                        </Text>
-                      )}
-                    </Td>
-                    <Td>
-                      {coupon.usage_count}
-                      {coupon.usage_limit != null
-                        ? ` / ${coupon.usage_limit}`
-                        : ''}
-                    </Td>
-                    <Td>
-                      {coupon.expires_at == null
-                        ? 'Never'
-                        : formatDate({
-                            format: 'distanceToNow',
-                            isoDate: coupon.expires_at,
-                            timezone: user?.timezone
-                          })}
-                    </Td>
-                    <Td align='right'>
-                      <Dropdown
-                        dropdownItems={
-                          <>
-                            <DropdownItem
-                              label='Edit'
-                              onClick={() => {
-                                setLocation(
-                                  appRoutes.editCoupon.makePath({
-                                    promotionId: promotion.id,
-                                    couponId: coupon.id
-                                  })
-                                )
-                              }}
-                            />
-                            <DropdownDivider />
-                            <DropdownItem
-                              label='Delete'
-                              onClick={() => {
-                                showDeleteCouponOverlay({
-                                  coupon,
-                                  deleteRule: promotion.coupons?.length === 1
-                                })
-                              }}
-                            />
-                          </>
-                        }
-                        dropdownLabel={<Icon name='dotsThree' size={24} />}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-              </>
-            }
+          <CouponTable
+            coupons={coupons}
+            onDelete={() => {
+              void mutatePromotionCoupons()
+            }}
+            promotionId={promotionId}
           />
         ) : (
           <ListItem
@@ -678,6 +583,13 @@ const SectionCoupon = withSkeletonTemplate<{
           </ListItem>
         )}
       </Section>
+      {showAll && (
+        <Spacer top='4' bottom='4'>
+          <Link href={appRoutes.couponList.makePath({ promotionId })}>
+            View all coupons
+          </Link>
+        </Spacer>
+      )}
     </SkeletonTemplate>
   )
 })
