@@ -7,8 +7,6 @@ export const promotionIncludeAttribute = [
   'coupon_codes_promotion_rule',
   'promotion_rules',
   'sku_list_promotion_rule.sku_list',
-  'coupons',
-  'coupons.promotion_rule',
   'sku_list',
   'market'
 ]
