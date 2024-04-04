@@ -21,8 +21,6 @@ function Page(props: PageProps<typeof appRoutes.couponList>): JSX.Element {
   const [searchValue, setSearchValue] = useState<string>()
   const [hardRefresh, setHardRefresh] = useState<number>()
 
-  console.log('load')
-
   return (
     <PageLayout
       overlay={props.overlay}
@@ -72,7 +70,9 @@ function Page(props: PageProps<typeof appRoutes.couponList>): JSX.Element {
           query={{
             filters: {
               promotion_rule_promotion_id_eq: props.params.promotionId,
-              ...(searchValue != null ? { code_cont: searchValue } : {})
+              ...(searchValue != null
+                ? { code_or_coupon_recipient_email_cont: searchValue }
+                : {})
             },
             sort: ['-updated_at']
           }}
@@ -84,6 +84,7 @@ function Page(props: PageProps<typeof appRoutes.couponList>): JSX.Element {
               onDelete={() => {}}
             />
           }
+          ItemTemplate={() => <></>}
         >
           {({ isLoading, data }) => (
             <CouponTable
