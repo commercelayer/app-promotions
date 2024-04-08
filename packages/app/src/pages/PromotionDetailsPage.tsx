@@ -353,7 +353,7 @@ const SectionInfo = withSkeletonTemplate<{
             </ListDetailsItem>
           )}
           {promotion.currency_code != null && (
-            <ListDetailsItem label='Currency code' gutter='none'>
+            <ListDetailsItem label='Currency' gutter='none'>
               {promotion.currency_code}
             </ListDetailsItem>
           )}

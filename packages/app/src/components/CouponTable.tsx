@@ -85,9 +85,10 @@ export const CouponTable = ({
                   </Text>
                   {coupon.recipient_email != null && (
                     <Text
+                      tag='div'
                       weight='semibold'
                       variant='info'
-                      style={{ fontSize: '10px' }}
+                      style={{ fontSize: '11px' }}
                     >
                       To: {coupon.recipient_email}
                     </Text>
