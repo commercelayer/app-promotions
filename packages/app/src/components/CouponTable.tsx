@@ -1,6 +1,7 @@
 import { appRoutes } from '#data/routes'
 import { useDeleteCouponOverlay } from '#hooks/useDeleteCouponOverlay'
 import {
+  Button,
   Dropdown,
   DropdownDivider,
   DropdownItem,
@@ -128,13 +129,17 @@ export const CouponTable = ({
                           onClick={() => {
                             showDeleteCouponOverlay({
                               coupon,
-                              deleteRule: coupons?.length === 1
+                              deleteRule: coupons.length === 1
                             })
                           }}
                         />
                       </>
                     }
-                    dropdownLabel={<Icon name='dotsThree' size={24} />}
+                    dropdownLabel={
+                      <Button variant='circle'>
+                        <Icon name='dotsThree' size={24} />
+                      </Button>
+                    }
                   />
                 </Td>
               </Tr>

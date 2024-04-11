@@ -9,6 +9,7 @@ import { usePromotionRules } from '#data/ruleBuilder/usePromotionRules'
 import { useDeletePromotionOverlay } from '#hooks/useDeletePromotionOverlay'
 import { usePromotion } from '#hooks/usePromotion'
 import { usePromotionCoupons } from '#hooks/usePromotionCoupons'
+import { isMockedId } from '#mocks'
 import type { Promotion } from '#types'
 import {
   A,
@@ -23,6 +24,7 @@ import {
   ListDetailsItem,
   ListItem,
   PageLayout,
+  ResourceMetadata,
   Section,
   SkeletonTemplate,
   Spacer,
@@ -33,6 +35,7 @@ import {
   getPromotionDisplayStatus,
   goBack,
   useCoreSdkProvider,
+  useEditMetadataOverlay,
   useTokenProvider,
   withSkeletonTemplate
 } from '@commercelayer/app-elements'
@@ -114,8 +117,18 @@ function Page(
         </Spacer>
 
         <Spacer top='14'>
-          <SectionCoupon promotionId={props.params.promotionId} />
+          <SectionCoupon promotion={promotion} />
         </Spacer>
+
+        {!isMockedId(promotion.id) && (
+          <Spacer top='14'>
+            <ResourceMetadata
+              overlay={{ title: 'Edit metadata', description: promotion.name }}
+              resourceType={promotion.type}
+              resourceId={promotion.id}
+            />
+          </Spacer>
+        )}
       </SkeletonTemplate>
     </PageLayout>
   )
@@ -158,10 +171,20 @@ const ActionButton = withSkeletonTemplate<{
   const [, setLocation] = useLocation()
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
     useDeletePromotionOverlay()
+  const { Overlay: EditMetadataOverlay, show: showEditMetadataOverlay } =
+    useEditMetadataOverlay()
 
   return (
     <>
       <DeleteOverlay promotion={promotion} />
+      {!isMockedId(promotion.id) && (
+        <EditMetadataOverlay
+          resourceType={promotion.type}
+          resourceId={promotion.id}
+          title='Edit metadata'
+          description={promotion.name}
+        />
+      )}
       <div
         style={{
           display: 'flex',
@@ -189,6 +212,12 @@ const ActionButton = withSkeletonTemplate<{
                       promotionId: promotion.id
                     })
                   )
+                }}
+              />
+              <DropdownItem
+                label='Metadata'
+                onClick={() => {
+                  showEditMetadataOverlay()
                 }}
               />
               <DropdownDivider />
@@ -467,7 +496,11 @@ const SectionActivationRules = withSkeletonTemplate<{
                               />
                             </>
                           }
-                          dropdownLabel={<Icon name='dotsThree' size={24} />}
+                          dropdownLabel={
+                            <Button variant='circle'>
+                              <Icon name='dotsThree' size={24} />
+                            </Button>
+                          }
                         />
                       </div>
                     )}
@@ -506,21 +539,48 @@ const SectionActivationRules = withSkeletonTemplate<{
 })
 
 const SectionCoupon = withSkeletonTemplate<{
-  promotionId: string
-}>(({ promotionId }) => {
+  promotion: Promotion
+}>(({ promotion }) => {
   const [, setLocation] = useLocation()
   const {
     isLoading: isLoadingCoupons,
     coupons,
     mutatePromotionCoupons
-  } = usePromotionCoupons(promotionId)
+  } = usePromotionCoupons(
+    promotion.coupon_codes_promotion_rule != null ? promotion.id : undefined
+  )
 
   const addCouponLink = appRoutes.newCoupon.makePath({
-    promotionId
+    promotionId: promotion.id
   })
 
   const hasCoupons = coupons != null && coupons.length > 0
   const showAll = (coupons?.meta.pageCount ?? 0) > 1
+
+  const emptyList = (
+    <ListItem
+      alignIcon='center'
+      icon={<Icon name='ticket' size={32} />}
+      paddingSize='6'
+      variant='boxed'
+    >
+      <Text>
+        Activate the promotion only if customer enter a specific coupon code at
+        checkout.
+      </Text>
+      <Button
+        alignItems='center'
+        size='small'
+        variant='secondary'
+        onClick={() => {
+          setLocation(addCouponLink)
+        }}
+      >
+        <Icon name='plus' size={16} />
+        Coupon
+      </Button>
+    </ListItem>
+  )
 
   return (
     <SkeletonTemplate isLoading={isLoadingCoupons}>
@@ -544,36 +604,17 @@ const SectionCoupon = withSkeletonTemplate<{
             onDelete={() => {
               void mutatePromotionCoupons()
             }}
-            promotionId={promotionId}
+            promotionId={promotion.id}
           />
         ) : (
-          <ListItem
-            alignIcon='center'
-            icon={<Icon name='ticket' size={32} />}
-            paddingSize='6'
-            variant='boxed'
-          >
-            <Text>
-              Activate the promotion only if customer enter a specific coupon
-              code at checkout.
-            </Text>
-            <Button
-              alignItems='center'
-              size='small'
-              variant='secondary'
-              onClick={() => {
-                setLocation(addCouponLink)
-              }}
-            >
-              <Icon name='plus' size={16} />
-              Coupon
-            </Button>
-          </ListItem>
+          emptyList
         )}
       </Section>
       {showAll && (
         <Spacer top='4' bottom='4'>
-          <Link href={appRoutes.couponList.makePath({ promotionId })}>
+          <Link
+            href={appRoutes.couponList.makePath({ promotionId: promotion.id })}
+          >
             View all coupons
           </Link>
         </Spacer>

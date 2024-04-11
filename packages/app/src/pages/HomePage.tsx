@@ -44,7 +44,10 @@ function HomePage(): JSX.Element {
           actionButton={
             canUserManagePromotions('create', 'atLeastOne') ? (
               <Link asChild href={appRoutes.newSelectType.makePath({})}>
-                <A href=''>Add promotion</A>
+                <A href='' variant='secondary' size='mini' alignItems='center'>
+                  <Icon name='plus' />
+                  New
+                </A>
               </Link>
             ) : undefined
           }
