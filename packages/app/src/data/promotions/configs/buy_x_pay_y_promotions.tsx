@@ -3,7 +3,6 @@ import {
   Grid,
   HookedInput,
   HookedInputCheckbox,
-  Icon,
   ListDetailsItem,
   Section,
   Spacer,
@@ -115,10 +114,8 @@ export default {
           {promotion.y}
         </ListDetailsItem> */}
         {promotion.cheapest_free === true && (
-          <ListDetailsItem label='Cheapest free' gutter='none'>
-            <Text variant='success'>
-              <Icon name='check' weight='bold' size={18} />
-            </Text>
+          <ListDetailsItem label='Mode' gutter='none'>
+            Cheapest free
           </ListDetailsItem>
         )}
       </>

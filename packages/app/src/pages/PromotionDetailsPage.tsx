@@ -395,9 +395,7 @@ const SectionInfo = withSkeletonTemplate<{
       )}
       {promotion.exclusive === true && (
         <ListDetailsItem label='Exclusive' gutter='none'>
-          <Text variant='success'>
-            <Icon name='check' weight='bold' size={18} />
-          </Text>
+          No other promotions apply
         </ListDetailsItem>
       )}
       {promotion.priority != null && (
