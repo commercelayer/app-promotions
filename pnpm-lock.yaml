@@ -28,14 +28,14 @@ importers:
   packages/app:
     dependencies:
       '@commercelayer/app-elements':
-        specifier: ^1.22.1
-        version: 1.22.1(@commercelayer/sdk@5.37.0)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.2)(react@18.2.0)(wouter@3.1.2)
+        specifier: ^1.22.2
+        version: 1.22.2(@commercelayer/sdk@5.37.0)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.3)(react@18.2.0)(wouter@3.1.2)
       '@commercelayer/sdk':
         specifier: 5.37.0
         version: 5.37.0
       '@hookform/resolvers':
         specifier: ^3.3.4
-        version: 3.3.4(react-hook-form@7.51.2)
+        version: 3.3.4(react-hook-form@7.51.3)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -49,8 +49,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       react-hook-form:
-        specifier: ^7.51.2
-        version: 7.51.2(react@18.2.0)
+        specifier: ^7.51.3
+        version: 7.51.3(react@18.2.0)
       swr:
         specifier: ^2.2.5
         version: 2.2.5(react@18.2.0)
@@ -77,8 +77,8 @@ importers:
         specifier: ^20.12.7
         version: 20.12.7
       '@types/react':
-        specifier: ^18.2.76
-        version: 18.2.76
+        specifier: ^18.2.77
+        version: 18.2.77
       '@types/react-dom':
         specifier: ^18.2.25
         version: 18.2.25
@@ -362,8 +362,8 @@ packages:
     dev: true
     optional: true
 
-  /@commercelayer/app-elements@1.22.1(@commercelayer/sdk@5.37.0)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.2)(react@18.2.0)(wouter@3.1.2):
-    resolution: {integrity: sha512-E9Khwf+e3xW6MHUqvmQE5JdXQ7O1fLObwykzfZUX+R71OxTuc9tir/iJ/wlqz3At3CGQUSTyL+ZlgRNhMwopAA==}
+  /@commercelayer/app-elements@1.22.2(@commercelayer/sdk@5.37.0)(query-string@8.2.0)(react-dom@18.2.0)(react-gtm-module@2.0.11)(react-hook-form@7.51.3)(react@18.2.0)(wouter@3.1.2):
+    resolution: {integrity: sha512-LcLP0brU2pXCuI9zTfBGrf27OG7Cp0oZL+IxJprBsmmcUPwDGeP8/L2UoC2IuxS+xzRgd3Agbl+Gex2wSo3Ulg==}
     engines: {node: '>=18', pnpm: '>=7'}
     peerDependencies:
       '@commercelayer/sdk': ^5.x
@@ -376,7 +376,7 @@ packages:
     dependencies:
       '@commercelayer/sdk': 5.37.0
       '@types/lodash': 4.17.0
-      '@types/react': 18.2.76
+      '@types/react': 18.2.77
       '@types/react-datepicker': 6.0.2(react-dom@18.2.0)(react@18.2.0)
       '@types/react-dom': 18.2.25
       classnames: 2.5.1
@@ -389,8 +389,8 @@ packages:
       react-datepicker: 6.1.0(react-dom@18.2.0)(react@18.2.0)
       react-dom: 18.2.0(react@18.2.0)
       react-gtm-module: 2.0.11
-      react-hook-form: 7.51.2(react@18.2.0)
-      react-select: 5.8.0(@types/react@18.2.76)(react-dom@18.2.0)(react@18.2.0)
+      react-hook-form: 7.51.3(react@18.2.0)
+      react-select: 5.8.0(@types/react@18.2.77)(react-dom@18.2.0)(react@18.2.0)
       react-tooltip: 5.26.2(react-dom@18.2.0)(react@18.2.0)
       swr: 2.2.5(react@18.2.0)
       ts-invariant: 0.10.3
@@ -488,7 +488,7 @@ packages:
     resolution: {integrity: sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==}
     dev: false
 
-  /@emotion/react@11.11.1(@types/react@18.2.76)(react@18.2.0):
+  /@emotion/react@11.11.1(@types/react@18.2.77)(react@18.2.0):
     resolution: {integrity: sha512-5mlW1DquU5HaxjLkfkGN1GA/fvVGdyHURRiX/0FHl2cfIfRxSOfmxEH5YS43edp0OldZrZ+dkBKbngxcNCdZvA==}
     peerDependencies:
       '@types/react': '*'
@@ -504,7 +504,7 @@ packages:
       '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.2.0)
       '@emotion/utils': 1.2.1
       '@emotion/weak-memoize': 0.3.1
-      '@types/react': 18.2.76
+      '@types/react': 18.2.77
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
     dev: false
@@ -832,12 +832,12 @@ packages:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     dev: true
 
-  /@hookform/resolvers@3.3.4(react-hook-form@7.51.2):
+  /@hookform/resolvers@3.3.4(react-hook-form@7.51.3):
     resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: 7.51.2(react@18.2.0)
+      react-hook-form: 7.51.3(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -1801,7 +1801,7 @@ packages:
     resolution: {integrity: sha512-RnBAD9hO9GgSNZ2WjUZKltP3OkLxHNxmvFHyp8SC5A5qItPH20VWj/4krJ3iqGUiH1pqV/vRTOQKeJfEOqcXSw==}
     dependencies:
       '@floating-ui/react': 0.26.9(react-dom@18.2.0)(react@18.2.0)
-      '@types/react': 18.2.76
+      '@types/react': 18.2.77
       date-fns: 3.3.1
     transitivePeerDependencies:
       - react
@@ -1811,16 +1811,16 @@ packages:
   /@types/react-dom@18.2.25:
     resolution: {integrity: sha512-o/V48vf4MQh7juIKZU2QGDfli6p1+OOi5oXx36Hffpc9adsHeXjVp8rHuPkjd8VT8sOJ2Zp05HR7CdpGTIUFUA==}
     dependencies:
-      '@types/react': 18.2.76
+      '@types/react': 18.2.77
 
   /@types/react-transition-group@4.4.9:
     resolution: {integrity: sha512-ZVNmWumUIh5NhH8aMD9CR2hdW0fNuYInlocZHaZ+dgk/1K49j1w/HoAuK1ki+pgscQrOFRTlXeoURtuzEkV3dg==}
     dependencies:
-      '@types/react': 18.2.76
+      '@types/react': 18.2.77
     dev: false
 
-  /@types/react@18.2.76:
-    resolution: {integrity: sha512-T6z/v7YxpswDM61Vq5KoSPTJqCkroJfsDIsvXCr4+qOY6gik5Ju4w0jf67cpC5z7ydOnp/E0V0W08pDRy8u9Xw==}
+  /@types/react@18.2.77:
+    resolution: {integrity: sha512-CUT9KUUF+HytDM7WiXKLF9qUSg4tGImwy4FXTlfEDPEkkNUzJ7rVFolYweJ9fS1ljoIaP7M7Rdjc5eUm/Yu5AA==}
     dependencies:
       '@types/prop-types': 15.7.11
       csstype: 3.1.2
@@ -7293,8 +7293,8 @@ packages:
     resolution: {integrity: sha512-8gyj4TTxeP7eEyc2QKawEuQoAZdjKvMY4pgWfycGmqGByhs17fR+zEBs0JUDq4US/l+vbTl+6zvUIx27iDo/Vw==}
     dev: false
 
-  /react-hook-form@7.51.2(react@18.2.0):
-    resolution: {integrity: sha512-y++lwaWjtzDt/XNnyGDQy6goHskFualmDlf+jzEZvjvz6KWDf7EboL7pUvRCzPTJd0EOPpdekYaQLEvvG6m6HA==}
+  /react-hook-form@7.51.3(react@18.2.0):
+    resolution: {integrity: sha512-cvJ/wbHdhYx8aviSWh28w9ImjmVsb5Y05n1+FW786vEZQJV5STNM0pW6ujS+oiBecb0ARBxJFyAnXj9+GHXACQ==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
@@ -7328,7 +7328,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /react-select@5.8.0(@types/react@18.2.76)(react-dom@18.2.0)(react@18.2.0):
+  /react-select@5.8.0(@types/react@18.2.77)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-TfjLDo58XrhP6VG5M/Mi56Us0Yt8X7xD6cDybC7yoRMUNm7BGO7qk8J0TLQOua/prb8vUOtsfnXZwfm30HGsAA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -7336,7 +7336,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.4
       '@emotion/cache': 11.11.0
-      '@emotion/react': 11.11.1(@types/react@18.2.76)(react@18.2.0)
+      '@emotion/react': 11.11.1(@types/react@18.2.77)(react@18.2.0)
       '@floating-ui/dom': 1.6.1
       '@types/react-transition-group': 4.4.9
       memoize-one: 6.0.0
@@ -7344,7 +7344,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-transition-group: 4.4.5(react-dom@18.2.0)(react@18.2.0)
-      use-isomorphic-layout-effect: 1.1.2(@types/react@18.2.76)(react@18.2.0)
+      use-isomorphic-layout-effect: 1.1.2(@types/react@18.2.77)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -8799,7 +8799,7 @@ packages:
       requires-port: 1.0.0
     dev: true
 
-  /use-isomorphic-layout-effect@1.1.2(@types/react@18.2.76)(react@18.2.0):
+  /use-isomorphic-layout-effect@1.1.2(@types/react@18.2.77)(react@18.2.0):
     resolution: {integrity: sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==}
     peerDependencies:
       '@types/react': '*'
@@ -8808,7 +8808,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@types/react': 18.2.76
+      '@types/react': 18.2.77
       react: 18.2.0
     dev: false
 
