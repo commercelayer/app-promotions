@@ -196,7 +196,7 @@ function useRuleBuilderFormFields(promotion: Promotion) {
         options: availableOptions
       },
       {
-        label: 'Not applicable with current activation rules',
+        label: 'Not applicable: you must set a single currency',
         options: notAvailableOptions
       }
     ]
