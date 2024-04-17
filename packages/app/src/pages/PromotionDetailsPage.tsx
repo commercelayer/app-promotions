@@ -215,7 +215,7 @@ const ActionButton = withSkeletonTemplate<{
                 }}
               />
               <DropdownItem
-                label='Metadata'
+                label='Set metadata'
                 onClick={() => {
                   showEditMetadataOverlay()
                 }}
