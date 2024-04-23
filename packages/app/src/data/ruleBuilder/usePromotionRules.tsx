@@ -195,9 +195,11 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
           matcherLabel: 'is',
           rawValues: String(promotionRule.sku_list?.id).toString().split(','),
           suffixLabel:
-            promotionRule.min_quantity != null
-              ? `(${promotionRule.min_quantity})`
-              : undefined
+            promotionRule.all_skus === true
+              ? `(all SKUs)`
+              : promotionRule.min_quantity != null
+                ? `(${promotionRule.min_quantity} SKU${promotionRule.min_quantity > 1 ? 's' : ''})`
+                : `(any SKUs)`
         }
       ]
     }
