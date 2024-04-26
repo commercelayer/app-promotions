@@ -35,9 +35,13 @@ export const matchers = {
   gt: {
     label: 'is greater than',
     value: 'gt'
+  },
+  end_any: {
+    label: 'ends with',
+    value: 'end_any'
   }
 } as const satisfies {
-  [key in 'in' | 'not_in' | 'eq' | 'gteq' | 'gt']: {
+  [key in 'in' | 'not_in' | 'eq' | 'gteq' | 'gt' | 'end_any']: {
     label: string
     value: key
   }
@@ -126,6 +130,16 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
+  customer_email: {
+    resource: 'custom_promotion_rules',
+    rel: null,
+    label: 'Customer email',
+    operators: [matchers.end_any],
+    Component: () => <HookedInput name='value' />,
+    isAvailable() {
+      return true
+    }
+  },
   order_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
@@ -168,6 +182,7 @@ export type RuleBuilderConfig = Record<
   | 'total_amount_cents'
   | 'line_items_sku_tags_id'
   | 'customer_tags_id'
+  | 'customer_email'
   | 'order_tags_id'
   | 'subtotal_amount_cents'
   | 'skuListPromotionRule',
