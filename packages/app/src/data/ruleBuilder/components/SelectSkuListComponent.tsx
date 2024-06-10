@@ -4,7 +4,7 @@ import {
   useCoreSdkProvider,
   type InputSelectValue
 } from '@commercelayer/app-elements'
-import type { QueryParamsList } from '@commercelayer/sdk'
+import type { QueryParamsList, SkuList } from '@commercelayer/sdk'
 
 export function SelectSkuListComponent(): JSX.Element {
   const { sdkClient } = useCoreSdkProvider()
@@ -27,7 +27,7 @@ export function SelectSkuListComponent(): JSX.Element {
   )
 }
 
-function getParams({ name }: { name: string }): QueryParamsList {
+function getParams({ name }: { name: string }): QueryParamsList<SkuList> {
   return {
     pageSize: 25,
     sort: {

@@ -18,7 +18,6 @@ import {
   Button,
   Card,
   Dropdown,
-  DropdownDivider,
   DropdownItem,
   Icon,
   ListDetailsItem,
@@ -40,7 +39,6 @@ import {
   withSkeletonTemplate
 } from '@commercelayer/app-elements'
 import { useMemo } from 'react'
-import type { KeyedMutator } from 'swr'
 import { Link, useLocation } from 'wouter'
 
 function Page(
@@ -60,6 +58,14 @@ function Page(
   const hasRules = rules.length > 0
   const viaApi = isGeneratedViaApi(promotion)
 
+  const displayStatus = useDisplayStatus(promotion.id)
+  const { sdkClient } = useCoreSdkProvider()
+
+  const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
+    useDeletePromotionOverlay()
+  const { Overlay: EditMetadataOverlay, show: showEditMetadataOverlay } =
+    useEditMetadataOverlay()
+
   if (error != null) {
     return <GenericPageNotFound />
   }
@@ -72,9 +78,53 @@ function Page(
         </SkeletonTemplate>
       }
       overlay={props.overlay}
-      actionButton={
-        <ActionButton promotion={promotion} mutatePromotion={mutatePromotion} />
-      }
+      toolbar={{
+        buttons: [
+          {
+            label: displayStatus.isEnabled ? 'Disable' : 'Enable',
+            size: 'small',
+            onClick: () => {
+              void sdkClient[promotion.type]
+                .update({
+                  id: promotion.id,
+                  _disable: displayStatus.isEnabled,
+                  _enable: !displayStatus.isEnabled
+                })
+                .then(() => {
+                  void mutatePromotion()
+                })
+            }
+          }
+        ],
+        dropdownItems: [
+          [
+            {
+              label: 'Edit',
+              onClick: () => {
+                setLocation(
+                  appRoutes.editPromotion.makePath({
+                    promotionId: promotion.id
+                  })
+                )
+              }
+            },
+            {
+              label: 'Set metadata',
+              onClick: () => {
+                showEditMetadataOverlay()
+              }
+            }
+          ],
+          [
+            {
+              label: 'Delete',
+              onClick: () => {
+                showDeleteOverlay()
+              }
+            }
+          ]
+        ]
+      }}
       mode={mode}
       gap='only-top'
       navigationButton={{
@@ -88,6 +138,16 @@ function Page(
       }}
     >
       <SkeletonTemplate isLoading={isLoading}>
+        <DeleteOverlay promotion={promotion} />
+        {!isMockedId(promotion.id) && (
+          <EditMetadataOverlay
+            resourceType={promotion.type}
+            resourceId={promotion.id}
+            title='Edit metadata'
+            description={promotion.name}
+          />
+        )}
+
         <Spacer top='14'>
           {!isLoadingRules && !hasRules && !viaApi && (
             <Alert status='warning'>
@@ -136,104 +196,6 @@ function Page(
 
 const isGeneratedViaApi = (promotion: Promotion): boolean =>
   promotion.reference_origin !== appPromotionsReferenceOrigin
-
-const EnableDisableButton = withSkeletonTemplate<{
-  promotion: Promotion
-  mutatePromotion: KeyedMutator<Promotion>
-}>(({ promotion, mutatePromotion }) => {
-  const displayStatus = useDisplayStatus(promotion.id)
-  const { sdkClient } = useCoreSdkProvider()
-
-  return (
-    <Button
-      size='small'
-      onClick={() => {
-        void sdkClient[promotion.type]
-          .update({
-            id: promotion.id,
-            _disable: displayStatus.isEnabled,
-            _enable: !displayStatus.isEnabled
-          })
-          .then(() => {
-            void mutatePromotion()
-          })
-      }}
-    >
-      {displayStatus.isEnabled ? 'Disable' : 'Enable'}
-    </Button>
-  )
-})
-
-const ActionButton = withSkeletonTemplate<{
-  promotion: Promotion
-  mutatePromotion: KeyedMutator<Promotion>
-}>(({ promotion, mutatePromotion }) => {
-  const [, setLocation] = useLocation()
-  const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
-    useDeletePromotionOverlay()
-  const { Overlay: EditMetadataOverlay, show: showEditMetadataOverlay } =
-    useEditMetadataOverlay()
-
-  return (
-    <>
-      <DeleteOverlay promotion={promotion} />
-      {!isMockedId(promotion.id) && (
-        <EditMetadataOverlay
-          resourceType={promotion.type}
-          resourceId={promotion.id}
-          title='Edit metadata'
-          description={promotion.name}
-        />
-      )}
-      <div
-        style={{
-          display: 'flex',
-          gap: '8px',
-          alignItems: 'center'
-        }}
-      >
-        <EnableDisableButton
-          mutatePromotion={mutatePromotion}
-          promotion={promotion}
-        />
-        <Dropdown
-          dropdownLabel={
-            <Button variant='secondary' size='small'>
-              <Icon name='dotsThree' size={16} weight='bold' />
-            </Button>
-          }
-          dropdownItems={
-            <>
-              <DropdownItem
-                label='Edit'
-                onClick={() => {
-                  setLocation(
-                    appRoutes.editPromotion.makePath({
-                      promotionId: promotion.id
-                    })
-                  )
-                }}
-              />
-              <DropdownItem
-                label='Set metadata'
-                onClick={() => {
-                  showEditMetadataOverlay()
-                }}
-              />
-              <DropdownDivider />
-              <DropdownItem
-                label='Delete'
-                onClick={() => {
-                  showDeleteOverlay()
-                }}
-              />
-            </>
-          }
-        />
-      </div>
-    </>
-  )
-})
 
 const CardStatus = withSkeletonTemplate<{
   promotionId: string

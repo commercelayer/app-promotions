@@ -1,7 +1,6 @@
 import { isMockedId } from '#mocks'
 import { useCoreApi } from '@commercelayer/app-elements'
-import type { Coupon } from '@commercelayer/sdk'
-import type { ListResponse } from '@commercelayer/sdk/lib/cjs/resource'
+import type { Coupon, ListResponse } from '@commercelayer/sdk'
 import type { KeyedMutator } from 'swr'
 
 export const promotionCouponsIncludeAttribute = ['promotion_rule']

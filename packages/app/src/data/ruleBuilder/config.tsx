@@ -6,7 +6,7 @@ import {
   Text,
   type CurrencyCode
 } from '@commercelayer/app-elements'
-import type { ListableResourceType } from '@commercelayer/sdk/lib/cjs/api'
+import type { ListableResourceType } from '@commercelayer/sdk'
 import { useFormContext } from 'react-hook-form'
 import { InputCurrencyComponent } from './components/InputCurrencyComponent'
 import { SelectCurrencyComponent } from './components/SelectCurrencyComponent'
