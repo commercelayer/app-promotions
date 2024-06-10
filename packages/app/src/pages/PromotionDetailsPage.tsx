@@ -60,6 +60,9 @@ function Page(
 
   const displayStatus = useDisplayStatus(promotion.id)
   const { sdkClient } = useCoreSdkProvider()
+  const {
+    settings: { accessToken, domain, organizationSlug }
+  } = useTokenProvider()
 
   const { show: showDeleteOverlay, Overlay: DeleteOverlay } =
     useDeletePromotionOverlay()
@@ -84,15 +87,43 @@ function Page(
             label: displayStatus.isEnabled ? 'Disable' : 'Enable',
             size: 'small',
             onClick: () => {
-              void sdkClient[promotion.type]
-                .update({
-                  id: promotion.id,
-                  _disable: displayStatus.isEnabled,
-                  _enable: !displayStatus.isEnabled
-                })
-                .then(() => {
+              // @ts-expect-error TODO: flex_promotions
+              if (promotion.type === 'flex_promotions') {
+                void fetch(
+                  // @ts-expect-error TODO: flex_promotions
+                  `https://${organizationSlug}.${domain}/api/flex_promotions/${promotion.id}`,
+                  {
+                    method: 'PATCH',
+                    headers: {
+                      authorization: `Bearer ${accessToken}`,
+                      'content-type': 'application/vnd.api+json'
+                    },
+                    body: JSON.stringify({
+                      data: {
+                        type: 'flex_promotions',
+                        // @ts-expect-error TODO: flex_promotions
+                        id: promotion.id,
+                        attributes: {
+                          _disable: displayStatus.isEnabled,
+                          _enable: !displayStatus.isEnabled
+                        }
+                      }
+                    })
+                  }
+                ).then(() => {
                   void mutatePromotion()
                 })
+              } else {
+                void sdkClient[promotion.type]
+                  .update({
+                    id: promotion.id,
+                    _disable: displayStatus.isEnabled,
+                    _enable: !displayStatus.isEnabled
+                  })
+                  .then(() => {
+                    void mutatePromotion()
+                  })
+              }
             }
           }
         ],
@@ -149,12 +180,16 @@ function Page(
         )}
 
         <Spacer top='14'>
-          {!isLoadingRules && !hasRules && !viaApi && (
-            <Alert status='warning'>
-              Define activation rules below to prevent application to all
-              orders.
-            </Alert>
-          )}
+          {!isLoadingRules &&
+            !hasRules &&
+            !viaApi &&
+            // @ts-expect-error TODO: flex_promotions
+            promotion.type !== 'flex_promotions' && (
+              <Alert status='warning'>
+                Define activation rules below to prevent application to all
+                orders.
+              </Alert>
+            )}
 
           {viaApi && (
             <Alert status='info'>
@@ -172,9 +207,38 @@ function Page(
           <SectionInfo promotion={promotion} />
         </Spacer>
 
-        <Spacer top='14'>
-          <SectionActivationRules promotionId={props.params.promotionId} />
-        </Spacer>
+        {
+          // @ts-expect-error TODO: flex_promotions
+          promotion.type === 'flex_promotions' && (
+            <Spacer top='14'>
+              <Section title='Rules' border='none'>
+                <Text size='small'>
+                  <Card overflow='visible' gap='4'>
+                    <pre style={{ overflowX: 'auto' }}>
+                      {
+                        // @ts-expect-error TODO: flex_promotions
+                        JSON.stringify(promotion.rules, undefined, 2)
+                      }
+                    </pre>
+                  </Card>
+                </Text>
+              </Section>
+            </Spacer>
+          )
+        }
+
+        {
+          // @ts-expect-error TODO: flex_promotions
+          promotion.type !== 'flex_promotions' && (
+            <>
+              <Spacer top='14'>
+                <SectionActivationRules
+                  promotionId={props.params.promotionId}
+                />
+              </Spacer>
+            </>
+          )
+        }
 
         <Spacer top='14'>
           <SectionCoupon promotion={promotion} />

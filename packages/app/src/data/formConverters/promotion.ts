@@ -14,7 +14,17 @@ export function promotionToFormValues(promotion?: Promotion) {
     expires_at: new Date(promotion.expires_at),
     apply_the_discount_to: promotion.sku_list != null ? 'sku_list' : 'all',
     show_priority: promotion.priority != null,
-    sku_list: promotion.sku_list?.id
+    sku_list: promotion.sku_list?.id,
+    rules:
+      // @ts-expect-error TODO: flex_promotions
+      promotion.rules != null
+        ? JSON.stringify(
+            // @ts-expect-error TODO: flex_promotions
+            promotion.rules,
+            undefined,
+            2
+          )
+        : undefined
   }
 }
 
@@ -34,6 +44,10 @@ export function formValuesToPromotion(
       'total_usage_limit' in formValues && formValues.total_usage_limit != null
         ? formValues.total_usage_limit
         : null,
+    rules:
+      'rules' in formValues && formValues.rules != null
+        ? JSON.parse(formValues.rules as string)
+        : undefined,
     priority:
       'priority' in formValues && formValues.priority != null
         ? formValues.priority
