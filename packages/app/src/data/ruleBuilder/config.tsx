@@ -120,6 +120,30 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
+  customer_status: {
+    resource: 'custom_promotion_rules',
+    rel: null,
+    label: 'Customer status',
+    operators: [matchers.in, matchers.not_in],
+    Component: () => (
+      <HookedInputSelect
+        name='value'
+        placeholder='Select...'
+        initialValues={[
+          { label: 'Prospect', value: 'prospect' },
+          {
+            label: 'Acquired',
+            value: 'acquired'
+          },
+          { label: 'Repeat', value: 'repeat' }
+        ]}
+        isMulti
+      />
+    ),
+    isAvailable() {
+      return true
+    }
+  },
   customer_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
@@ -181,6 +205,7 @@ export type RuleBuilderConfig = Record<
   | 'currency_code'
   | 'total_amount_cents'
   | 'line_items_sku_tags_id'
+  | 'customer_status'
   | 'customer_tags_id'
   | 'customer_email'
   | 'order_tags_id'

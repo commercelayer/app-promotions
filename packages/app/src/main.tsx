@@ -3,7 +3,8 @@ import {
   ErrorBoundary,
   MetaTags,
   TokenProvider,
-  createApp
+  createApp,
+  type ClAppProps
 } from '@commercelayer/app-elements'
 import '@commercelayer/app-elements/style.css'
 import { StrictMode } from 'react'
@@ -12,8 +13,8 @@ import { App } from './App'
 
 const isDev = Boolean(import.meta.env.DEV)
 
-createApp(
-  (props) => (
+const Main: React.FC<ClAppProps> = (props) => {
+  return (
     <StrictMode>
       <ErrorBoundary hasContainer>
         <SWRConfig
@@ -37,6 +38,9 @@ createApp(
         </SWRConfig>
       </ErrorBoundary>
     </StrictMode>
-  ),
-  'promotions'
-)
+  )
+}
+
+export default Main
+
+createApp(Main, 'promotions')
