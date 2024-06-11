@@ -4,7 +4,7 @@ import {
   useCoreSdkProvider,
   type InputSelectValue
 } from '@commercelayer/app-elements'
-import type { QueryParamsList } from '@commercelayer/sdk'
+import type { QueryParamsList, Tag } from '@commercelayer/sdk'
 
 export function SelectTagComponent(): JSX.Element {
   const { sdkClient } = useCoreSdkProvider()
@@ -28,7 +28,7 @@ export function SelectTagComponent(): JSX.Element {
   )
 }
 
-function getParams({ name }: { name: string }): QueryParamsList {
+function getParams({ name }: { name: string }): QueryParamsList<Tag> {
   return {
     pageSize: 25,
     sort: {

@@ -2,8 +2,6 @@ import { CouponTable } from '#components/CouponTable'
 import type { PageProps } from '#components/Routes'
 import { appRoutes } from '#data/routes'
 import {
-  A,
-  Icon,
   PageLayout,
   ResourceList,
   SearchBar,
@@ -11,7 +9,7 @@ import {
   useTokenProvider
 } from '@commercelayer/app-elements'
 import { useState } from 'react'
-import { Link, useLocation } from 'wouter'
+import { useLocation } from 'wouter'
 
 function Page(props: PageProps<typeof appRoutes.couponList>): JSX.Element {
   const {
@@ -38,19 +36,22 @@ function Page(props: PageProps<typeof appRoutes.couponList>): JSX.Element {
           )
         }
       }}
-      actionButton={
-        <Link
-          href={appRoutes.newCoupon.makePath({
-            promotionId: props.params.promotionId
-          })}
-          asChild
-        >
-          <A href='' variant='primary' size='small' alignItems='center'>
-            <Icon name='plus' />
-            Coupon
-          </A>
-        </Link>
-      }
+      toolbar={{
+        buttons: [
+          {
+            label: 'Coupon',
+            icon: 'plus',
+            size: 'small',
+            onClick: () => {
+              setLocation(
+                appRoutes.newCoupon.makePath({
+                  promotionId: props.params.promotionId
+                })
+              )
+            }
+          }
+        ]
+      }}
     >
       <Spacer top='4'>
         <SearchBar

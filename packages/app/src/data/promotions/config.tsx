@@ -1,6 +1,6 @@
 import type { Promotion } from '#types'
 import { type IconProps } from '@commercelayer/app-elements'
-import type { ResourceTypeLock } from '@commercelayer/sdk/lib/cjs/api'
+import type { ResourceTypeLock } from '@commercelayer/sdk'
 import type { Replace } from 'type-fest'
 import { type z } from 'zod'
 import buy_x_pay_y_promotions from './configs/buy_x_pay_y_promotions'

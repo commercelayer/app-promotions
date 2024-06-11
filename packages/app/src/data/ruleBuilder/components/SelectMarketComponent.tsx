@@ -6,7 +6,7 @@ import {
   type CurrencyCode,
   type InputSelectValue
 } from '@commercelayer/app-elements'
-import type { QueryParamsList } from '@commercelayer/sdk'
+import type { Market, QueryParamsList } from '@commercelayer/sdk'
 import { useCurrencyCodes } from '../currency'
 
 export function SelectMarketComponent({
@@ -45,7 +45,7 @@ function getParams({
 }: {
   name: string
   currencyCodes: CurrencyCode[]
-}): QueryParamsList {
+}): QueryParamsList<Market> {
   return {
     pageSize: 25,
     sort: {
