@@ -20,6 +20,7 @@ import {
   Dropdown,
   DropdownItem,
   Icon,
+  Input,
   ListDetailsItem,
   ListItem,
   PageLayout,
@@ -38,7 +39,7 @@ import {
   useTokenProvider,
   withSkeletonTemplate
 } from '@commercelayer/app-elements'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useLocation } from 'wouter'
 
 function Page(
@@ -253,8 +254,75 @@ function Page(
             />
           </Spacer>
         )}
+
+        <Spacer top='14'>
+          <SectionCheck promotion={promotion} />
+        </Spacer>
       </SkeletonTemplate>
     </PageLayout>
+  )
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function SectionCheck({ promotion }: { promotion: Promotion }) {
+  const {
+    settings: { accessToken, domain, organizationSlug }
+  } = useTokenProvider()
+
+  const [results, setResults] = useState<any>()
+
+  const matches = results?.data?.filter((d: { match: boolean }) => d.match)
+
+  return (
+    <Section title='Check'>
+      <Spacer top='4'>
+        <form
+          className='flex gap-2'
+          onSubmit={(event) => {
+            event.preventDefault()
+            const orderId = new FormData(event.currentTarget).get('orderId')
+
+            void fetch(
+              `https://${organizationSlug}.${domain}/api/flex_promotions/${promotion.id}/check/${orderId?.toString()}`,
+              {
+                method: 'GET',
+                headers: {
+                  authorization: `Bearer ${accessToken}`,
+                  'content-type': 'application/vnd.api+json'
+                }
+              }
+            )
+              .then(async (response) => await response.json())
+              .then(async (json) => {
+                setResults(json)
+              })
+          }}
+        >
+          <Input name='orderId' placeholder='Order id' />
+          <Button type='submit' style={{ border: 'none' }}>
+            Check
+          </Button>
+        </form>
+        {results != null && (
+          <Spacer top='4'>
+            <Text size='small'>
+              <Spacer bottom='1'>
+                {matches == null
+                  ? 'Ehi, double check the order id 🧐'
+                  : matches.length > 0
+                    ? 'Hurray! It matches 🎉'
+                    : "So sad, it doesn't match 😢"}
+              </Spacer>
+              <Card overflow='visible' gap='4'>
+                <pre style={{ overflowX: 'auto' }}>
+                  {JSON.stringify(results, undefined, 2)}
+                </pre>
+              </Card>
+            </Text>
+          </Spacer>
+        )}
+      </Spacer>
+    </Section>
   )
 }
 
