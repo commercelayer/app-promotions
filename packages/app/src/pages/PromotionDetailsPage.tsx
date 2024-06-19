@@ -308,7 +308,7 @@ function SectionCheck({ promotion }: { promotion: Promotion }) {
             <Text size='small'>
               <Spacer bottom='1'>
                 {matches == null
-                  ? 'Ehi, double check the order id 🧐'
+                  ? 'Oops, something went wrong 😱'
                   : matches.length > 0
                     ? 'Hurray! It matches 🎉'
                     : "So sad, it doesn't match 😢"}
