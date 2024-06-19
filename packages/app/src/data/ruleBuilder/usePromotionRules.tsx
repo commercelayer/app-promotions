@@ -143,7 +143,7 @@ type RawRuleValid = RawRuleBasic & {
   /** Related resource. (e.g. when `markets`, the `rawValue` contains market IDs) */
   rel: RuleBuilderConfig[keyof RuleBuilderConfig]['rel']
   /** Filter matcher. It represents the condition to be met by the query. */
-  matcherLabel: (typeof matchers)[keyof typeof matchers]['label']
+  matcherLabel: (typeof matchers)[keyof typeof matchers]['label'] | ''
   /** Type from the associated promotion rule */
   type: CustomPromotionRule['type'] | SkuListPromotionRule['type']
   /** The associated `PromotionRule`. */
@@ -224,27 +224,30 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
             ''
           ) as keyof RuleBuilderConfig
 
-          const config = ruleBuilderConfig[configKey]
-          const matcherLabel = matcher != null ? matchers[matcher].label : null
-          if (config == null || matcherLabel == null) {
-            return {
-              valid: false,
-              key: predicate,
-              label: predicate,
-              rawValues: String(value).toString().split(',')
-            } satisfies RawRule
-          }
+          const config: RuleBuilderConfig[keyof RuleBuilderConfig] =
+            ruleBuilderConfig[configKey]
+          const matcherLabel = matcher != null ? matchers[matcher].label : ''
+
+          // // An unknown custom promotion rule cannot be modified/deleted.
+          // if (config == null || matcherLabel === '') {
+          //   return {
+          //     valid: false,
+          //     key: predicate,
+          //     label: predicate,
+          //     rawValues: String(value).toString().split(',')
+          //   } satisfies RawRule
+          // }
 
           return {
             valid: true,
             type: promotionRule.type,
             promotionRule,
             key: predicate,
-            label: config.label,
+            label: config?.label ?? predicate,
             predicate,
             configKey,
             config,
-            rel: config.rel,
+            rel: config?.rel ?? null,
             matcherLabel,
             rawValues: String(value).toString().split(',')
           } satisfies RawRule
