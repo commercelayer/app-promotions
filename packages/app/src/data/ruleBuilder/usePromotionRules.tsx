@@ -228,16 +228,6 @@ function toRawRules(promotionRule: PromotionRule): RawRule[] | null {
             ruleBuilderConfig[configKey]
           const matcherLabel = matcher != null ? matchers[matcher].label : ''
 
-          // // An unknown custom promotion rule cannot be modified/deleted.
-          // if (config == null || matcherLabel === '') {
-          //   return {
-          //     valid: false,
-          //     key: predicate,
-          //     label: predicate,
-          //     rawValues: String(value).toString().split(',')
-          //   } satisfies RawRule
-          // }
-
           return {
             valid: true,
             type: promotionRule.type,
