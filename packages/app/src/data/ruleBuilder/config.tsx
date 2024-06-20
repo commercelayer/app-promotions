@@ -164,6 +164,16 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
+  customer_customer_subscriptions_reference: {
+    resource: 'custom_promotion_rules',
+    rel: null,
+    label: 'Customer subscription',
+    operators: [matchers.in, matchers.not_in],
+    Component: () => <HookedInput name='value' />,
+    isAvailable() {
+      return true
+    }
+  },
   order_tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
@@ -208,6 +218,7 @@ export type RuleBuilderConfig = Record<
   | 'customer_status'
   | 'customer_tags_id'
   | 'customer_email'
+  | 'customer_customer_subscriptions_reference'
   | 'order_tags_id'
   | 'subtotal_amount_cents'
   | 'skuListPromotionRule',
