@@ -14,7 +14,11 @@ export function promotionToFormValues(promotion?: Promotion) {
     expires_at: new Date(promotion.expires_at),
     apply_the_discount_to: promotion.sku_list != null ? 'sku_list' : 'all',
     show_priority: promotion.priority != null,
-    sku_list: promotion.sku_list?.id
+    sku_list: promotion.sku_list?.id,
+    reference:
+      promotion.reference != null && promotion.reference !== ''
+        ? promotion.reference
+        : null
   }
 }
 
@@ -33,6 +37,12 @@ export function formValuesToPromotion(
     total_usage_limit:
       'total_usage_limit' in formValues && formValues.total_usage_limit != null
         ? formValues.total_usage_limit
+        : null,
+    reference:
+      'reference' in formValues &&
+      formValues.reference != null &&
+      formValues.reference !== ''
+        ? formValues.reference
         : null,
     priority:
       'priority' in formValues && formValues.priority != null

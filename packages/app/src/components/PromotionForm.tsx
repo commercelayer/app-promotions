@@ -125,6 +125,10 @@ export function PromotionForm({
               }}
             />
           </Spacer>
+
+          <Spacer top='6'>
+            <HookedInput name='reference' label='Reference' />
+          </Spacer>
         </Section>
       </Spacer>
 
