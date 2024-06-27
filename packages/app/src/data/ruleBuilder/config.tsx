@@ -36,12 +36,20 @@ export const matchers = {
     label: 'is greater than',
     value: 'gt'
   },
+  lteq: {
+    label: 'is equal or lower than',
+    value: 'lteq'
+  },
+  lt: {
+    label: 'is lower than',
+    value: 'lt'
+  },
   end_any: {
     label: 'ends with',
     value: 'end_any'
   }
 } as const satisfies {
-  [key in 'in' | 'not_in' | 'eq' | 'gteq' | 'gt' | 'end_any']: {
+  [key in 'in' | 'not_in' | 'eq' | 'gteq' | 'gt' | 'lteq' | 'lt' | 'end_any']: {
     label: string
     value: key
   }
@@ -188,7 +196,13 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     resource: 'custom_promotion_rules',
     rel: null,
     label: 'Cart subtotal',
-    operators: [matchers.eq, matchers.gteq, matchers.gt],
+    operators: [
+      matchers.eq,
+      matchers.gteq,
+      matchers.gt,
+      matchers.lteq,
+      matchers.lt
+    ],
     Component: ({ promotion }) => (
       <InputCurrencyComponent promotion={promotion} />
     ),
@@ -200,7 +214,13 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
     resource: 'custom_promotion_rules',
     rel: null,
     label: 'Cart total',
-    operators: [matchers.eq, matchers.gteq, matchers.gt],
+    operators: [
+      matchers.eq,
+      matchers.gteq,
+      matchers.gt,
+      matchers.lteq,
+      matchers.lt
+    ],
     Component: ({ promotion }) => (
       <InputCurrencyComponent promotion={promotion} />
     ),
