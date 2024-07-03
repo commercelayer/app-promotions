@@ -182,7 +182,7 @@ export const ruleBuilderConfig: RuleBuilderConfig = {
       return true
     }
   },
-  order_tags_id: {
+  tags_id: {
     resource: 'custom_promotion_rules',
     rel: 'tags',
     label: 'Order tag',
@@ -239,7 +239,7 @@ export type RuleBuilderConfig = Record<
   | 'customer_tags_id'
   | 'customer_email'
   | 'customer_customer_subscriptions_reference'
-  | 'order_tags_id'
+  | 'tags_id'
   | 'subtotal_amount_cents'
   | 'skuListPromotionRule',
   {
