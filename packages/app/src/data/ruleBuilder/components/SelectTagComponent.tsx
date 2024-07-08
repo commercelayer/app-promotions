@@ -9,15 +9,18 @@ import type { QueryParamsList, Tag } from '@commercelayer/sdk'
 export function SelectTagComponent(): JSX.Element {
   const { sdkClient } = useCoreSdkProvider()
 
-  const { data: tags = [] } = useCoreApi('tags', 'list', [
-    getParams({ name: '' })
-  ])
+  const { data: tags } = useCoreApi('tags', 'list', [getParams({ name: '' })])
 
   return (
     <HookedInputSelect
       name='value'
       placeholder='Search...'
-      initialValues={toInputSelectValues(tags)}
+      menuFooterText={
+        tags != null && tags.meta.recordCount > 25
+          ? 'Type to search for more options.'
+          : undefined
+      }
+      initialValues={toInputSelectValues(tags ?? [])}
       loadAsyncValues={async (name) => {
         const tags = await sdkClient.tags.list(getParams({ name }))
 

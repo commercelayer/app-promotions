@@ -9,7 +9,7 @@ import type { QueryParamsList, SkuList } from '@commercelayer/sdk'
 export function SelectSkuListComponent(): JSX.Element {
   const { sdkClient } = useCoreSdkProvider()
 
-  const { data: skuLists = [] } = useCoreApi('sku_lists', 'list', [
+  const { data: skuLists } = useCoreApi('sku_lists', 'list', [
     getParams({ name: '' })
   ])
 
@@ -17,7 +17,12 @@ export function SelectSkuListComponent(): JSX.Element {
     <HookedInputSelect
       name='value'
       placeholder='Search...'
-      initialValues={toInputSelectValues(skuLists)}
+      menuFooterText={
+        skuLists != null && skuLists.meta.recordCount > 25
+          ? 'Type to search for more options.'
+          : undefined
+      }
+      initialValues={toInputSelectValues(skuLists ?? [])}
       loadAsyncValues={async (name) => {
         const skuLists = await sdkClient.sku_lists.list(getParams({ name }))
 
