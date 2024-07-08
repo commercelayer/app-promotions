@@ -17,7 +17,7 @@ export function SelectMarketComponent({
   const { sdkClient } = useCoreSdkProvider()
   const currencyCodes = useCurrencyCodes(promotion)
 
-  const { data: markets = [] } = useCoreApi('markets', 'list', [
+  const { data: markets } = useCoreApi('markets', 'list', [
     getParams({ currencyCodes, name: '' })
   ])
 
@@ -26,7 +26,12 @@ export function SelectMarketComponent({
       key={currencyCodes.join(',')}
       name='value'
       placeholder='Search...'
-      initialValues={toInputSelectValues(markets)}
+      menuFooterText={
+        markets != null && markets.meta.recordCount > 25
+          ? 'Type to search for more options.'
+          : undefined
+      }
+      initialValues={toInputSelectValues(markets ?? [])}
       loadAsyncValues={async (name) => {
         const markets = await sdkClient.markets.list(
           getParams({ currencyCodes, name })
