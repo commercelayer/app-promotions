@@ -1,3 +1,6 @@
+> [!WARNING]
+> This repository is no longer maitained. We moved all our Dashboard applications to a brand new [dashboard-apps](https://github.com/commercelayer/dashboard-apps) monorepo. This allows you to run them all locally effortlessly.
+
 # App Promotions
 
 Commerce Layer application for managing promotions.
